@@ -19,14 +19,16 @@ type
   TtgdNamedCollection = class(TOwnedCollection)
   protected
     function GetItems(Index: Integer): TtgdNamedCollectionItem;
+    function GetValues(Name: String): TtgdNamedCollectionItem;
     procedure SetItems(Index: Integer; const Value: TtgdNamedCollectionItem);
   public
     function ContainsName(AName: string): Boolean;
     function FindName(AName: string): TtgdNamedCollectionItem;
-    function IndexOfName(AName: string): Integer;
+    function IndexOfName(AName: string; APartialSearch: Boolean = False): Integer;
     function TryFindName(AName: string; out AItem: TtgdNamedCollectionItem): Boolean;
     property Items[Index: Integer]: TtgdNamedCollectionItem read GetItems write
-      SetItems; default;
+        SetItems;
+    property Values[Name: String]: TtgdNamedCollectionItem read GetValues; default;
   end;
 
   TtgdReportContextItem = class(TtgdNamedCollectionItem)
@@ -41,12 +43,14 @@ type
   TtgdReportContext = class(TtgdNamedCollection)
   protected
     function GetItems(Index: Integer): TtgdReportContextItem;
+    function GetValues(Name: String): TtgdNamedCollectionItem;
     procedure SetItems(Index: Integer; const Value: TtgdReportContextItem);
   public
     constructor Create(AOwner: TPersistent);
     function Add(AComponent: TComponent; AName: string = ''): TtgdReportContextItem;
     property Items[Index: Integer]: TtgdReportContextItem read GetItems write
-      SetItems; default;
+      SetItems;
+    property Values[Name: String]: TtgdNamedCollectionItem read GetValues; default;
   end;
 
   TtgdReportVariable = class;
@@ -75,11 +79,14 @@ type
   TtgdReportVariables = class(TtgdNamedCollection)
   protected
     function GetItems(Index: Integer): TtgdReportVariable;
+    function GetValues(Name: String): TtgdReportVariable;
     procedure SetItems(Index: Integer; const Value: TtgdReportVariable);
   public
     constructor Create(AOwner: TPersistent);
+    function Add(AName: string; AValue: Variant): TtgdReportVariable;
     property Items[Index: Integer]: TtgdReportVariable read GetItems write
-      SetItems; default;
+      SetItems;
+    property Values[Name: String]: TtgdReportVariable read GetValues; default;
   end;
 
   TtgdReportFunction = class;
@@ -94,6 +101,8 @@ type
   protected
     function DoExecute(AName: string; AParams: array of Variant): Variant;
     procedure SetDeclaration(const Value: string);
+  public
+    function ExtractNameFromDeclaration(ADeclaration: String): string;
   published
     property Declaration: string read FDeclaration write SetDeclaration;
     property OnExecute: TtgdReportFunctionExecuteEvent read FOnExecute write FOnExecute;
@@ -102,11 +111,14 @@ type
   TtgdReportFunctions = class(TtgdNamedCollection)
   protected
     function GetItems(Index: Integer): TtgdReportFunction;
+    function GetValues(Name: String): TtgdReportFunction;
     procedure SetItems(Index: Integer; const Value: TtgdReportFunction);
   public
     constructor Create(AOwner: TPersistent);
+    function Add(ADeclaration: String): TtgdReportFunction;
     property Items[Index: Integer]: TtgdReportFunction read GetItems write
-      SetItems; default;
+      SetItems;
+    property Values[Name: String]: TtgdReportFunction read GetValues; default;
   end;
 
 implementation
@@ -146,14 +158,22 @@ begin
   Result := TtgdReportContextItem(inherited Items[Index]);
 end;
 
-function TtgdNamedCollection.IndexOfName(AName: string): Integer;
+function TtgdNamedCollection.GetValues(Name: String): TtgdNamedCollectionItem;
+begin
+  if not TryFindName(Name, Result) then
+    raise Exception.CreateFmt('Item with name "%s" is not found in collection', [Name]);
+end;
+
+function TtgdNamedCollection.IndexOfName(AName: string; APartialSearch: Boolean
+    = False): Integer;
 var
   I: Integer;
 begin
   Result := -1;
   for I := 0 to Count - 1 do
   begin
-    if AnsiSameText(AName, Items[I].Name) then
+    if AnsiSameText(AName, Items[I].Name)
+      or (APartialSearch and AnsiStartsText(AName, Items[I].Name)) then
     begin
       Result := I;
       Break;
@@ -162,7 +182,7 @@ begin
 end;
 
 procedure TtgdNamedCollection.SetItems(Index: Integer; const Value:
-  TtgdNamedCollectionItem);
+    TtgdNamedCollectionItem);
 begin
   inherited Items[Index] := Value;
 end;
@@ -203,6 +223,11 @@ begin
   Result := TtgdReportContextItem(inherited Items[Index]);
 end;
 
+function TtgdReportContext.GetValues(Name: String): TtgdNamedCollectionItem;
+begin
+  Result := TtgdNamedCollectionItem(inherited Values[Name]);
+end;
+
 procedure TtgdReportContext.SetItems(Index: Integer; const Value: TtgdReportContextItem);
 begin
   inherited Items[Index] := Value;
@@ -213,9 +238,22 @@ begin
   inherited Create(AOwner, TtgdReportContextItem);
 end;
 
+function TtgdReportVariables.Add(AName: string; AValue: Variant):
+    TtgdReportVariable;
+begin
+  Result := TtgdReportVariable.Create(Self);
+  Result.Name := AName;
+  Result.Value := AValue;
+end;
+
 function TtgdReportVariables.GetItems(Index: Integer): TtgdReportVariable;
 begin
   Result := TtgdReportVariable(inherited Items[Index]);
+end;
+
+function TtgdReportVariables.GetValues(Name: String): TtgdReportVariable;
+begin
+  Result := TtgdReportVariable(inherited Values[Name]);
 end;
 
 procedure TtgdReportVariables.SetItems(Index: Integer; const Value: TtgdReportVariable);
@@ -226,13 +264,13 @@ end;
 procedure TtgdReportVariable.DoGetValue(AVarName: string; var Value: Variant);
 begin
   if Assigned(FOnGetValue) then
-    FOnGetValue(Self, AVarName, Value);
+    FOnGetValue(Self, Value);
 end;
 
 procedure TtgdReportVariable.DoSetValue(AVarName: string; Value: Variant);
 begin
   if Assigned(FOnSetValue) then
-    FOnSetValue(Self, AVarName, Value);
+    FOnSetValue(Self, Value);
 end;
 
 procedure TtgdReportVariable.SetValue(const Value: Variant);
@@ -246,9 +284,30 @@ end;
 function TtgdReportFunction.DoExecute(AName: string; AParams: array of Variant): Variant;
 begin
   if Assigned(FOnExecute) then
-    Result := FOnExecute(Self, AName, AParams)
+    Result := FOnExecute(Self, AParams)
   else
     Result := Unassigned;
+end;
+
+function TtgdReportFunction.ExtractNameFromDeclaration(ADeclaration: String):
+    string;
+const
+  IdentChars = ['a' .. 'z', 'A' .. 'Z', '0' .. '9', '_'];
+var
+  I: Integer;
+  vText: string;
+begin
+  Result := '';
+  vText := MidStr(ADeclaration, Pos(' ', ADeclaration)+1, MaxInt);
+  I := 1;
+  while I <= Length(Result) do
+  begin
+    if vText[I] in IdentChars then
+      Result := Result + vText[I]
+    else
+      Break;
+    Inc(I);
+  end;
 end;
 
 procedure TtgdReportFunction.SetDeclaration(const Value: string);
@@ -256,6 +315,7 @@ begin
   if FDeclaration <> Value then
   begin
     FDeclaration := Value;
+    Name := FDeclaration;
   end;
 end;
 
@@ -264,9 +324,20 @@ begin
   inherited Create(AOwner, TtgdReportContextItem);
 end;
 
+function TtgdReportFunctions.Add(ADeclaration: String): TtgdReportFunction;
+begin
+  Result := TtgdReportFunction.Create(Self);
+  Result.Declaration := ADeclaration;
+end;
+
 function TtgdReportFunctions.GetItems(Index: Integer): TtgdReportFunction;
 begin
   Result := TtgdReportFunction(inherited Items[Index]);
+end;
+
+function TtgdReportFunctions.GetValues(Name: String): TtgdReportFunction;
+begin
+  Result := TtgdReportFunction(inherited Values[Name]);
 end;
 
 procedure TtgdReportFunctions.SetItems(Index: Integer; const Value: TtgdReportFunction);
