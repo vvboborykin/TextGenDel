@@ -3,7 +3,8 @@ unit tgdReportUnit;
 interface
 
 uses
-  SysUtils, Classes, Variants, StrUtils, DateUtils, tgdCollectionsUnit;
+  SysUtils, Classes, Variants, StrUtils, DateUtils, tgdCollectionsUnit,
+  fs_iinterpreter;
 
 type
   TtgdReport = class(TComponent)
@@ -32,6 +33,8 @@ type
     destructor Destroy; override;
     procedure GenerateText(AResultLines: TStrings);
     procedure SetDefaultMarkers;
+    function DoCallMethod(Instance: TObject; ClassType: TClass; const MethodName:
+        String; var Params: Variant): Variant;
   published
     property Context: TtgdReportContext read FContext write SetContext;
     property TemplateLines: TStringList read FTemplateLines write SetTemplateLines;
@@ -72,6 +75,16 @@ begin
   FreeAndNil(FContext);
   FreeAndNil(FTemplateLines);
   inherited Destroy;
+end;
+
+function TtgdReport.DoCallMethod(Instance: TObject; ClassType: TClass; const
+    MethodName: String; var Params: Variant): Variant;
+var
+  vItem: TtgdNamedCollectionItem;
+begin
+  Result := Unassigned;
+  if FFunctions.TryFindName(MethodName, vItem) then
+    Result := TtgdReportFunction(vItem).DoExecute(MethodName, Params);
 end;
 
 procedure TtgdReport.GenerateText(AResultLines: TStrings);

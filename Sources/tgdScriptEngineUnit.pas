@@ -14,6 +14,12 @@ type
     procedure ValidateScript(AScript: TStrings); stdcall;
   end;
 
+
+  TtgdCreateScriptEngineFunc = function(): ItgdScriptEngine;
+
+var
+  CreateScriptEngine: TtgdCreateScriptEngineFunc;
+
 implementation
 
 end.

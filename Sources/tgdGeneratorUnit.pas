@@ -37,8 +37,17 @@ end;
 procedure TtgdGenerator.GenerateText(AResultLines: TStrings);
 var
   vEngine: ItgdScriptEngine;
+  vScript: TStringList;
 begin
-  vEngine := 
+  vEngine := CreateScriptEngine;
+  vScript := TStringList.Create();
+  try
+    vEngine.Init(FReport);
+    vEngine.ConvertTemplateToScript(vScript);
+    vEngine.ExecuteScript(vScript, AResultLines);
+  finally
+    vScript.Free;
+  end;
 end;
 
 procedure TtgdGenerator.SetReport(const Value: TtgdReport);

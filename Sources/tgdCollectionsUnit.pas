@@ -91,18 +91,17 @@ type
 
   TtgdReportFunction = class;
 
-  TtgdReportFunctionExecuteEvent = function(Sender: TtgdReportFunction; AParams:
-    array of Variant): Variant of object;
+  TtgdReportFunctionExecuteEvent = function(Sender: TtgdReportFunction; AParams: Variant): Variant of object;
 
   TtgdReportFunction = class(TtgdNamedCollectionItem)
   private
     FDeclaration: string;
     FOnExecute: TtgdReportFunctionExecuteEvent;
   protected
-    function DoExecute(AName: string; AParams: array of Variant): Variant;
     procedure SetDeclaration(const Value: string);
   public
     function ExtractNameFromDeclaration(ADeclaration: String): string;
+    function DoExecute(AName: string; AParams: Variant): Variant;
   published
     property Declaration: string read FDeclaration write SetDeclaration;
     property OnExecute: TtgdReportFunctionExecuteEvent read FOnExecute write FOnExecute;
@@ -281,7 +280,7 @@ begin
   end;
 end;
 
-function TtgdReportFunction.DoExecute(AName: string; AParams: array of Variant): Variant;
+function TtgdReportFunction.DoExecute(AName: string; AParams: Variant): Variant;
 begin
   if Assigned(FOnExecute) then
     Result := FOnExecute(Self, AParams)

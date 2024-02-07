@@ -25,6 +25,9 @@ type
 
 implementation
 
+uses
+  tgdCollectionsUnit;
+
 constructor TtgdFastScriptEngine.Create;
 begin
   inherited Create;
@@ -57,23 +60,58 @@ begin
 end;
 
 procedure TtgdFastScriptEngine.RegisterContext;
+var
+  I: Integer;
+  vItem: TtgdReportContextItem;
 begin
-  // TODO -cMM: TtgdFastScriptEngine.RegisterContext default body inserted
+  for I := 0 to FReport.Context.Count-1 do
+  begin
+    vItem := FReport.Context.Items[I];
+    FScript.AddForm(vItem.Component);
+  end;
+  
+  if FReport.UseOwnerAsContext then
+    FScript.AddForm(FReport.Owner);
 end;
 
 procedure TtgdFastScriptEngine.RegisterFunctions;
+var
+  I: Integer;
+  vItem: TtgdReportFunction;
 begin
-  // TODO -cMM: TtgdFastScriptEngine.RegisterFunctions default body inserted
+  for I := 0 to FReport.Functions.Count-1 do
+  begin
+    vItem := FReport.Functions.Items[I];
+    FScript.AddMethod(vItem.Declaration, FReport.DoCallMethod, 'TextGen');
+  end;
 end;
 
 procedure TtgdFastScriptEngine.RegisterVariables;
+var
+  I: Integer;
+  vItem: TtgdReportVariable;
 begin
-  // TODO -cMM: TtgdFastScriptEngine.RegisterVariables default body inserted
+  for I := 0 to FReport.Variables.Count-1 do
+  begin
+    vItem := FReport.Variables.Items[I];
+    FScript.AddVariable(vItem.Name, 'Variant', vItem.Value);
+  end;
 end;
 
 procedure TtgdFastScriptEngine.ValidateScript(AScript: TStrings);
 begin
-  // TODO -cMM: TtgdFastScriptEngine.ValidateScript default body inserted
+  FScript.Lines.Assign(AScript);
+  if not FScript.Compile then
+    raise Exception.CreateFmt('Compilation error %s at %s',
+      [FScript.ErrorMsg, FScript.ErrorPos]);
 end;
+
+function CreateFastScriptEngine(): ItgdScriptEngine;
+begin
+  Result := TtgdFastScriptEngine.Create;
+end;
+
+initialization
+  CreateScriptEngine := CreateFastScriptEngine;
 
 end.
