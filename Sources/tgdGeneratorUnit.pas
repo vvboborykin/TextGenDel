@@ -19,6 +19,9 @@ type
 
 implementation
 
+uses
+  tgdScriptEngineUnit;
+
 const
   SAReportIsNil = 'AReport is nil';
 
@@ -32,8 +35,10 @@ begin
 end;
 
 procedure TtgdGenerator.GenerateText(AResultLines: TStrings);
+var
+  vEngine: ItgdScriptEngine;
 begin
-
+  vEngine := 
 end;
 
 procedure TtgdGenerator.SetReport(const Value: TtgdReport);

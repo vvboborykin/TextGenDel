@@ -31,6 +31,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure GenerateText(AResultLines: TStrings);
+    procedure SetDefaultMarkers;
   published
     property Context: TtgdReportContext read FContext write SetContext;
     property TemplateLines: TStringList read FTemplateLines write SetTemplateLines;
@@ -61,6 +62,7 @@ begin
   FContext := TtgdReportContext.Create(Self);
   FVariables := TtgdReportVariables.Create(Self);
   FFunctions := TtgdReportFunctions.Create(Self);
+  SetDefaultMarkers();
 end;
 
 destructor TtgdReport.Destroy;
@@ -105,6 +107,14 @@ end;
 procedure TtgdReport.SetContext(const Value: TtgdReportContext);
 begin
   FContext.Assign(Value);
+end;
+
+procedure TtgdReport.SetDefaultMarkers;
+begin
+  FCodeBeginMarker := '{{';
+  FCodeEndMarker := '}}';
+  FMacroBeginMarker := '{=';
+  FMacroEndMarker := '=}'
 end;
 
 procedure TtgdReport.SetFunctions(const Value: TtgdReportFunctions);
