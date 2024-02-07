@@ -11,6 +11,7 @@ type
     FCodeBeginMarker: string;
     FCodeEndMarker: string;
     FContext: TtgdReportContext;
+    FFunctions: TtgdReportFunctions;
     FMacroBeginMarker: string;
     FMacroEndMarker: string;
     FTemplateLines: TStringList;
@@ -20,6 +21,7 @@ type
     procedure SetCodeBeginMarker(const Value: string);
     procedure SetCodeEndMarker(const Value: string);
     procedure SetContext(const Value: TtgdReportContext);
+    procedure SetFunctions(const Value: TtgdReportFunctions);
     procedure SetMacroBeginMarker(const Value: string);
     procedure SetMacroEndMarker(const Value: string);
     procedure SetTemplateLines(const Value: TStringList);
@@ -39,6 +41,7 @@ type
     property MacroEndMarker: string read FMacroEndMarker write SetMacroEndMarker;
     property CodeBeginMarker: string read FCodeBeginMarker write SetCodeBeginMarker;
     property CodeEndMarker: string read FCodeEndMarker write SetCodeEndMarker;
+    property Functions: TtgdReportFunctions read FFunctions write SetFunctions;
     property Variables: TtgdReportVariables read FVariables write SetVariables;
   end;
 
@@ -57,10 +60,12 @@ begin
   FUseOwnerAsContext := True;
   FContext := TtgdReportContext.Create(Self);
   FVariables := TtgdReportVariables.Create(Self);
+  FFunctions := TtgdReportFunctions.Create(Self);
 end;
 
 destructor TtgdReport.Destroy;
 begin
+  FreeAndNil(FFunctions);
   FreeAndNil(FVariables);
   FreeAndNil(FContext);
   FreeAndNil(FTemplateLines);
@@ -100,6 +105,11 @@ end;
 procedure TtgdReport.SetContext(const Value: TtgdReportContext);
 begin
   FContext.Assign(Value);
+end;
+
+procedure TtgdReport.SetFunctions(const Value: TtgdReportFunctions);
+begin
+  FFunctions.Assign(Value);
 end;
 
 procedure TtgdReport.SetMacroBeginMarker(const Value: string);
