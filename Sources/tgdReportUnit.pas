@@ -45,6 +45,8 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure GenerateText(AResultLines: TStrings);
+    procedure GenerateScript(AResultLines: TStrings);
+    procedure ValidateTemplate;
     procedure SetDefaultMarkers;
     function DoCallMethod(Instance: TObject; ClassType: TClass; const MethodName:
         String; var Params: Variant): Variant;
@@ -143,6 +145,20 @@ begin
     Result := TtgdReportFunction(vItem).DoExecute(MethodName, Params);
 end;
 
+procedure TtgdReport.GenerateScript(AResultLines: TStrings);
+begin
+  if AResultLines = nil then
+    raise Exception.Create(SAResultLinesIsNil);
+  with TtgdGenerator.Create(Self) do
+  begin
+    try
+      GenerateScript(AResultLines);
+    finally
+      Free;
+    end;
+  end;
+end;
+
 procedure TtgdReport.GenerateText(AResultLines: TStrings);
 begin
   if AResultLines = nil then
@@ -234,6 +250,18 @@ end;
 procedure TtgdReport.SetVariables(const Value: TtgdReportVariables);
 begin
   FVariables.Assign(Value);
+end;
+
+procedure TtgdReport.ValidateTemplate;
+begin
+  with TtgdGenerator.Create(Self) do
+  begin
+    try
+      ValidateTemplate();
+    finally
+      Free;
+    end;
+  end;
 end;
 
 end.

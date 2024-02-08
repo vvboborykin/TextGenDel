@@ -1,0 +1,9 @@
+{{var I: Integer;
+begin}}
+<ClinicalDocument>
+{{for I := 0 to 9 do
+begin}}
+  <Node index={= IntToStr(I )=}>Проверка {= IntToStr(I) =} </Node>
+{{end;}}
+</ClinicalDocument>
+{{end.}}

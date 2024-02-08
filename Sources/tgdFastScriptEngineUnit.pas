@@ -82,7 +82,7 @@ var
   vText: string;
 begin
   vText := ReplaceMacroses(ALine);
-  vText := AnsiQuotedStr(vText, '''');
+  vText := '''' + vText + '''';
 
   if AnsiStartsText(''' + ', vText) then
     vText := MidStr(vText, 5, MaxInt);
@@ -111,8 +111,15 @@ var
 begin
   CheckInitCompleted();
   FNestCount := 0;
-  for I := 0 to AScript.Count - 1 do
-    GenerateScriptLine(AScript[I], AScript);
+  
+  for I := 0 to FReport.TemplateLines.Count - 1 do
+    GenerateScriptLine(FReport.TemplateLines[I], AScript);
+
+  if (AScript.Count = 0) or (Trim(AScript[AScript.Count-1]) <> 'end.') then
+  begin
+    AScript.Insert(0, 'begin');
+    AScript.Append('end.');
+  end;
 end;
 
 procedure TtgdFastScriptEngine.ExecuteScript(AScript, AResultLines: TStrings);
@@ -179,7 +186,7 @@ begin
   if FReport.UseOwnerAsContext and (FReport.Owner <> nil) then
   begin
     for I := 0 to FReport.Owner.ComponentCount-1 do
-      FScript.AddForm(FReport.Components[I]);
+      FScript.AddForm(FReport.Owner.Components[I]);
   end;
 end;
 

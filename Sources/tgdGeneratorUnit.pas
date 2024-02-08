@@ -33,6 +33,8 @@ type
     /// </summary>
     /// <param name="AResultLines"> (TStrings) Result text recipient</param>
     procedure GenerateText(AResultLines: TStrings);
+    procedure GenerateScript(AResultLines: TStrings);
+    procedure ValidateTemplate;
     /// <summary>TtgdGenerator.Report
     /// Owner
     /// </summary>
@@ -57,6 +59,16 @@ begin
   FReport := AReport;
 end;
 
+procedure TtgdGenerator.GenerateScript(AResultLines: TStrings);
+var
+  vEngine: ItgdScriptEngine;
+  vScript: TStringList;
+begin
+  vEngine := CreateScriptEngine;
+  vEngine.Init(FReport);
+  vEngine.ConvertTemplateToScript(AResultLines);
+end;
+
 procedure TtgdGenerator.GenerateText(AResultLines: TStrings);
 var
   vEngine: ItgdScriptEngine;
@@ -78,6 +90,22 @@ begin
   if FReport <> Value then
   begin
     FReport := Value;
+  end;
+end;
+
+procedure TtgdGenerator.ValidateTemplate;
+var
+  vEngine: ItgdScriptEngine;
+  vScript: TStringList;
+begin
+  vEngine := CreateScriptEngine;
+  vScript := TStringList.Create();
+  try
+    vEngine.Init(FReport);
+    vEngine.ConvertTemplateToScript(vScript);
+    vEngine.ValidateScript(vScript);
+  finally
+    vScript.Free;
   end;
 end;
 
