@@ -161,8 +161,11 @@ begin
     FScript.AddForm(vItem.Component);
   end;
 
-  if FReport.UseOwnerAsContext then
-    FScript.AddForm(FReport.Owner);
+  if FReport.UseOwnerAsContext and (FReport.Owner <> nil) then
+  begin
+    for I := 0 to FReport.Owner.ComponentCount-1 do
+      FScript.AddForm(FReport.Components[I]);
+  end;
 end;
 
 procedure TtgdFastScriptEngine.RegisterFunctions;
