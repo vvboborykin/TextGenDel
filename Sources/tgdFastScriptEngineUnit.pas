@@ -4,7 +4,8 @@ interface
 
 uses
   SysUtils, Classes, Variants, StrUtils, DateUtils, tgdScriptEngineUnit,
-  tgdReportUnit, fs_iinterpreter;
+  tgdReportUnit, fs_iinterpreter, fs_ipascal, fs_iclassesrtti, fs_idbrtti,
+  fs_iformsrtti, fs_iinirtti;
 
 type
   TtgdFastScriptEngine = class(TInterfacedObject, ItgdScriptEngine)
@@ -13,12 +14,15 @@ type
     FReport: TtgdReport;
     FResultLines: TStrings;
     FScript: TfsScript;
+    procedure AddScriptCodeLine(ALine: string; AScript: TStrings);
+    procedure AddScriptMacroLine(ALine: string; AScript: TStrings);
     function CallAddLine(Instance: TObject; ClassType: TClass; const MethodName:
-        String; var Params: Variant): Variant;
+      string; var Params: Variant): Variant;
     procedure ConvertTemplateToScript(AScript: TStrings); stdcall;
     procedure ExecuteScript(AScript, AResultLines: TStrings); stdcall;
     procedure GenerateScriptLine(ALine: string; AScript: TStrings);
     procedure Init(AReport: TtgdReport); stdcall;
+    procedure RaiseCompileError;
     procedure RegisterContext;
     procedure RegisterFunctions;
     procedure RegisterVariables;
@@ -47,8 +51,31 @@ begin
   inherited Destroy;
 end;
 
+procedure TtgdFastScriptEngine.AddScriptCodeLine(ALine: string; AScript: TStrings);
+var
+  vText: string;
+begin
+  vText := StringReplace(ALine, FReport.CodeBeginMarker, '', [rfReplaceAll]);
+  vText := StringReplace(vText, FReport.CodeEndMarker, '', [rfReplaceAll]);
+  AScript.Add(vText);
+end;
+
+procedure TtgdFastScriptEngine.AddScriptMacroLine(ALine: string; AScript: TStrings);
+var
+  vText: string;
+begin
+  vText := ReplaceMacroses(ALine);
+  vText := AnsiQuotedStr(vText, '''');
+  if AnsiStartsText(''' + ', vText) then
+    vText := MidStr(vText, 5, MaxInt);
+  if AnsiEndsText(' + ''', vText) then
+    vText := LeftStr(vText, Length(vText) - 4);
+
+  AScript.Add(FReport.AddLineFunctionName + '(' + vText + ');');
+end;
+
 function TtgdFastScriptEngine.CallAddLine(Instance: TObject; ClassType: TClass;
-    const MethodName: String; var Params: Variant): Variant;
+  const MethodName: string; var Params: Variant): Variant;
 begin
   Result := FResultLines.Add(VarToStr(Params[0]));
 end;
@@ -66,33 +93,24 @@ procedure TtgdFastScriptEngine.ExecuteScript(AScript, AResultLines: TStrings);
 begin
   FResultLines := AResultLines;
   FScript.Lines.Assign(AScript);
-  FScript.Execute();
-  FResultLines := nil;
+  if FScript.Compile() then
+    FScript.Execute()
+  else
+  begin
+    FResultLines := nil;
+    RaiseCompileError();
+  end;
 end;
 
 procedure TtgdFastScriptEngine.GenerateScriptLine(ALine: string; AScript: TStrings);
-var
-  vText: string;
 begin
   if AnsiStartsText(FReport.CodeBeginMarker, Trim(ALine)) then
     Inc(FNestCount);
 
   if FNestCount > 0 then
-  begin
-    vText := StringReplace(ALine, FReport.CodeBeginMarker, '', [rfReplaceAll]);
-    vText := StringReplace(vText, FReport.CodeEndMarker, '', [rfReplaceAll]);
-    AScript.Add(vText)
-  end
+    AddScriptCodeLine(ALine, AScript)
   else
-  begin
-    vText := ReplaceMacroses(ALine);
-    vText := AnsiQuotedStr(vText, '''');
-    if AnsiStartsText(''' + ', vText) then
-      vText := MidStr(vText, 5, MaxInt);
-    if AnsiEndsText(' + ''', vText) then
-      vText := LeftStr(vText, Length(vText) - 4);
-    AScript.Add(FReport.AddLineFunctionName + '(' + vText + ');');
-  end;
+    AddScriptMacroLine(ALine, AScript);
 
   if AnsiEndsText(FReport.CodeEndMarker, Trim(ALine)) then
     Dec(FNestCount);
@@ -104,6 +122,12 @@ begin
   RegisterContext();
   RegisterVariables();
   RegisterFunctions();
+end;
+
+procedure TtgdFastScriptEngine.RaiseCompileError;
+begin
+  raise Exception.CreateFmt('Compilation error %s at %s', [FScript.ErrorMsg,
+    FScript.ErrorPos]);
 end;
 
 procedure TtgdFastScriptEngine.RegisterContext;
@@ -132,7 +156,8 @@ begin
     FScript.AddMethod(vItem.Declaration, FReport.DoCallMethod, 'TextGen');
   end;
 
-  FScript.AddMethod('function ' + FReport.AddLineFunctionName + '(ALine: String): Integer;', CallAddLine);
+  FScript.AddMethod('function ' + FReport.AddLineFunctionName +
+    '(ALine: String): Integer;', CallAddLine);
 end;
 
 procedure TtgdFastScriptEngine.RegisterVariables;
@@ -158,8 +183,7 @@ procedure TtgdFastScriptEngine.ValidateScript(AScript: TStrings);
 begin
   FScript.Lines.Assign(AScript);
   if not FScript.Compile then
-    raise Exception.CreateFmt('Compilation error %s at %s', [FScript.ErrorMsg,
-      FScript.ErrorPos]);
+    RaiseCompileError;
 end;
 
 function CreateFastScriptEngine(): ItgdScriptEngine;
