@@ -222,4 +222,48 @@ object TestMainForm: TTestMainForm
       Action = EditUndo1
     end
   end
+  object vtData: TVirtualTable
+    Active = True
+    FieldDefs = <
+      item
+        Name = 'Name'
+        DataType = ftString
+        Size = 255
+      end
+      item
+        Name = 'Code'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Date'
+        DataType = ftDateTime
+      end
+      item
+        Name = 'Summa'
+        DataType = ftFloat
+      end>
+    Left = 236
+    Top = 248
+    Data = {
+      0400040004004E616D650100FF00000000000400436F64650300000000000000
+      0400446174650B00000000000000050053756D6D610600000000000000000003
+      0000000C000000C8ECFF20FDEBE5ECE5EDF2E004000000010000000800000000
+      0054383F08CD42080000009A9999999909694008000000CDEEE2FBE920333304
+      0000000200000008000000000018DF1008CD4208000000AE47E17A14AEF33F06
+      000000CBEEE4E420300400000003000000080000000000FEF94004CD42080000
+      009A99999999990B40}
+    object vtDataName: TStringField
+      FieldName = 'Name'
+      Size = 255
+    end
+    object vtDataCode: TIntegerField
+      FieldName = 'Code'
+    end
+    object vtDataDate: TDateTimeField
+      FieldName = 'Date'
+    end
+    object vtDataSumma: TFloatField
+      FieldName = 'Summa'
+    end
+  end
 end

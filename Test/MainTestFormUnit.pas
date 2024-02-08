@@ -5,14 +5,13 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, DialogsX, StdCtrls, ComCtrls, tgdReportUnit, Menus, StdActns,
-  ActnList;
+  ActnList, DB, MemDS, VirtualTable, tgdCollectionsUnit;
 
 type
   TTestMainForm = class(TForm)
     btnGenerateScript: TButton;
     pgc1: TPageControl;
     tsTemplate: TTabSheet;
-    mmoTemplate: TMemo;
     tsScript: TTabSheet;
     mmoScript: TMemo;
     tsResult: TTabSheet;
@@ -39,6 +38,12 @@ type
     Undo1: TMenuItem;
     N1: TMenuItem;
     N2: TMenuItem;
+    mmoTemplate: TMemo;
+    vtData: TVirtualTable;
+    vtDataName: TStringField;
+    vtDataCode: TIntegerField;
+    vtDataDate: TDateTimeField;
+    vtDataSumma: TFloatField;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnGenerateScriptClick(Sender: TObject);
@@ -49,6 +54,7 @@ type
     procedure mmoTemplateKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     FReport: TtgdReport;
+    function SayTime(Sender: TtgdReportFunction; AParams: Variant): Variant;
   public
     { Public declarations }
   end;
@@ -68,6 +74,8 @@ end;
 procedure TTestMainForm.FormCreate(Sender: TObject);
 begin
   FReport := TtgdReport.Create(Self);
+  FReport.Variables.Add('CurrentTimeText', DateTimeToStr(Now));
+  FReport.Functions.Add('function SayTime(): String').OnExecute := Self.SayTime;
 end;
 
 procedure TTestMainForm.btnGenerateScriptClick(Sender: TObject);
@@ -120,6 +128,12 @@ begin
     vMemo := TMemo(Sender);
     vMemo.Lines[vMemo.CaretPos.Y] := StringReplace(vMemo.Lines[vMemo.CaretPos.Y], #9, '  ', [rfReplaceAll]);
   end;
+end;
+
+function TTestMainForm.SayTime(Sender: TtgdReportFunction; AParams: Variant):
+    Variant;
+begin
+  Result := TimeToStr(Now);
 end;
 
 end.

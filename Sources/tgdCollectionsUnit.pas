@@ -310,7 +310,7 @@ end;
 
 constructor TtgdReportVariables.Create(AOwner: TPersistent);
 begin
-  inherited Create(AOwner, TtgdReportContextItem);
+  inherited Create(AOwner, TtgdReportVariable);
 end;
 
 function TtgdReportVariables.Add(AName: string; AValue: Variant):
@@ -355,7 +355,7 @@ begin
   Result := '';
   vText := MidStr(ADeclaration, Pos(' ', ADeclaration)+1, MaxInt);
   I := 1;
-  while I <= Length(Result) do
+  while I <= Length(vText) do
   begin
     if vText[I] in IdentChars then
       Result := Result + vText[I]
@@ -370,13 +370,13 @@ begin
   if FDeclaration <> Value then
   begin
     FDeclaration := Value;
-    Name := FDeclaration;
+    Name := ExtractNameFromDeclaration(FDeclaration);
   end;
 end;
 
 constructor TtgdReportFunctions.Create(AOwner: TPersistent);
 begin
-  inherited Create(AOwner, TtgdReportContextItem);
+  inherited Create(AOwner, TtgdReportFunction);
 end;
 
 function TtgdReportFunctions.Add(ADeclaration: String): TtgdReportFunction;

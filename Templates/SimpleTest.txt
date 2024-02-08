@@ -1,9 +1,11 @@
-{{var I: Integer;
-begin}}
-<ClinicalDocument>
-{{for I := 0 to 9 do
-begin}}
-  <Node index={= IntToStr(I )=}>Проверка {= IntToStr(I) =} </Node>
-{{end;}}
-</ClinicalDocument>
-{{end.}}
+{{
+vtData.Open;
+vtData.First;
+while not vtData.Eof do begin
+}}
+  Имя = {= vtDataName.AsString =} Код = {= vtDataCode.AsString =}
+{{
+  vtData.Next;
+end;
+}}
+{= SayTime() =}

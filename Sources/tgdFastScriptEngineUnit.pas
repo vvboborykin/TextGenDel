@@ -25,6 +25,7 @@ type
     FReport: TtgdReport;
     FResultLines: TStrings;
     FScript: TfsScript;
+    procedure AddComponentRegistration(vComponent: TComponent);
     procedure AddScriptCodeLine(ALine: string; AScript: TStrings);
     procedure AddScriptMacroLine(ALine: string; AScript: TStrings);
     function CallAddLine(Instance: TObject; ClassType: TClass; const MethodName:
@@ -35,6 +36,7 @@ type
     procedure GenerateScriptLine(ALine: string; AScript: TStrings);
     procedure Init(AReport: TtgdReport); stdcall;
     procedure RaiseCompileError;
+    procedure RegisterComponentClass(AClass: TClass);
     procedure RegisterContext;
     procedure RegisterFunctions;
     procedure RegisterVariables;
@@ -48,7 +50,7 @@ type
 implementation
 
 uses
-  tgdCollectionsUnit;
+  tgdCollectionsUnit, Forms;
 
 resourcestring
   SAReportIsNil = 'AReport is nil';
@@ -66,6 +68,12 @@ destructor TtgdFastScriptEngine.Destroy;
 begin
   FreeAndNil(FScript);
   inherited Destroy;
+end;
+
+procedure TtgdFastScriptEngine.AddComponentRegistration(vComponent: TComponent);
+begin
+  RegisterComponentClass(vComponent.ClassType);
+  FScript.AddComponent(vComponent);
 end;
 
 procedure TtgdFastScriptEngine.AddScriptCodeLine(ALine: string; AScript: TStrings);
@@ -86,7 +94,7 @@ begin
 
   if AnsiStartsText(''' + ', vText) then
     vText := MidStr(vText, 5, MaxInt);
-    
+
   if AnsiEndsText(' + ''', vText) then
     vText := LeftStr(vText, Length(vText) - 4);
 
@@ -111,11 +119,11 @@ var
 begin
   CheckInitCompleted();
   FNestCount := 0;
-  
+
   for I := 0 to FReport.TemplateLines.Count - 1 do
     GenerateScriptLine(FReport.TemplateLines[I], AScript);
 
-  if (AScript.Count = 0) or (Trim(AScript[AScript.Count-1]) <> 'end.') then
+  if (AScript.Count = 0) or (Trim(AScript[AScript.Count - 1]) <> 'end.') then
   begin
     AScript.Insert(0, 'begin');
     AScript.Append('end.');
@@ -168,13 +176,26 @@ end;
 
 procedure TtgdFastScriptEngine.RaiseCompileError;
 begin
-  raise Exception.CreateFmt(SCompilationErrorAt, [FScript.ErrorMsg,
-    FScript.ErrorPos]);
+  raise Exception.CreateFmt(SCompilationErrorAt, [FScript.ErrorMsg, FScript.ErrorPos]);
+end;
+
+procedure TtgdFastScriptEngine.RegisterComponentClass(AClass: TClass);
+var
+  vFsClass: TfsClassVariable;
+begin
+  vFsClass := FScript.FindClass(AClass.ClassName);
+  if vFsClass = nil then
+  begin
+    if (AClass.ClassParent <> nil) then
+      RegisterComponentClass(AClass.ClassParent);
+  end;
+  FScript.AddClass(AClass, AClass.ClassParent.ClassName);
 end;
 
 procedure TtgdFastScriptEngine.RegisterContext;
 var
   I: Integer;
+  vComponent: TComponent;
   vItem: TtgdReportContextItem;
 begin
   for I := 0 to FReport.Context.Count - 1 do
@@ -185,8 +206,18 @@ begin
 
   if FReport.UseOwnerAsContext and (FReport.Owner <> nil) then
   begin
-    for I := 0 to FReport.Owner.ComponentCount-1 do
-      FScript.AddForm(FReport.Owner.Components[I]);
+    for I := 0 to FReport.Owner.ComponentCount - 1 do
+    begin
+      vComponent := FReport.Owner.Components[I];
+      if (vComponent is TFrame) or (vComponent is TForm)
+        or (vComponent is TDataModule) then
+          FScript.AddForm(vComponent)
+      else
+        (*TODO: extracted code
+        FScript.AddComponent(vComponent);
+        *)
+        AddComponentRegistration(vComponent);
+    end;
   end;
 end;
 
@@ -227,7 +258,7 @@ end;
 procedure TtgdFastScriptEngine.ValidateScript(AScript: TStrings);
 begin
   CheckInitCompleted;
-  
+
   FScript.Lines.Assign(AScript);
   if not FScript.Compile then
     RaiseCompileError;
@@ -240,7 +271,9 @@ end;
 
 initialization
   CreateScriptEngine := CreateFastScriptEngine;
+
 finalization
-  CreateScriptEngine := nil; 
+  CreateScriptEngine := nil;
+
 end.
 
