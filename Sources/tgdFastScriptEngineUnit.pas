@@ -1,3 +1,11 @@
+{*******************************************************
+* Project: TextGenDelTest
+* Unit: tgdFastScriptEngineUnit.pas
+* Description: Implimentation of Script Engine Interface Based On FastScript library
+* 
+* Created: 08.02.2024 10:50:19
+* Copyright (C) 2024 Боборыкин В.В. (bpost@yandex.ru)
+*******************************************************}
 unit tgdFastScriptEngineUnit;
 
 interface
@@ -8,6 +16,9 @@ uses
   fs_iformsrtti, fs_iinirtti;
 
 type
+  /// <summary>TtgdFastScriptEngine
+  /// Implimentation of Script Engine Interface Based On FastScript library
+  /// </summary>
   TtgdFastScriptEngine = class(TInterfacedObject, ItgdScriptEngine)
   private
     FNestCount: Integer;
@@ -38,6 +49,9 @@ implementation
 uses
   tgdCollectionsUnit;
 
+resourcestring
+  SCompilationErrorAt = 'Compilation error %s at %s';
+
 constructor TtgdFastScriptEngine.Create;
 begin
   inherited Create;
@@ -66,8 +80,10 @@ var
 begin
   vText := ReplaceMacroses(ALine);
   vText := AnsiQuotedStr(vText, '''');
+
   if AnsiStartsText(''' + ', vText) then
     vText := MidStr(vText, 5, MaxInt);
+    
   if AnsiEndsText(' + ''', vText) then
     vText := LeftStr(vText, Length(vText) - 4);
 
@@ -93,8 +109,12 @@ procedure TtgdFastScriptEngine.ExecuteScript(AScript, AResultLines: TStrings);
 begin
   FResultLines := AResultLines;
   FScript.Lines.Assign(AScript);
+
   if FScript.Compile() then
-    FScript.Execute()
+  begin
+    FScript.Execute();
+    FResultLines := nil;
+  end
   else
   begin
     FResultLines := nil;
@@ -126,7 +146,7 @@ end;
 
 procedure TtgdFastScriptEngine.RaiseCompileError;
 begin
-  raise Exception.CreateFmt('Compilation error %s at %s', [FScript.ErrorMsg,
+  raise Exception.CreateFmt(SCompilationErrorAt, [FScript.ErrorMsg,
     FScript.ErrorPos]);
 end;
 
@@ -193,6 +213,7 @@ end;
 
 initialization
   CreateScriptEngine := CreateFastScriptEngine;
-
+finalization
+  CreateScriptEngine := nil; 
 end.
 

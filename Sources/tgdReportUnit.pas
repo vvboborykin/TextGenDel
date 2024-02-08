@@ -1,3 +1,11 @@
+{*******************************************************
+* Project: TextGenDelTest
+* Unit: tgdReportUnit.pas
+* Description: Template generator component
+* 
+* Created: 08.02.2024 10:43:28
+* Copyright (C) 2024 Боборыкин В.В. (bpost@yandex.ru)
+*******************************************************}
 unit tgdReportUnit;
 
 interface
@@ -7,6 +15,9 @@ uses
   fs_iinterpreter;
 
 type
+  /// <summary>TtgdReport
+  /// Template generator component
+  /// </summary>
   TtgdReport = class(TComponent)
   private
     FAddLineFunctionName: String;
@@ -38,18 +49,58 @@ type
     function DoCallMethod(Instance: TObject; ClassType: TClass; const MethodName:
         String; var Params: Variant): Variant;
   published
+    /// <summary>TtgdReport.AddLineFunctionName
+    /// The Name Of Custom function for Script appending New Line in Generation results
+    /// </summary>
+    /// type:String
     property AddLineFunctionName: String read FAddLineFunctionName write
         SetAddLineFunctionName;
+    /// <summary>TtgdReport.Context
+    /// Collection of components to use as Script variables
+    /// </summary>
+    /// type:TtgdReportContext
     property Context: TtgdReportContext read FContext write SetContext;
+    /// <summary>TtgdReport.TemplateLines
+    /// Template Lines (text)
+    /// </summary>
+    /// type:TStringList
     property TemplateLines: TStringList read FTemplateLines write SetTemplateLines;
+    /// <summary>TtgdReport.UseOwnerAsContext
+    /// Flag of usage owner component in Script
+    /// </summary>
+    /// type:Boolean
     property UseOwnerAsContext: Boolean read FUseOwnerAsContext write
         SetUseOwnerAsContext;
+    /// <summary>TtgdReport.MacroBeginMarker
+    /// The Marker of macro Expression start
+    /// </summary>
+    /// type:string
     property MacroBeginMarker: string read FMacroBeginMarker write
         SetMacroBeginMarker;
+    /// <summary>TtgdReport.MacroEndMarker
+    /// The Marker of macro Expression end
+    /// </summary>
+    /// type:string
     property MacroEndMarker: string read FMacroEndMarker write SetMacroEndMarker;
+    /// <summary>TtgdReport.CodeBeginMarker
+    /// The Marker of code Block Start
+    /// </summary>
+    /// type:string
     property CodeBeginMarker: string read FCodeBeginMarker write SetCodeBeginMarker;
+    /// <summary>TtgdReport.CodeEndMarker
+    /// The Marker of Block End
+    /// </summary>
+    /// type:string
     property CodeEndMarker: string read FCodeEndMarker write SetCodeEndMarker;
+    /// <summary>TtgdReport.Functions
+    /// Collection of Custom Script function declarations
+    /// </summary>
+    /// type:TtgdReportFunctions
     property Functions: TtgdReportFunctions read FFunctions write SetFunctions;
+    /// <summary>TtgdReport.Variables
+    /// Script Custom varibles
+    /// </summary>
+    /// type:TtgdReportVariables
     property Variables: TtgdReportVariables read FVariables write SetVariables;
   end;
 

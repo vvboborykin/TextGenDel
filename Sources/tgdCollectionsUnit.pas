@@ -1,3 +1,11 @@
+{*******************************************************
+* Project: TextGenDelTest
+* Unit: tgdCollectionsUnit.pas
+* Description: Report collections
+* 
+* Created: 08.02.2024 10:28:54
+* Copyright (C) 2024 Боборыкин В.В. (bpost@yandex.ru)
+*******************************************************}
 unit tgdCollectionsUnit;
 
 interface
@@ -6,6 +14,9 @@ uses
   SysUtils, Classes, Variants, StrUtils, DateUtils;
 
 type
+  /// <summary>TtgdNamedCollectionItem
+  /// Base collection item having a name
+  /// </summary>
   TtgdNamedCollectionItem = class(TCollectionItem)
   private
     FName: string;
@@ -13,33 +24,88 @@ type
     function GetDisplayName: string; override;
     procedure SetName(const Value: string);
   published
+    /// <summary>TtgdNamedCollectionItem.Name
+    /// Item name
+    /// </summary>
+    /// type:string
     property Name: string read FName write SetName;
   end;
 
+  /// <summary>TtgdNamedCollection
+  /// Base collection of named items
+  /// </summary>
   TtgdNamedCollection = class(TOwnedCollection)
   protected
     function GetItems(Index: Integer): TtgdNamedCollectionItem;
     function GetValues(Name: String): TtgdNamedCollectionItem;
     procedure SetItems(Index: Integer; const Value: TtgdNamedCollectionItem);
   public
+    /// <summary>TtgdNamedCollection.ContainsName Is collection contains item having
+    /// specified name
+    /// </summary>
+    /// <returns> Boolean
+    /// </returns>
+    /// <param name="AName"> (string) Item`s name to find</param>
     function ContainsName(AName: string): Boolean;
+    /// <summary>TtgdNamedCollection.FindName
+    /// Find item having specified name
+    /// </summary>
+    /// <returns> TtgdNamedCollectionItem
+    /// nil if not found
+    /// </returns>
+    /// <param name="AName"> (string) The name of item to find</param>
     function FindName(AName: string): TtgdNamedCollectionItem;
+    /// <summary>TtgdNamedCollection.IndexOfName
+    /// The index of item having specified name in collection
+    /// </summary>
+    /// <returns> Integer
+    /// -1 if not found
+    /// </returns>
+    /// <param name="AName"> (string) Name of item to find</param>
+    /// <param name="APartialSearch"> (Boolean) </param>
     function IndexOfName(AName: string; APartialSearch: Boolean = False): Integer;
+    /// <summary>TtgdNamedCollection.TryFindName
+    /// Try to find item having specified name
+    /// </summary>
+    /// <returns> Boolean
+    /// True is found, otherwise False
+    /// </returns>
+    /// <param name="AName"> (string) Name of item to find</param>
+    /// <param name="AItem"> (TtgdNamedCollectionItem) Found item or nil if not
+    /// found</param>
     function TryFindName(AName: string; out AItem: TtgdNamedCollectionItem): Boolean;
+    /// <summary>TtgdNamedCollection.Items
+    /// Collection elements
+    /// </summary>
+    /// type:TtgdNamedCollectionItem
+    /// <param name="Index"> (Integer) Element index</param>
     property Items[Index: Integer]: TtgdNamedCollectionItem read GetItems write
         SetItems;
+    /// <summary>TtgdNamedCollection.Values Elements by name
+    /// </summary> type:TtgdNamedCollectionItem
+    /// <param name="Name"> (String) </param>
     property Values[Name: String]: TtgdNamedCollectionItem read GetValues; default;
   end;
 
+  /// <summary>TtgdReportContextItem Template variable component (use it as variable in
+  /// template)
+  /// </summary>
   TtgdReportContextItem = class(TtgdNamedCollectionItem)
   private
     FComponent: TComponent;
   protected
     procedure SetComponent(const Value: TComponent);
   published
+    /// <summary>TtgdReportContextItem.Component
+    /// Component instance of template variable
+    /// </summary>
+    /// type:TComponent
     property Component: TComponent read FComponent write SetComponent;
   end;
 
+  /// <summary>TtgdReportContext
+  /// Context components for template
+  /// </summary>
   TtgdReportContext = class(TtgdNamedCollection)
   protected
     function GetItems(Index: Integer): TtgdReportContextItem;
@@ -53,29 +119,25 @@ type
     property Values[Name: String]: TtgdNamedCollectionItem read GetValues; default;
   end;
 
-  TtgdReportVariable = class;
-
-  TtgdGetReportVariableEvent = procedure(Sender: TtgdReportVariable; var Value:
-    Variant) of object;
-
-  TtgdSetReportVariableEvent = procedure(Sender: TtgdReportVariable; Value:
-    Variant) of object;
-
+  /// <summary>TtgdReportVariable
+  /// Template variable
+  /// </summary>
   TtgdReportVariable = class(TtgdNamedCollectionItem)
   private
-    FOnGetValue: TtgdGetReportVariableEvent;
-    FOnSetValue: TtgdSetReportVariableEvent;
     FValue: Variant;
   protected
-    procedure DoGetValue(AVarName: string; var Value: Variant);
-    procedure DoSetValue(AVarName: string; Value: Variant);
     procedure SetValue(const Value: Variant);
   published
+    /// <summary>TtgdReportVariable.Value
+    /// Variable value
+    /// </summary>
+    /// type:Variant
     property Value: Variant read FValue write SetValue;
-    property OnGetValue: TtgdGetReportVariableEvent read FOnGetValue write FOnGetValue;
-    property OnSetValue: TtgdSetReportVariableEvent read FOnSetValue write FOnSetValue;
   end;
 
+  /// <summary>TtgdReportVariables
+  /// Custom variables of template
+  /// </summary>
   TtgdReportVariables = class(TtgdNamedCollection)
   protected
     function GetItems(Index: Integer): TtgdReportVariable;
@@ -93,6 +155,9 @@ type
 
   TtgdReportFunctionExecuteEvent = function(Sender: TtgdReportFunction; AParams: Variant): Variant of object;
 
+  /// <summary>TtgdReportFunction
+  /// Additional custom function for use in template
+  /// </summary>
   TtgdReportFunction = class(TtgdNamedCollectionItem)
   private
     FDeclaration: string;
@@ -103,10 +168,21 @@ type
     function ExtractNameFromDeclaration(ADeclaration: String): string;
     function DoExecute(AName: string; AParams: Variant): Variant;
   published
+    /// <summary>TtgdReportFunction.Declaration
+    /// Function syntax
+    /// </summary>
+    /// type:string
     property Declaration: string read FDeclaration write SetDeclaration;
+    /// <summary>TtgdReportFunction.OnExecute
+    /// Function implementation
+    /// </summary>
+    /// type:TtgdReportFunctionExecuteEvent
     property OnExecute: TtgdReportFunctionExecuteEvent read FOnExecute write FOnExecute;
   end;
 
+  /// <summary>TtgdReportFunctions
+  /// Custom functions for use in template
+  /// </summary>
   TtgdReportFunctions = class(TtgdNamedCollection)
   protected
     function GetItems(Index: Integer): TtgdReportFunction;
@@ -260,26 +336,6 @@ begin
   inherited Items[Index] := Value;
 end;
 
-procedure TtgdReportVariable.DoGetValue(AVarName: string; var Value: Variant);
-begin
-  if Assigned(FOnGetValue) then
-    FOnGetValue(Self, Value);
-end;
-
-procedure TtgdReportVariable.DoSetValue(AVarName: string; Value: Variant);
-begin
-  if Assigned(FOnSetValue) then
-    FOnSetValue(Self, Value);
-end;
-
-procedure TtgdReportVariable.SetValue(const Value: Variant);
-begin
-  if FValue <> Value then
-  begin
-    FValue := Value;
-  end;
-end;
-
 function TtgdReportFunction.DoExecute(AName: string; AParams: Variant): Variant;
 begin
   if Assigned(FOnExecute) then
@@ -342,6 +398,14 @@ end;
 procedure TtgdReportFunctions.SetItems(Index: Integer; const Value: TtgdReportFunction);
 begin
   inherited Items[Index] := Value;
+end;
+
+procedure TtgdReportVariable.SetValue(const Value: Variant);
+begin
+  if FValue <> Value then
+  begin
+    FValue := Value;
+  end;
 end;
 
 end.

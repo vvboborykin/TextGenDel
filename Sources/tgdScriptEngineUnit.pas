@@ -1,7 +1,7 @@
 {*******************************************************
 * Project: TextGenDelTest
 * Unit: tgdScriptEngineUnit.pas
-* Description: ScripEngine interface declaration
+* Description: Scrip Engine interface declaration
 *
 * Created: 08.02.2024 9:41:02
 * Copyright (C) 2024 Боборыкин В.В. (bpost@yandex.ru)
@@ -15,7 +15,7 @@ uses
 
 type
   /// <summary>ItgdScriptEngine
-  /// ScripEngine interface declaration
+  /// Scrip Engine interface declaration
   /// </summary>
   ItgdScriptEngine = interface
   ['{E42CD0D9-F515-4EAA-9A38-7E55F648CA11}']
