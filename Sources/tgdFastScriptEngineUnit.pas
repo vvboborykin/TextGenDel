@@ -11,7 +11,10 @@ type
   private
     FNestCount: Integer;
     FReport: TtgdReport;
+    FResultLines: TStrings;
     FScript: TfsScript;
+    function CallAddLine(Instance: TObject; ClassType: TClass; const MethodName:
+        String; var Params: Variant): Variant;
     procedure ConvertTemplateToScript(AScript: TStrings); stdcall;
     procedure ExecuteScript(AScript, AResultLines: TStrings); stdcall;
     procedure GenerateScriptLine(ALine: string; AScript: TStrings);
@@ -44,6 +47,12 @@ begin
   inherited Destroy;
 end;
 
+function TtgdFastScriptEngine.CallAddLine(Instance: TObject; ClassType: TClass;
+    const MethodName: String; var Params: Variant): Variant;
+begin
+  Result := FResultLines.Add(VarToStr(Params[0]));
+end;
+
 procedure TtgdFastScriptEngine.ConvertTemplateToScript(AScript: TStrings);
 var
   I: Integer;
@@ -55,7 +64,10 @@ end;
 
 procedure TtgdFastScriptEngine.ExecuteScript(AScript, AResultLines: TStrings);
 begin
-  // TODO -cMM: TtgdFastScriptEngine.ExecuteScript default body inserted
+  FResultLines := AResultLines;
+  FScript.Lines.Assign(AScript);
+  FScript.Execute();
+  FResultLines := nil;
 end;
 
 procedure TtgdFastScriptEngine.GenerateScriptLine(ALine: string; AScript: TStrings);
@@ -119,6 +131,8 @@ begin
     vItem := FReport.Functions.Items[I];
     FScript.AddMethod(vItem.Declaration, FReport.DoCallMethod, 'TextGen');
   end;
+
+  FScript.AddMethod('function ' + FReport.AddLineFunctionName + '(ALine: String): Integer;', CallAddLine);
 end;
 
 procedure TtgdFastScriptEngine.RegisterVariables;
