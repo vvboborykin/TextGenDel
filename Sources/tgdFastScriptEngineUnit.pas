@@ -29,6 +29,7 @@ type
     procedure AddScriptMacroLine(ALine: string; AScript: TStrings);
     function CallAddLine(Instance: TObject; ClassType: TClass; const MethodName:
       string; var Params: Variant): Variant;
+    procedure CheckInitCompleted;
     procedure ConvertTemplateToScript(AScript: TStrings); stdcall;
     procedure ExecuteScript(AScript, AResultLines: TStrings); stdcall;
     procedure GenerateScriptLine(ALine: string; AScript: TStrings);
@@ -50,7 +51,9 @@ uses
   tgdCollectionsUnit;
 
 resourcestring
-  SCompilationErrorAt = 'Compilation error %s at %s';
+  SAReportIsNil = 'AReport is nil';
+  SInitMetodNotExecuted = 'Init metod not executed';
+  SCompilationErrorAt = 'Compilation error "%s" at %s';
 
 constructor TtgdFastScriptEngine.Create;
 begin
@@ -96,10 +99,17 @@ begin
   Result := FResultLines.Add(VarToStr(Params[0]));
 end;
 
+procedure TtgdFastScriptEngine.CheckInitCompleted;
+begin
+  if FReport = nil then
+    raise Exception.Create(SInitMetodNotExecuted);
+end;
+
 procedure TtgdFastScriptEngine.ConvertTemplateToScript(AScript: TStrings);
 var
   I: Integer;
 begin
+  CheckInitCompleted();
   FNestCount := 0;
   for I := 0 to AScript.Count - 1 do
     GenerateScriptLine(AScript[I], AScript);
@@ -107,6 +117,8 @@ end;
 
 procedure TtgdFastScriptEngine.ExecuteScript(AScript, AResultLines: TStrings);
 begin
+  CheckInitCompleted;
+
   FResultLines := AResultLines;
   FScript.Lines.Assign(AScript);
 
@@ -138,6 +150,9 @@ end;
 
 procedure TtgdFastScriptEngine.Init(AReport: TtgdReport);
 begin
+  if AReport = nil then
+    raise Exception.Create(SAReportIsNil);
+
   FReport := AReport;
   RegisterContext();
   RegisterVariables();
@@ -204,6 +219,8 @@ end;
 
 procedure TtgdFastScriptEngine.ValidateScript(AScript: TStrings);
 begin
+  CheckInitCompleted;
+  
   FScript.Lines.Assign(AScript);
   if not FScript.Compile then
     RaiseCompileError;
