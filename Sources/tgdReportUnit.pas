@@ -9,6 +9,7 @@ uses
 type
   TtgdReport = class(TComponent)
   private
+    FAddLineFunctionName: String;
     FCodeBeginMarker: string;
     FCodeEndMarker: string;
     FContext: TtgdReportContext;
@@ -19,6 +20,7 @@ type
     FUseOwnerAsContext: Boolean;
     FVariables: TtgdReportVariables;
   protected
+    procedure SetAddLineFunctionName(const Value: String);
     procedure SetCodeBeginMarker(const Value: string);
     procedure SetCodeEndMarker(const Value: string);
     procedure SetContext(const Value: TtgdReportContext);
@@ -36,6 +38,8 @@ type
     function DoCallMethod(Instance: TObject; ClassType: TClass; const MethodName:
         String; var Params: Variant): Variant;
   published
+    property AddLineFunctionName: String read FAddLineFunctionName write
+        SetAddLineFunctionName;
     property Context: TtgdReportContext read FContext write SetContext;
     property TemplateLines: TStringList read FTemplateLines write SetTemplateLines;
     property UseOwnerAsContext: Boolean read FUseOwnerAsContext write
@@ -66,6 +70,7 @@ begin
   FVariables := TtgdReportVariables.Create(Self);
   FFunctions := TtgdReportFunctions.Create(Self);
   SetDefaultMarkers();
+  FAddLineFunctionName := 'AddLine';
 end;
 
 destructor TtgdReport.Destroy;
@@ -98,6 +103,14 @@ begin
     finally
       Free;
     end;
+  end;
+end;
+
+procedure TtgdReport.SetAddLineFunctionName(const Value: String);
+begin
+  if FAddLineFunctionName <> Value then
+  begin
+    FAddLineFunctionName := Value;
   end;
 end;
 
