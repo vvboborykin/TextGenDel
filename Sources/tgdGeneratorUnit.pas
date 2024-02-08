@@ -62,7 +62,6 @@ end;
 procedure TtgdGenerator.GenerateScript(AResultLines: TStrings);
 var
   vEngine: ItgdScriptEngine;
-  vScript: TStringList;
 begin
   vEngine := CreateScriptEngine;
   vEngine.Init(FReport);
