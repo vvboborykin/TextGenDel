@@ -213,9 +213,6 @@ begin
         or (vComponent is TDataModule) then
           FScript.AddForm(vComponent)
       else
-        (*TODO: extracted code
-        FScript.AddComponent(vComponent);
-        *)
         AddComponentRegistration(vComponent);
     end;
   end;
