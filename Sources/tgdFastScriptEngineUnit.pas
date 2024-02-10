@@ -2,7 +2,7 @@
 * Project: TextGenDelTest
 * Unit: tgdFastScriptEngineUnit.pas
 * Description: Implimentation of Script Engine Interface Based On FastScript library
-* 
+*
 * Created: 08.02.2024 10:50:19
 * Copyright (C) 2024 Боборыкин В.В. (bpost@yandex.ru)
 *******************************************************}
@@ -25,12 +25,17 @@ type
     FReport: TtgdReport;
     FResultLines: TStrings;
     FScript: TfsScript;
+    function AddCodeSection(ALine: string; ASections: TStrings): string;
     procedure AddComponentRegistration(vComponent: TComponent);
     procedure AddScriptCodeLine(ALine: string; AScript: TStrings);
-    procedure AddScriptMacroLine(ALine: string; AScript: TStrings);
+    function GetMacroSectionText(ALine: string): string;
+    function AddTextSection(ALine: string; ASections: TStrings): string;
+    function AddNextSection(ALine: string; ASections: TStrings; AMarker: string;
+        ASectionType, ANestContDelta: Integer): string;
     function CallAddLine(Instance: TObject; ClassType: TClass; const MethodName:
       string; var Params: Variant): Variant;
     procedure CheckInitCompleted;
+    function ConverSectionToScript(ASection: string; ASectionType: Integer): string;
     procedure ConvertTemplateToScript(AScript: TStrings); stdcall;
     procedure ExecuteScript(AScript, AResultLines: TStrings); stdcall;
     procedure GenerateScriptLine(ALine: string; AScript: TStrings);
@@ -41,6 +46,7 @@ type
     procedure RegisterFunctions;
     procedure RegisterVariables;
     function ReplaceMacroses(ALine: string): string;
+    procedure SplitLinesToSections(ALine: string; ASections: TStrings);
     procedure ValidateScript(AScript: TStrings); stdcall;
   public
     constructor Create;
@@ -48,6 +54,8 @@ type
   end;
 
 implementation
+
+{$WARN UNSAFE_CAST OFF}
 
 uses
   tgdCollectionsUnit, Forms;
@@ -70,6 +78,12 @@ begin
   inherited Destroy;
 end;
 
+function TtgdFastScriptEngine.AddCodeSection(ALine: string; ASections:
+    TStrings): string;
+begin
+  Result := AddNextSection(ALine, ASections, FReport.CodeEndMarker, 1, -1);
+end;
+
 procedure TtgdFastScriptEngine.AddComponentRegistration(vComponent: TComponent);
 begin
   RegisterComponentClass(vComponent.ClassType);
@@ -85,7 +99,7 @@ begin
   AScript.Add(vText);
 end;
 
-procedure TtgdFastScriptEngine.AddScriptMacroLine(ALine: string; AScript: TStrings);
+function TtgdFastScriptEngine.GetMacroSectionText(ALine: string): string;
 var
   vText: string;
 begin
@@ -95,10 +109,40 @@ begin
   if AnsiStartsText(''' + ', vText) then
     vText := MidStr(vText, 5, MaxInt);
 
-  if AnsiEndsText(' + ''', vText) then
+  if AnsiStartsText(' + ''', vText) then
     vText := LeftStr(vText, Length(vText) - 4);
 
-  AScript.Add(FReport.AddLineFunctionName + '(' + vText + ');');
+  Result := FReport.AddLineFunctionName + '(' + Trim(vText) + ');';
+end;
+
+function TtgdFastScriptEngine.AddTextSection(ALine: string; ASections:
+    TStrings): string;
+begin
+  Result := AddNextSection(ALine, ASections, FReport.CodeBeginMarker, 0, 1);
+end;
+
+function TtgdFastScriptEngine.AddNextSection(ALine: string; ASections:
+    TStrings; AMarker: string; ASectionType, ANestContDelta: Integer): string;
+var
+  vEndMarkerPos: Integer;
+  vEndSectionPos: Integer;
+  vSectionText: string;
+begin
+  Result := ALine;
+  vEndMarkerPos := AnsiPos(AMarker, ALine);
+  if vEndMarkerPos = 0 then
+  begin
+    Result := '';
+    vSectionText := ALine;
+  end
+  else
+  begin
+    vEndSectionPos := vEndMarkerPos + Length(AMarker);
+    Result := AnsiMidStr(ALine, vEndSectionPos+1, MaxInt);
+    vSectionText := LeftStr(ALine, vEndMarkerPos-1);
+    Inc(FNestCount, ANestContDelta);
+  end;
+  ASections.AddObject(vSectionText, TObject(ASectionType));
 end;
 
 function TtgdFastScriptEngine.CallAddLine(Instance: TObject; ClassType: TClass;
@@ -111,6 +155,14 @@ procedure TtgdFastScriptEngine.CheckInitCompleted;
 begin
   if FReport = nil then
     raise Exception.Create(SInitMetodNotExecuted);
+end;
+
+function TtgdFastScriptEngine.ConverSectionToScript(ASection: string;
+    ASectionType: Integer): string;
+begin
+  Result := ASection;
+  if ASectionType = 0 then
+    Result := GetMacroSectionText(ASection);
 end;
 
 procedure TtgdFastScriptEngine.ConvertTemplateToScript(AScript: TStrings);
@@ -150,14 +202,25 @@ begin
 end;
 
 procedure TtgdFastScriptEngine.GenerateScriptLine(ALine: string; AScript: TStrings);
+var
+  I: Integer;
+  vScriptLine: string;
+  vSections: TStrings;
 begin
   if AnsiStartsText(FReport.CodeBeginMarker, Trim(ALine)) then
     Inc(FNestCount);
 
-  if FNestCount > 0 then
-    AddScriptCodeLine(ALine, AScript)
-  else
-    AddScriptMacroLine(ALine, AScript);
+  vScriptLine := '';
+  vSections := TStringList.Create;
+  try
+    SplitLinesToSections(ALine, vSections);
+    for I := 0 to vSections.Count-1 do
+      vScriptLine := vScriptLine + ConverSectionToScript(vSections[I], Integer(vSections.Objects[I]));
+  finally
+    vSections.Free;
+  end;
+
+  AScript.Add(vScriptLine);
 
   if AnsiEndsText(FReport.CodeEndMarker, Trim(ALine)) then
     Dec(FNestCount);
@@ -253,6 +316,17 @@ begin
   Result := ALine;
   Result := StringReplace(Result, FReport.MacroBeginMarker, ''' + ', [rfReplaceAll]);
   Result := StringReplace(Result, FReport.MacroEndMarker, ' + ''', [rfReplaceAll]);
+end;
+
+procedure TtgdFastScriptEngine.SplitLinesToSections(ALine: string; ASections:
+    TStrings);
+begin
+  repeat
+    if FNestCount > 0 then
+      ALine := AddCodeSection(ALine, ASections)
+    else
+      ALine := AddTextSection(ALine, ASections);
+  until ALine = '';
 end;
 
 procedure TtgdFastScriptEngine.ValidateScript(AScript: TStrings);
