@@ -300,4 +300,11 @@ object tgdReportEditorForm: TtgdReportEditorForm
     Left = 392
     Top = 160
   end
+  object synjsnsyn1: TSynJSONSyn
+    Options.AutoDetectEnabled = False
+    Options.AutoDetectLineLimit = 0
+    Options.Visible = False
+    Left = 392
+    Top = 216
+  end
 end

@@ -7,7 +7,7 @@ uses
   Dialogs, SynEditHighlighter, SynHighlighterPas, SynEdit, SynMemo,
   StdCtrls, ImgList, ComCtrls, ExtCtrls, SynEditMiscClasses, SynEditSearch,
   SynCompletionProposal, ActnList, SynHighlighterMulti, Buttons,
-  SynHighlighterXML;
+  SynHighlighterXML, SynHighlighterJSON;
 
 type
   TtgdReportEditorForm = class(TForm)
@@ -33,6 +33,7 @@ type
     btnCancel: TBitBtn;
     btnValidate: TBitBtn;
     actValidate: TAction;
+    synjsnsyn1: TSynJSONSyn;
   private
     { Private declarations }
   public
