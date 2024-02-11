@@ -7,7 +7,8 @@ uses
   tgdGeneratorUnit in '..\Sources\tgdGeneratorUnit.pas',
   tgdCollectionsUnit in '..\Sources\tgdCollectionsUnit.pas',
   tgdScriptEngineUnit in '..\Sources\tgdScriptEngineUnit.pas',
-  tgdFastScriptEngineUnit in '..\Sources\tgdFastScriptEngineUnit.pas';
+  tgdFastScriptEngineUnit in '..\Sources\tgdFastScriptEngineUnit.pas',
+  tgdReportEditorFormUnit in '..\Sources\tgdReportEditorFormUnit.pas' {tgdReportEditorForm};
 
 {$R *.res}
 
