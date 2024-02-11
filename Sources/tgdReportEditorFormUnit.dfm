@@ -1,7 +1,7 @@
 object tgdReportEditorForm: TtgdReportEditorForm
   Left = 459
   Top = 141
-  Width = 1181
+  Width = 957
   Height = 633
   Caption = 'Report Editor'
   Color = clBtnFace
@@ -11,39 +11,40 @@ object tgdReportEditorForm: TtgdReportEditorForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   PixelsPerInch = 96
   TextHeight = 13
   object pnlClient: TPanel
     Left = 0
     Top = 0
-    Width = 1165
+    Width = 941
     Height = 553
     Align = alClient
     BevelOuter = bvNone
     BorderWidth = 7
     TabOrder = 0
-    object spl1: TSplitter
+    object splVert: TSplitter
       Left = 253
       Top = 7
       Width = 5
       Height = 539
       Beveled = True
     end
-    object tv1: TTreeView
+    object tvContext: TTreeView
       Left = 7
       Top = 7
       Width = 246
       Height = 539
       Align = alLeft
-      Images = il16
+      Images = ilTree
       Indent = 19
       RowSelect = True
       TabOrder = 0
     end
-    object synm1: TSynMemo
+    object synmTemplate: TSynMemo
       Left = 258
       Top = 7
-      Width = 900
+      Width = 676
       Height = 539
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
@@ -57,24 +58,24 @@ object tgdReportEditorForm: TtgdReportEditorForm
       Gutter.Font.Height = -11
       Gutter.Font.Name = 'Courier New'
       Gutter.Font.Style = []
-      Highlighter = synmltsyn1
+      Highlighter = symMain
       RightEdge = 0
-      SearchEngine = syndtsrch1
+      SearchEngine = synsSearch
       TabWidth = 2
       WantTabs = True
       FontSmoothing = fsmClearType
     end
   end
-  object pnl1: TPanel
+  object pnlBttons: TPanel
     Left = 0
     Top = 553
-    Width = 1165
+    Width = 941
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    object btnSave1: TBitBtn
-      Left = 320
+    object btnSave: TBitBtn
+      Left = 264
       Top = 8
       Width = 105
       Height = 25
@@ -118,7 +119,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
         0000000000000000000000000000000000000000000000000000}
     end
     object btnLoadFromFile: TBitBtn
-      Left = 440
+      Left = 376
       Top = 8
       Width = 105
       Height = 25
@@ -162,9 +163,9 @@ object tgdReportEditorForm: TtgdReportEditorForm
         0000000000000000000000000000000000000000000000000000}
     end
     object btnOk: TBitBtn
-      Left = 16
+      Left = 8
       Top = 8
-      Width = 137
+      Width = 105
       Height = 25
       Action = actOk
       Caption = 'Ok'
@@ -173,7 +174,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
       TabOrder = 2
     end
     object btnCancel: TBitBtn
-      Left = 160
+      Left = 120
       Top = 8
       Width = 105
       Height = 25
@@ -184,7 +185,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
       TabOrder = 3
     end
     object btnValidate: TBitBtn
-      Left = 592
+      Left = 488
       Top = 8
       Width = 161
       Height = 25
@@ -228,7 +229,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
         97FF47BB96FF46BB96FF47BA95FF45BA94FF338A6EC000000003}
     end
   end
-  object synpsyn1: TSynPasSyn
+  object synpPascalSyntax: TSynPasSyn
     Options.AutoDetectEnabled = False
     Options.AutoDetectLineLimit = 0
     Options.Visible = False
@@ -236,27 +237,28 @@ object tgdReportEditorForm: TtgdReportEditorForm
     Left = 392
     Top = 112
   end
-  object syntcmplt1: TSynAutoComplete
+  object syaAutoComplete: TSynAutoComplete
     EndOfTokenChr = '()[]. '
-    Editor = synm1
+    Editor = synmTemplate
     ShortCut = 8224
-    Options = []
+    Options = [scoCompleteWithTab, scoCompleteWithEnter]
     Left = 440
     Top = 24
   end
-  object syndtsrch1: TSynEditSearch
+  object synsSearch: TSynEditSearch
     Left = 352
     Top = 24
   end
-  object il16: TImageList
+  object ilTree: TImageList
     Left = 136
     Top = 136
   end
-  object actlst1: TActionList
+  object aclMain: TActionList
     Left = 584
     Top = 136
     object actOk: TAction
       Caption = 'Ok'
+      OnExecute = actOkExecute
     end
     object actCancel: TAction
       Caption = 'Cancel'
@@ -264,17 +266,20 @@ object tgdReportEditorForm: TtgdReportEditorForm
     object actLoad: TAction
       Caption = 'Load from file'
       ShortCut = 16463
+      OnExecute = actLoadExecute
     end
     object actSave: TAction
       Caption = 'Save to file'
       ImageIndex = 0
       ShortCut = 16467
+      OnExecute = actSaveExecute
     end
     object actValidate: TAction
       Caption = 'Validate template'
+      OnExecute = actValidateExecute
     end
   end
-  object synmltsyn1: TSynMultiSyn
+  object symMain: TSynMultiSyn
     Options.AutoDetectEnabled = False
     Options.AutoDetectLineLimit = 0
     Options.Visible = False
@@ -283,16 +288,16 @@ object tgdReportEditorForm: TtgdReportEditorForm
         CaseSensitive = False
         StartExpr = '{{'
         EndExpr = '}}'
-        Highlighter = synpsyn1
+        Highlighter = synpPascalSyntax
         SchemeName = 'PascalScript'
         StartExprW = '{{'
         EndExprW = '}}'
       end>
-    DefaultHighlighter = synxmlsyn2
+    DefaultHighlighter = syxXmlSyntax
     Left = 304
     Top = 112
   end
-  object synxmlsyn2: TSynXMLSyn
+  object syxXmlSyntax: TSynXMLSyn
     Options.AutoDetectEnabled = False
     Options.AutoDetectLineLimit = 0
     Options.Visible = False
@@ -300,11 +305,25 @@ object tgdReportEditorForm: TtgdReportEditorForm
     Left = 392
     Top = 160
   end
-  object synjsnsyn1: TSynJSONSyn
+  object synjJsonSyntax: TSynJSONSyn
     Options.AutoDetectEnabled = False
     Options.AutoDetectLineLimit = 0
     Options.Visible = False
     Left = 392
     Top = 216
+  end
+  object dlgLoad: TFileOpenDialog
+    FavoriteLinks = <>
+    FileTypes = <>
+    Options = []
+    Left = 464
+    Top = 304
+  end
+  object dlgSave: TFileSaveDialog
+    FavoriteLinks = <>
+    FileTypes = <>
+    Options = []
+    Left = 536
+    Top = 312
   end
 end

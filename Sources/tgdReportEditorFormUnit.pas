@@ -7,44 +7,140 @@ uses
   Dialogs, SynEditHighlighter, SynHighlighterPas, SynEdit, SynMemo,
   StdCtrls, ImgList, ComCtrls, ExtCtrls, SynEditMiscClasses, SynEditSearch,
   SynCompletionProposal, ActnList, SynHighlighterMulti, Buttons,
-  SynHighlighterXML, SynHighlighterJSON;
+  SynHighlighterXML, SynHighlighterJSON, tgdReportUnit, DialogsX;
 
 type
   TtgdReportEditorForm = class(TForm)
-    synpsyn1: TSynPasSyn;
-    syntcmplt1: TSynAutoComplete;
-    syndtsrch1: TSynEditSearch;
+    synpPascalSyntax: TSynPasSyn;
+    syaAutoComplete: TSynAutoComplete;
+    synsSearch: TSynEditSearch;
     pnlClient: TPanel;
-    spl1: TSplitter;
-    tv1: TTreeView;
-    pnl1: TPanel;
-    synm1: TSynMemo;
-    il16: TImageList;
-    actlst1: TActionList;
-    synmltsyn1: TSynMultiSyn;
-    synxmlsyn2: TSynXMLSyn;
+    splVert: TSplitter;
+    tvContext: TTreeView;
+    pnlBttons: TPanel;
+    synmTemplate: TSynMemo;
+    ilTree: TImageList;
+    aclMain: TActionList;
+    symMain: TSynMultiSyn;
+    syxXmlSyntax: TSynXMLSyn;
     actSave: TAction;
     actCancel: TAction;
     actLoad: TAction;
     actOk: TAction;
-    btnSave1: TBitBtn;
+    btnSave: TBitBtn;
     btnLoadFromFile: TBitBtn;
     btnOk: TBitBtn;
     btnCancel: TBitBtn;
     btnValidate: TBitBtn;
     actValidate: TAction;
-    synjsnsyn1: TSynJSONSyn;
+    synjJsonSyntax: TSynJSONSyn;
+    dlgLoad: TFileOpenDialog;
+    dlgSave: TFileSaveDialog;
+    procedure actLoadExecute(Sender: TObject);
+    procedure actOkExecute(Sender: TObject);
+    procedure actSaveExecute(Sender: TObject);
+    procedure actValidateExecute(Sender: TObject);
   private
-    { Private declarations }
+    FReport: TtgdReport;
+    procedure Init(AReport: TtgdReport);
+    procedure LoadTopTreeNodes;
+    procedure LoadTreeNodes(ANode: TTreeNode);
   public
-    { Public declarations }
+    class function ShowEditor(AReport: TtgdReport): Boolean;
   end;
 
-var
-  tgdReportEditorForm: TtgdReportEditorForm;
 
 implementation
 
+uses
+  tgdScriptEngineUnit;
+
+resourcestring
+  STemplateIsValid = 'Template is valid';
+  SAReportIsNil = 'AReport is nil';
+
 {$R *.dfm}
+
+procedure TtgdReportEditorForm.actLoadExecute(Sender: TObject);
+begin
+  if dlgLoad.Execute then
+  begin
+    synmTemplate.Lines.LoadFromFile(dlgLoad.FileName);
+    if AnsiSameText('.xml', ExtractFileExt(dlgLoad.FileName)) then
+      symMain.DefaultHighlighter := syxXmlSyntax
+    else
+    if AnsiSameText('.json', ExtractFileExt(dlgLoad.FileName)) then
+      symMain.DefaultHighlighter := synjJsonSyntax
+    else
+      symMain.DefaultHighlighter := nil;
+  end;
+end;
+
+procedure TtgdReportEditorForm.actOkExecute(Sender: TObject);
+begin
+  FReport.TemplateLines.Assign(synmTemplate.Lines);
+end;
+
+procedure TtgdReportEditorForm.actSaveExecute(Sender: TObject);
+begin
+  if dlgSave.Execute then
+    synmTemplate.Lines.SaveToFile(dlgSave.FileName);
+end;
+
+procedure TtgdReportEditorForm.actValidateExecute(Sender: TObject);
+var
+  vScript: TStringList;
+  vScriptEngine: ItgdScriptEngine;
+begin
+  vScript := TStringList.Create();
+  try
+    vScriptEngine := CreateScriptEngine();
+    vScriptEngine.Init(FReport);
+    vScriptEngine.ConvertTemplateToScript(vScript);
+    vScriptEngine.ValidateScript(vScript);
+    ShowMessage(STemplateIsValid);
+  finally
+    vScript.Free;
+  end;
+end;
+
+procedure TtgdReportEditorForm.Init(AReport: TtgdReport);
+begin
+  FReport := AReport;
+  synmTemplate.Lines.Assign(AReport.TemplateLines);
+  LoadTopTreeNodes();
+end;
+
+procedure TtgdReportEditorForm.LoadTopTreeNodes;
+begin
+  LoadTreeNodes(nil);
+end;
+
+procedure TtgdReportEditorForm.LoadTreeNodes(ANode: TTreeNode);
+var
+  vParentObject: TObject;
+begin
+  vParentObject := nil
+  if ANode <> nil then
+    vParentObject := TObject(ANode.Data);
+
+  
+end;
+
+class function TtgdReportEditorForm.ShowEditor(AReport: TtgdReport): Boolean;
+var
+  vForm: TtgdReportEditorForm;
+begin
+  if AReport = nil then
+    raise Exception.Create(SAReportIsNil);
+
+  vForm := TtgdReportEditorForm.Create(nil);
+  try
+    vForm.Init(AReport);
+    Result := IsPositiveResult(vForm.ShowModal);
+  finally
+    vForm.Free;
+  end;
+end;
 
 end.

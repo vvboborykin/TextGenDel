@@ -14,6 +14,17 @@ uses
   SysUtils, Classes, Variants, StrUtils, DateUtils, tgdReportUnit;
 
 type
+  TScriptElement = class
+  private
+    FName: string;
+    FSourceObject: TObjectList;
+    procedure SetName(const Value: string);
+    procedure SetSourceObject(const Value: TObjectList);
+  public
+    property Name: string read FName write SetName;
+    property SourceObject: TObjectList read FSourceObject write SetSourceObject;
+  end;
+
   /// <summary>ItgdScriptEngine
   /// Scrip Engine interface declaration
   /// </summary>
@@ -23,13 +34,21 @@ type
     /// Convert report`s TemplateLines to script lines
     /// </summary>
     /// <param name="AScript"> (TStrings) Result script lines</param>
-    procedure ConvertTemplateToScript(AScript: TStrings); stdcall;
+    procedure ConvertTemplateToScript(AScript: TStrings; ATemplateLines: TStrings =
+        nil); stdcall;
     /// <summary>ItgdScriptEngine.ExecuteScript
     /// Execute script (generate text)
     /// </summary>
     /// <param name="AScript"> (TStrings) Script source to generate text</param>
     /// <param name="AResultLines"> (TStrings) Result text lines recipient</param>
     procedure ExecuteScript(AScript, AResultLines: TStrings); stdcall;
+    /// <summary>ItgdScriptEngine.GetChildrenScriptElements
+    /// Get script children elements
+    /// </summary>
+    /// <param name="AParent"> (TObject) </param>
+    /// <param name="AChildren"> (TObjectList) </param>
+    procedure GetChildrenScriptElements(AParent: TObject; AChildren: TObjectList);
+        stdcall;
     /// <summary>ItgdScriptEngine.Init
     /// Initialize script engine before use
     /// </summary>
@@ -57,5 +76,21 @@ var
   CreateScriptEngine: TtgdCreateScriptEngineFunc;
 
 implementation
+
+procedure TScriptElement.SetName(const Value: string);
+begin
+  if FName <> Value then
+  begin
+    FName := Value;
+  end;
+end;
+
+procedure TScriptElement.SetSourceObject(const Value: TObjectList);
+begin
+  if FSourceObject <> Value then
+  begin
+    FSourceObject := Value;
+  end;
+end;
 
 end.

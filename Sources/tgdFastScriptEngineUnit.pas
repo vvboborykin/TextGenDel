@@ -31,9 +31,17 @@ type
     function CallAddLine(Instance: TObject; ClassType: TClass; const MethodName:
       string; var Params: Variant): Variant;
     procedure CheckInitCompleted;
-    procedure ConvertTemplateToScript(AScript: TStrings); stdcall;
+    procedure ConvertTemplateToScript(AScript: TStrings; ATemplateLines: TStrings =
+        nil); stdcall;
     procedure ExecuteScript(AScript, AResultLines: TStrings); stdcall;
     procedure GenerateScriptLine(ALine: string; AScript: TStrings);
+    /// <summary>ItgdScriptEngine.GetChildrenScriptElements
+    /// Get script children elements
+    /// </summary>
+    /// <param name="AParent"> (TObject) </param>
+    /// <param name="AChildren"> (TObjectList) </param>
+    procedure GetChildrenScriptElements(AParent: TObject; AChildren: TObjectList);
+        stdcall;
     procedure Init(AReport: TtgdReport); stdcall;
     procedure RaiseCompileError;
     procedure RegisterComponentClass(AClass: TClass);
@@ -113,15 +121,19 @@ begin
     raise Exception.Create(SInitMetodNotExecuted);
 end;
 
-procedure TtgdFastScriptEngine.ConvertTemplateToScript(AScript: TStrings);
+procedure TtgdFastScriptEngine.ConvertTemplateToScript(AScript: TStrings;
+    ATemplateLines: TStrings = nil);
 var
   I: Integer;
 begin
   CheckInitCompleted();
   FNestCount := 0;
+  
+  if ATemplateLines = nil then
+    ATemplateLines := FReport.TemplateLines;
 
-  for I := 0 to FReport.TemplateLines.Count - 1 do
-    GenerateScriptLine(FReport.TemplateLines[I], AScript);
+  for I := 0 to ATemplateLines.Count - 1 do
+    GenerateScriptLine(ATemplateLines[I], AScript);
 
   if (AScript.Count = 0) or (Trim(AScript[AScript.Count - 1]) <> 'end.') then
   begin
@@ -161,6 +173,15 @@ begin
 
   if AnsiEndsText(FReport.CodeEndMarker, Trim(ALine)) then
     Dec(FNestCount);
+end;
+
+procedure TtgdFastScriptEngine.GetChildrenScriptElements(AParent: TObject;
+    AChildren: TObjectList);
+begin
+  if AParent = nil then
+    LoadRootElements()
+  else
+    LoadSubElements(AParent);
 end;
 
 procedure TtgdFastScriptEngine.Init(AReport: TtgdReport);
