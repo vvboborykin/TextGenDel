@@ -158,9 +158,12 @@ begin
   vChildren := TtgdScriptElementList.Create(False);
   try
     vParentObject := nil;
+
     if ANode <> nil then
       vParentObject := TObject(ANode.Data);
+
     FEngine.GetChildrenScriptElements(vParentObject, vChildren);
+
     for I := 0 to vChildren.Count-1 do
       AddChildNode(ANode, vChildren[I]);
   finally
