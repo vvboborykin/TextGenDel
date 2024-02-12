@@ -13,7 +13,7 @@ interface
 uses
   SysUtils, Classes, Variants, StrUtils, DateUtils, tgdScriptEngineUnit,
   tgdReportUnit, fs_iinterpreter, fs_ipascal, fs_iclassesrtti, fs_idbrtti,
-  fs_iformsrtti, fs_iinirtti;
+  fs_iformsrtti, fs_iinirtti, tdgScriptElementsUnit;
 
 type
   /// <summary>TtgdFastScriptEngine
@@ -25,7 +25,7 @@ type
     FReport: TtgdReport;
     FResultLines: TStrings;
     FScript: TfsScript;
-    procedure AddChildScriptElement(AItem: TfsItemList; AChildren:
+    procedure AddScriptElementToList(AItem: TfsItemList; AChildren:
         TtgdScriptElementList);
     procedure AddComponentRegistration(vComponent: TComponent);
     procedure AddScriptCodeLine(ALine: string; AScript: TStrings);
@@ -77,10 +77,56 @@ begin
   inherited Destroy;
 end;
 
-procedure TtgdFastScriptEngine.AddChildScriptElement(AItem: TfsItemList;
+procedure TtgdFastScriptEngine.AddScriptElementToList(AItem: TfsItemList;
     AChildren: TtgdScriptElementList);
+var
+  vCustVar: TfsCustomVariable;
+  vHasChildren: Boolean;
+  vName: string;
+  vScriptItem: TtgdScriptElement;
 begin
-  // TODO -cMM: TtgdFastScriptEngine.AddChildScriptElement default body inserted
+  vScriptItem := nil;
+
+  if AItem is TfsCustomVariable then
+  begin
+    vCustVar := (AItem as TfsCustomVariable);
+    vName := vCustVar.Name;
+    vHasChildren := (vCustVar.RefItem <> nil)
+      and (vCustVar.RefItem is TfsClassVariable)
+      and ((vCustVar.RefItem as TfsClassVariable).Count > 0);
+
+    if AItem is TfsClassVariable then
+      vScriptItem := TtgdScriptClass.Create(AItem, vName, vCustVar.Count > 0)
+    else
+    if AItem is TfsTypeVariable then
+      vScriptItem := TtgdScriptType.Create(AItem, vName, vCustVar.Count > 0)
+    else
+    if AItem is TfsVariable then
+    begin
+      vScriptItem := TtgdScriptVariable.Create(AItem, vName, vHasChildren)
+    end
+    else
+    if AItem is TfsEventHelper then
+    begin
+      vScriptItem := TtgdScriptEvent.Create(AItem, vName, vHasChildren)
+    end
+    else
+    if AItem is TfsPropertyHelper then
+    begin
+      vScriptItem := TtgdScriptProperty.Create(AItem, vName, vHasChildren)
+    end
+    else
+    if AItem is TfsMethodHelper then
+    begin
+      if (AItem as TfsMethodHelper).ParentRef <> nil then
+        vScriptItem := TtgdScriptMethod.Create(AItem, vName, vHasChildren)
+      else
+        vScriptItem := TtgdScriptFunction.Create(AItem, vName, vHasChildren);
+    end
+  end;
+
+  if vScriptItem <> nil then
+    AChildren.Add(vScriptItem)
 end;
 
 procedure TtgdFastScriptEngine.AddComponentRegistration(vComponent: TComponent);
@@ -209,7 +255,7 @@ begin
   for I := 0 to FScript.Count-1 do
   begin
     vItem := FScript.Items[I];
-    AddChildScriptElement(vItem, AChildren);
+    AddScriptElementToList(vItem, AChildren);
   end;
 end;
 
@@ -240,7 +286,7 @@ begin
     if vClass <> nil then
     begin
       for I := 0 to vClass.Count-1 do
-        AddChildScriptElement(vClass.Members[I], AChildren);
+        AddScriptElementToList(vClass.Members[I], AChildren);
     end;
   end;
 end;

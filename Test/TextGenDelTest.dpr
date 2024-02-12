@@ -8,7 +8,8 @@ uses
   tgdCollectionsUnit in '..\Sources\tgdCollectionsUnit.pas',
   tgdScriptEngineUnit in '..\Sources\tgdScriptEngineUnit.pas',
   tgdFastScriptEngineUnit in '..\Sources\tgdFastScriptEngineUnit.pas',
-  tgdReportEditorFormUnit in '..\Sources\tgdReportEditorFormUnit.pas' {tgdReportEditorForm};
+  tgdReportEditorFormUnit in '..\Sources\tgdReportEditorFormUnit.pas' {tgdReportEditorForm},
+  tdgScriptElementsUnit in '..\Sources\tdgScriptElementsUnit.pas';
 
 {$R *.res}
 

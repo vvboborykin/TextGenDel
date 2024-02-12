@@ -44,6 +44,8 @@ type
     vtDataCode: TIntegerField;
     vtDataDate: TDateTimeField;
     vtDataSumma: TFloatField;
+    btnEdit: TButton;
+    procedure btnEditClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnGenerateScriptClick(Sender: TObject);
@@ -64,7 +66,15 @@ var
 
 implementation
 
+uses
+  tgdReportEditorFormUnit;
+
 {$R *.dfm}
+
+procedure TTestMainForm.btnEditClick(Sender: TObject);
+begin
+  TtgdReportEditorForm.ShowEditor(FReport);
+end;
 
 procedure TTestMainForm.FormDestroy(Sender: TObject);
 begin

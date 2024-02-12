@@ -135,6 +135,15 @@ object TestMainForm: TTestMainForm
     TabOrder = 5
     OnClick = btnValidateTemplateClick
   end
+  object btnEdit: TButton
+    Left = 696
+    Top = 8
+    Width = 75
+    Height = 25
+    Caption = 'Edit'
+    TabOrder = 6
+    OnClick = btnEditClick
+  end
   object dlgLoad: TFileOpenDialog
     FavoriteLinks = <>
     FileTypes = <>
@@ -224,6 +233,7 @@ object TestMainForm: TTestMainForm
   end
   object vtData: TVirtualTable
     Active = True
+    Constraints = <>
     FieldDefs = <
       item
         Name = 'Name'

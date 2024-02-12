@@ -7,7 +7,7 @@ uses
   Dialogs, SynEditHighlighter, SynHighlighterPas, SynEdit, SynMemo, StdCtrls,
   ImgList, ComCtrls, ExtCtrls, SynEditMiscClasses, SynEditSearch,
   SynCompletionProposal, ActnList, SynHighlighterMulti, Buttons,
-  tgdScriptEngineUnit, SynHighlighterXML, SynHighlighterJSON, tgdReportUnit,
+  tgdScriptEngineUnit, SynHighlighterXML, SynHighlighterJSON, tgdReportUnit, tdgScriptElementsUnit,
   DialogsX;
 
 type
@@ -120,19 +120,25 @@ function TtgdReportEditorForm.GetImageIndexOfScriptElement(AScriptElement:
 begin
   Result := 0;
   if AScriptElement is TtgdScriptVariable then
-    Result := 1
+    Result := 6
   else
   if AScriptElement is TtgdScriptClass then
     Result := 1
   else
   if AScriptElement is TtgdScriptFunction then
-    Result := 1
+    Result := 4
   else
   if AScriptElement is TtgdScriptProperty then
-    Result := 1
+    Result := 0
   else
   if AScriptElement is TtgdScriptEvent then
-    Result := 1
+    Result := 3
+  else
+  if AScriptElement is TtgdScriptMethod then
+    Result := 2
+  else
+  if AScriptElement is TtgdScriptConstant then
+    Result := 5
   else
 end;
 
@@ -140,6 +146,8 @@ procedure TtgdReportEditorForm.Init(AReport: TtgdReport);
 begin
   FReport := AReport;
   FEngine := CreateScriptEngine();
+  FEngine.Init(FReport);
+  
   synmTemplate.Lines.Assign(AReport.TemplateLines);
   LoadTopTreeNodes();
 end;
