@@ -11,18 +11,47 @@ unit tgdScriptEngineUnit;
 interface
 
 uses
-  SysUtils, Classes, Variants, StrUtils, DateUtils, tgdReportUnit;
+  SysUtils, Classes, Variants, StrUtils, DateUtils, Contnrs, tgdReportUnit;
 
 type
-  TScriptElement = class
+  TtgdScriptElement = class
   private
+    FHasChildren: Boolean;
     FName: string;
     FSourceObject: TObjectList;
     procedure SetName(const Value: string);
     procedure SetSourceObject(const Value: TObjectList);
+  protected
+    procedure SetHasChildren(const Value: Boolean);
   public
+    property HasChildren: Boolean read FHasChildren write SetHasChildren;
     property Name: string read FName write SetName;
     property SourceObject: TObjectList read FSourceObject write SetSourceObject;
+  end;
+
+  TtgdScriptVariable = class(TtgdScriptElement)
+  end;
+
+  TtgdScriptClass = class(TtgdScriptElement)
+  end;
+
+  TtgdScriptFunction = class(TtgdScriptElement)
+  end;
+
+  TtgdScriptEvent = class(TtgdScriptElement)
+  end;
+
+  TtgdScriptProperty = class(TtgdScriptElement)
+  end;
+
+
+  TtgdScriptElementList = class(TObjectList)
+  protected
+    function GetItems(Index: Integer): TtgdScriptElement;
+    procedure SetItems(Index: Integer; const Value: TtgdScriptElement);
+  public
+    property Items[Index: Integer]: TtgdScriptElement read GetItems write SetItems;
+        default;
   end;
 
   /// <summary>ItgdScriptEngine
@@ -47,8 +76,8 @@ type
     /// </summary>
     /// <param name="AParent"> (TObject) </param>
     /// <param name="AChildren"> (TObjectList) </param>
-    procedure GetChildrenScriptElements(AParent: TObject; AChildren: TObjectList);
-        stdcall;
+    procedure GetChildrenScriptElements(AParent: TObject; AChildren:
+        TtgdScriptElementList); stdcall;
     /// <summary>ItgdScriptEngine.Init
     /// Initialize script engine before use
     /// </summary>
@@ -77,7 +106,15 @@ var
 
 implementation
 
-procedure TScriptElement.SetName(const Value: string);
+procedure TtgdScriptElement.SetHasChildren(const Value: Boolean);
+begin
+  if FHasChildren <> Value then
+  begin
+    FHasChildren := Value;
+  end;
+end;
+
+procedure TtgdScriptElement.SetName(const Value: string);
 begin
   if FName <> Value then
   begin
@@ -85,12 +122,23 @@ begin
   end;
 end;
 
-procedure TScriptElement.SetSourceObject(const Value: TObjectList);
+procedure TtgdScriptElement.SetSourceObject(const Value: TObjectList);
 begin
   if FSourceObject <> Value then
   begin
     FSourceObject := Value;
   end;
+end;
+
+function TtgdScriptElementList.GetItems(Index: Integer): TtgdScriptElement;
+begin
+  Result := inherited Items[Index] as TtgdScriptElement;
+end;
+
+procedure TtgdScriptElementList.SetItems(Index: Integer; const Value:
+    TtgdScriptElement);
+begin
+  inherited Items[Index] := Value
 end;
 
 end.

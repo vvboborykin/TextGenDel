@@ -4,10 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, SynEditHighlighter, SynHighlighterPas, SynEdit, SynMemo,
-  StdCtrls, ImgList, ComCtrls, ExtCtrls, SynEditMiscClasses, SynEditSearch,
+  Dialogs, SynEditHighlighter, SynHighlighterPas, SynEdit, SynMemo, StdCtrls,
+  ImgList, ComCtrls, ExtCtrls, SynEditMiscClasses, SynEditSearch,
   SynCompletionProposal, ActnList, SynHighlighterMulti, Buttons,
-  SynHighlighterXML, SynHighlighterJSON, tgdReportUnit, DialogsX;
+  tgdScriptEngineUnit, SynHighlighterXML, SynHighlighterJSON, tgdReportUnit,
+  DialogsX;
 
 type
   TtgdReportEditorForm = class(TForm)
@@ -42,6 +43,11 @@ type
     procedure actValidateExecute(Sender: TObject);
   private
     FReport: TtgdReport;
+    FEngine: ItgdScriptEngine;
+    procedure AddChildNode(AParentNode: TTreeNode; AScriptElement:
+        TtgdScriptElement);
+    function GetImageIndexOfScriptElement(AScriptElement: TtgdScriptElement):
+        Integer;
     procedure Init(AReport: TtgdReport);
     procedure LoadTopTreeNodes;
     procedure LoadTreeNodes(ANode: TTreeNode);
@@ -49,11 +55,7 @@ type
     class function ShowEditor(AReport: TtgdReport): Boolean;
   end;
 
-
 implementation
-
-uses
-  tgdScriptEngineUnit;
 
 resourcestring
   STemplateIsValid = 'Template is valid';
@@ -68,8 +70,7 @@ begin
     synmTemplate.Lines.LoadFromFile(dlgLoad.FileName);
     if AnsiSameText('.xml', ExtractFileExt(dlgLoad.FileName)) then
       symMain.DefaultHighlighter := syxXmlSyntax
-    else
-    if AnsiSameText('.json', ExtractFileExt(dlgLoad.FileName)) then
+    else if AnsiSameText('.json', ExtractFileExt(dlgLoad.FileName)) then
       symMain.DefaultHighlighter := synjJsonSyntax
     else
       symMain.DefaultHighlighter := nil;
@@ -104,9 +105,41 @@ begin
   end;
 end;
 
+procedure TtgdReportEditorForm.AddChildNode(AParentNode: TTreeNode;
+    AScriptElement: TtgdScriptElement);
+var
+  vNode: TTreeNode;
+begin
+  vNode := tvContext.Items.AddChild(AParentNode, AScriptElement.Name);
+  vNode.HasChildren := AScriptElement.HasChildren;
+  vNode.ImageIndex := GetImageIndexOfScriptElement(AScriptElement);
+end;
+
+function TtgdReportEditorForm.GetImageIndexOfScriptElement(AScriptElement:
+    TtgdScriptElement): Integer;
+begin
+  Result := 0;
+  if AScriptElement is TtgdScriptVariable then
+    Result := 1
+  else
+  if AScriptElement is TtgdScriptClass then
+    Result := 1
+  else
+  if AScriptElement is TtgdScriptFunction then
+    Result := 1
+  else
+  if AScriptElement is TtgdScriptProperty then
+    Result := 1
+  else
+  if AScriptElement is TtgdScriptEvent then
+    Result := 1
+  else
+end;
+
 procedure TtgdReportEditorForm.Init(AReport: TtgdReport);
 begin
   FReport := AReport;
+  FEngine := CreateScriptEngine();
   synmTemplate.Lines.Assign(AReport.TemplateLines);
   LoadTopTreeNodes();
 end;
@@ -118,13 +151,21 @@ end;
 
 procedure TtgdReportEditorForm.LoadTreeNodes(ANode: TTreeNode);
 var
+  I: Integer;
+  vChildren: TtgdScriptElementList;
   vParentObject: TObject;
 begin
-  vParentObject := nil
-  if ANode <> nil then
-    vParentObject := TObject(ANode.Data);
-
-  
+  vChildren := TtgdScriptElementList.Create(False);
+  try
+    vParentObject := nil;
+    if ANode <> nil then
+      vParentObject := TObject(ANode.Data);
+    FEngine.GetChildrenScriptElements(vParentObject, vChildren);
+    for I := 0 to vChildren.Count-1 do
+      AddChildNode(ANode, vChildren[I]);
+  finally
+    vChildren.Free;
+  end;
 end;
 
 class function TtgdReportEditorForm.ShowEditor(AReport: TtgdReport): Boolean;
@@ -144,3 +185,4 @@ begin
 end;
 
 end.
+

@@ -1,6 +1,6 @@
 object TestMainForm: TTestMainForm
-  Left = 513
-  Top = 202
+  Left = 311
+  Top = 204
   Width = 1073
   Height = 578
   Caption = 'TextGenDel test application'

@@ -25,6 +25,8 @@ type
     FReport: TtgdReport;
     FResultLines: TStrings;
     FScript: TfsScript;
+    procedure AddChildScriptElement(AItem: TfsItemList; AChildren:
+        TtgdScriptElementList);
     procedure AddComponentRegistration(vComponent: TComponent);
     procedure AddScriptCodeLine(ALine: string; AScript: TStrings);
     procedure AddScriptMacroLine(ALine: string; AScript: TStrings);
@@ -35,14 +37,11 @@ type
         nil); stdcall;
     procedure ExecuteScript(AScript, AResultLines: TStrings); stdcall;
     procedure GenerateScriptLine(ALine: string; AScript: TStrings);
-    /// <summary>ItgdScriptEngine.GetChildrenScriptElements
-    /// Get script children elements
-    /// </summary>
-    /// <param name="AParent"> (TObject) </param>
-    /// <param name="AChildren"> (TObjectList) </param>
-    procedure GetChildrenScriptElements(AParent: TObject; AChildren: TObjectList);
-        stdcall;
+    procedure GetChildrenScriptElements(AParent: TObject; AChildren:
+        TtgdScriptElementList); stdcall;
     procedure Init(AReport: TtgdReport); stdcall;
+    procedure LoadRootElements(AChildren: TtgdScriptElementList);
+    procedure LoadSubElements(AParent: TObject; AChildren: TtgdScriptElementList);
     procedure RaiseCompileError;
     procedure RegisterComponentClass(AClass: TClass);
     procedure RegisterContext;
@@ -76,6 +75,12 @@ destructor TtgdFastScriptEngine.Destroy;
 begin
   FreeAndNil(FScript);
   inherited Destroy;
+end;
+
+procedure TtgdFastScriptEngine.AddChildScriptElement(AItem: TfsItemList;
+    AChildren: TtgdScriptElementList);
+begin
+  // TODO -cMM: TtgdFastScriptEngine.AddChildScriptElement default body inserted
 end;
 
 procedure TtgdFastScriptEngine.AddComponentRegistration(vComponent: TComponent);
@@ -176,12 +181,12 @@ begin
 end;
 
 procedure TtgdFastScriptEngine.GetChildrenScriptElements(AParent: TObject;
-    AChildren: TObjectList);
+    AChildren: TtgdScriptElementList);
 begin
   if AParent = nil then
-    LoadRootElements()
+    LoadRootElements(AChildren)
   else
-    LoadSubElements(AParent);
+    LoadSubElements(AParent, AChildren);
 end;
 
 procedure TtgdFastScriptEngine.Init(AReport: TtgdReport);
@@ -193,6 +198,51 @@ begin
   RegisterContext();
   RegisterVariables();
   RegisterFunctions();
+end;
+
+procedure TtgdFastScriptEngine.LoadRootElements(AChildren:
+    TtgdScriptElementList);
+var
+  I: Integer;
+  vItem: TfsItemList;
+begin
+  for I := 0 to FScript.Count-1 do
+  begin
+    vItem := FScript.Items[I];
+    AddChildScriptElement(vItem, AChildren);
+  end;
+end;
+
+procedure TtgdFastScriptEngine.LoadSubElements(AParent: TObject; AChildren:
+    TtgdScriptElementList);
+var
+  I: Integer;
+  vClass: TfsClassVariable;
+  vCustVar: TfsCustomVariable;
+  vParentItem: TfsItemList;
+begin
+  if AParent <> nil then
+  begin
+    vParentItem := TfsItemList(AParent);
+    vClass := nil;
+
+    if vParentItem is TfsClassVariable then
+      vClass := (vParentItem as TfsClassVariable)
+    else
+    if vParentItem is TfsCustomVariable then
+    begin
+      vCustVar := vParentItem as TfsCustomVariable;
+      if (vCustVar.RefItem <> nil) and (vCustVar.RefItem is TfsClassVariable) then
+        vClass := (vCustVar.RefItem as TfsClassVariable)
+      else;
+    end;
+
+    if vClass <> nil then
+    begin
+      for I := 0 to vClass.Count-1 do
+        AddChildScriptElement(vClass.Members[I], AChildren);
+    end;
+  end;
 end;
 
 procedure TtgdFastScriptEngine.RaiseCompileError;
