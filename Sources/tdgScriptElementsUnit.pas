@@ -1,3 +1,11 @@
+{*******************************************************
+* Project: TextGenDelTest
+* Unit: tdgScriptElementsUnit.pas
+* Description: Script element classes and list
+* 
+* Created: 13.02.2024 9:57:35
+* Copyright (C) 2024 Боборыкин В.В. (bpost@yandex.ru)
+*******************************************************}
 unit tdgScriptElementsUnit;
 
 interface
@@ -6,6 +14,9 @@ uses
   SysUtils, Classes, Variants, StrUtils, DateUtils, Contnrs;
 
 type
+  /// <summary>TtgdScriptElement
+  /// Abstract script element
+  /// </summary>
   TtgdScriptElement = class
   private
     FHasChildren: Boolean;
@@ -24,36 +35,68 @@ type
     property SourceObject: TObject read FSourceObject write SetSourceObject;
   end;
 
+  /// <summary>TtgdScriptVariable
+  /// Script variable
+  /// </summary>
   TtgdScriptVariable = class(TtgdScriptElement)
   end;
 
+  /// <summary>TtgdScriptClass
+  /// Script class
+  /// </summary>
   TtgdScriptClass = class(TtgdScriptElement)
   end;
 
+  /// <summary>TtgdScriptFunction
+  /// Script function or procedure
+  /// </summary>
   TtgdScriptFunction = class(TtgdScriptElement)
   end;
 
+  /// <summary>TtgdScriptMethod
+  /// Script class method
+  /// </summary>
   TtgdScriptMethod = class(TtgdScriptElement)
   end;
 
+  /// <summary>TtgdScriptEvent
+  /// Script event type
+  /// </summary>
   TtgdScriptEvent = class(TtgdScriptElement)
   end;
 
+  /// <summary>TtgdScriptProperty
+  /// Script class property
+  /// </summary>
   TtgdScriptProperty = class(TtgdScriptElement)
   end;
 
+  /// <summary>TtgdScriptConstant
+  /// Script constant
+  /// </summary>
   TtgdScriptConstant = class(TtgdScriptElement)
   end;
 
+  /// <summary>TtgdScriptType
+  /// Script type declaration
+  /// </summary>
   TtgdScriptType = class(TtgdScriptElement)
   end;
 
 
+  /// <summary>TtgdScriptElementList
+  /// List of script element
+  /// </summary>
   TtgdScriptElementList = class(TObjectList)
   protected
     function GetItems(Index: Integer): TtgdScriptElement;
     procedure SetItems(Index: Integer; const Value: TtgdScriptElement);
   public
+    /// <summary>TtgdScriptElementList.Items
+    /// Elements in list
+    /// </summary>
+    /// type:TtgdScriptElement
+    /// <param name="Index"> (Integer) </param>
     property Items[Index: Integer]: TtgdScriptElement read GetItems write SetItems;
         default;
   end;

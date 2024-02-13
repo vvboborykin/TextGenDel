@@ -97,7 +97,7 @@ type
     procedure SetComponent(const Value: TComponent);
   published
     /// <summary>TtgdReportContextItem.Component
-    /// Component instance of template variable
+    /// Component instance for template variable
     /// </summary>
     /// type:TComponent
     property Component: TComponent read FComponent write SetComponent;
