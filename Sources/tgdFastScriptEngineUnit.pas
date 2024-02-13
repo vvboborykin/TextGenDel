@@ -91,7 +91,7 @@ begin
 
   vClassName := AItem.ClassName;
   if vClassName <> '' then
-    vClassName := '';
+    vClassName := vClassName;
 
 
   if AItem is TfsCustomVariable then
@@ -130,9 +130,12 @@ begin
     end
   end;
 
-  if (vScriptItem <> nil) and ((AChildren.AllowedClasses.Count = 0)
-    or (AChildren.AllowedClasses.IndexOf(Pointer(vScriptItem.ClassType)) >= 0)) then
-    AChildren.Add(vScriptItem)
+  if (vScriptItem <> nil)  then
+  begin
+    if AChildren.IsClassAllowed(vScriptItem.ClassType) then
+      if not AChildren.ContainsName(vScriptItem.Name) then
+        AChildren.Add(vScriptItem);
+  end;
 end;
 
 procedure TtgdFastScriptEngine.AddComponentRegistration(vComponent: TComponent);
@@ -269,7 +272,7 @@ procedure TtgdFastScriptEngine.LoadSubElements(AParent: TObject; AChildren:
     TtgdScriptElementList);
 var
   I: Integer;
-  vClass: TfsClassVariable;
+  vClass, vParentClass: TfsClassVariable;
   vClassName: string;
   vCustVar: TfsCustomVariable;
   vParentItem: TfsItemList;
@@ -280,7 +283,7 @@ begin
 
     vClassName := vParentItem.ClassName;
     if vClassName <> '' then
-      vClassName := '';
+      vClassName := vClassName;
 
     vClass := nil;
 
@@ -290,11 +293,20 @@ begin
     if vParentItem is TfsCustomVariable then
     begin
       vCustVar := vParentItem as TfsCustomVariable;
-      vClass := FScript.FindClass(vCustVar.GetFullTypeName);
+      vClass := FScript.FindClass(vCustVar.TypeName);
     end;
 
     if vClass <> nil then
     begin
+      vParentClass := FScript.FindClass(vClass.TypeName);
+      repeat
+        if vParentClass <> nil then
+        begin
+          for I := 0 to vParentClass.MembersCount - 1 do
+            AddScriptElementToList(vParentClass.Members[I], AChildren);
+          vParentClass := FScript.FindClass(vParentClass.Ancestor);
+        end;
+      until vParentClass = nil;
       for I := 0 to vClass.MembersCount - 1 do
         AddScriptElementToList(vClass.Members[I], AChildren);
     end;
@@ -309,14 +321,21 @@ end;
 procedure TtgdFastScriptEngine.RegisterComponentClass(AClass: TClass);
 var
   vFsClass: TfsClassVariable;
+
+  function FindParentClass(ACurrent: TClass): TfsClassVariable;
+  begin
+    Result := FScript.FindClass(ACurrent.ClassName);
+    if Result = nil then
+      Result := FindParentClass(ACurrent.ClassParent);
+  end;
+
 begin
   vFsClass := FScript.FindClass(AClass.ClassName);
   if vFsClass = nil then
   begin
-    if (AClass.ClassParent <> nil) then
-      RegisterComponentClass(AClass.ClassParent);
+    vFsClass := FindParentClass(AClass);
+    FScript.AddClass(AClass, vFsClass.TypeName);
   end;
-  FScript.AddClass(AClass, AClass.ClassParent.ClassName);
 end;
 
 procedure TtgdFastScriptEngine.RegisterContext;

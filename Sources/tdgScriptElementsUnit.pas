@@ -95,6 +95,8 @@ type
   public
     constructor Create(AOwnsObjects: Boolean); overload;
     destructor Destroy; override;
+    function ContainsName(AName: string): Boolean;
+    function IsClassAllowed(AClass: TClass): Boolean;
     property AllowedClasses: TList read FAllowedClasses;
     /// <summary>TtgdScriptElementList.Items
     /// Elements in list
@@ -152,9 +154,29 @@ begin
   inherited Destroy;
 end;
 
+function TtgdScriptElementList.ContainsName(AName: string): Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 0 to Count-1  do
+  begin
+    if AnsiSameText(AName, Items[I].Name) then
+    begin
+      Result := True;
+      Break;
+    end;
+  end;
+end;
+
 function TtgdScriptElementList.GetItems(Index: Integer): TtgdScriptElement;
 begin
   Result := inherited Items[Index] as TtgdScriptElement;
+end;
+
+function TtgdScriptElementList.IsClassAllowed(AClass: TClass): Boolean;
+begin
+  Result := (AllowedClasses.Count = 0) or (AllowedClasses.IndexOf(Pointer(AClass)) >= 0);
 end;
 
 procedure TtgdScriptElementList.SetItems(Index: Integer; const Value:
