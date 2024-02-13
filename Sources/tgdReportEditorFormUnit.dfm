@@ -36,12 +36,14 @@ object tgdReportEditorForm: TtgdReportEditorForm
       Width = 246
       Height = 539
       Align = alLeft
+      HideSelection = False
       Images = ilTree
       Indent = 19
       RowSelect = True
       TabOrder = 0
       OnEditing = tvContextEditing
       OnExpanding = tvContextExpanding
+      OnKeyUp = synmTemplateKeyUp
     end
     object synmTemplate: TSynMemo
       Left = 258
@@ -55,6 +57,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
       Font.Name = 'Courier New'
       Font.Style = []
       TabOrder = 1
+      OnKeyUp = synmTemplateKeyUp
       Gutter.Font.Charset = DEFAULT_CHARSET
       Gutter.Font.Color = clWindowText
       Gutter.Font.Height = -11
@@ -255,7 +258,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
     Left = 136
     Top = 136
     Bitmap = {
-      494C010107000A00040010001000FFFFFFFFFF00FFFFFFFFFFFFFFFF424D3600
+      494C010107000A00040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -655,7 +658,8 @@ object tgdReportEditorForm: TtgdReportEditorForm
       C003F080FF81F1FFC003F380FF00F8FFC003E180FE00F87FC0038080FC00F83F
       C0030000F800E01FC00300008800C00FC0030003F800E007C00300010801E03F
       C0038001F803F01FC003C0018807F00FC003E001FC0FF807C003F000FF1FF803
-      C003F9C1FFFFFC01FFFFFFE7FFFFFFFF}
+      C003F9C1FFFFFC01FFFFFFE7FFFFFFFF00000000000000000000000000000000
+      000000000000}
   end
   object aclMain: TActionList
     Left = 584

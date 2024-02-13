@@ -41,6 +41,7 @@ type
     procedure actOkExecute(Sender: TObject);
     procedure actSaveExecute(Sender: TObject);
     procedure actValidateExecute(Sender: TObject);
+    procedure synmTemplateKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure tvContextEditing(Sender: TObject; Node: TTreeNode; var AllowEdit:
         Boolean);
     procedure tvContextExpanding(Sender: TObject; Node: TTreeNode; var
@@ -53,6 +54,7 @@ type
     function GetImageIndexOfScriptElement(AScriptElement: TtgdScriptElement):
         Integer;
     procedure Init(AReport: TtgdReport);
+    procedure InsertSelectedTreeNodeToTemplate;
     procedure LoadTopTreeNodes;
     procedure LoadTreeNodes(ANode: TTreeNode; AScriptElementClass: array of TClass);
   public
@@ -161,6 +163,23 @@ begin
   LoadTopTreeNodes();
 end;
 
+procedure TtgdReportEditorForm.InsertSelectedTreeNodeToTemplate;
+var
+  vText: string;
+begin
+  if tvContext.Selected <> nil then
+  begin
+    with synmTemplate do
+    begin
+      if Lines.Count < 1 then
+        Lines.Add('');
+      vText := Lines[CaretY - 1];
+      Insert(tvContext.Selected.Text, vText, CaretX);
+      Lines[CaretY - 1] := vText;
+    end;
+  end;
+end;
+
 procedure TtgdReportEditorForm.LoadTopTreeNodes;
 begin
   LoadTreeNodes(nil, [TtgdScriptVariable, TtgdScriptFunction, TtgdScriptType]);
@@ -210,6 +229,13 @@ begin
   finally
     vForm.Free;
   end;
+end;
+
+procedure TtgdReportEditorForm.synmTemplateKeyUp(Sender: TObject; var Key:
+    Word; Shift: TShiftState);
+begin
+  if (Key = VK_RETURN) and (ssCtrl in Shift) then
+    InsertSelectedTreeNodeToTemplate();
 end;
 
 procedure TtgdReportEditorForm.tvContextEditing(Sender: TObject; Node:
