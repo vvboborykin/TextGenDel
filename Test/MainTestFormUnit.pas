@@ -5,7 +5,9 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, DialogsX, StdCtrls, ComCtrls, tgdReportUnit, Menus, StdActns,
-  ActnList, DB, MemDS, VirtualTable, tgdCollectionsUnit;
+  ActnList, DB, MemDS, VirtualTable, tgdCollectionsUnit, fs_idbrtti,
+  fs_iinirtti, fs_imenusrtti, fs_idialogsrtti, fs_iextctrlsrtti,
+  fs_iformsrtti, fs_igraphicsrtti, fs_iclassesrtti;
 
 type
   TTestMainForm = class(TForm)
@@ -45,6 +47,14 @@ type
     vtDataDate: TDateTimeField;
     vtDataSumma: TFloatField;
     btnEdit: TButton;
+    fsClassesRTTI1: TfsClassesRTTI;
+    fsGraphicsRTTI1: TfsGraphicsRTTI;
+    fsFormsRTTI1: TfsFormsRTTI;
+    fsExtCtrlsRTTI1: TfsExtCtrlsRTTI;
+    fsDialogsRTTI1: TfsDialogsRTTI;
+    fsMenusRTTI1: TfsMenusRTTI;
+    fsIniRTTI1: TfsIniRTTI;
+    fsDBRTTI1: TfsDBRTTI;
     procedure btnEditClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -84,6 +94,7 @@ end;
 procedure TTestMainForm.FormCreate(Sender: TObject);
 begin
   FReport := TtgdReport.Create(Self);
+  FReport.Name := 'TtgdReport1';
   FReport.Variables.Add('CurrentTimeText', DateTimeToStr(Now));
   FReport.Functions.Add('function SayTime(): String').OnExecute := Self.SayTime;
 end;

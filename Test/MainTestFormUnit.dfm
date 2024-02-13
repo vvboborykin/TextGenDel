@@ -233,7 +233,6 @@ object TestMainForm: TTestMainForm
   end
   object vtData: TVirtualTable
     Active = True
-    Constraints = <>
     FieldDefs = <
       item
         Name = 'Name'
@@ -275,5 +274,37 @@ object TestMainForm: TTestMainForm
     object vtDataSumma: TFloatField
       FieldName = 'Summa'
     end
+  end
+  object fsClassesRTTI1: TfsClassesRTTI
+    Left = 588
+    Top = 112
+  end
+  object fsGraphicsRTTI1: TfsGraphicsRTTI
+    Left = 660
+    Top = 120
+  end
+  object fsFormsRTTI1: TfsFormsRTTI
+    Left = 628
+    Top = 184
+  end
+  object fsExtCtrlsRTTI1: TfsExtCtrlsRTTI
+    Left = 716
+    Top = 192
+  end
+  object fsDialogsRTTI1: TfsDialogsRTTI
+    Left = 804
+    Top = 200
+  end
+  object fsMenusRTTI1: TfsMenusRTTI
+    Left = 748
+    Top = 272
+  end
+  object fsIniRTTI1: TfsIniRTTI
+    Left = 668
+    Top = 280
+  end
+  object fsDBRTTI1: TfsDBRTTI
+    Left = 828
+    Top = 280
   end
 end

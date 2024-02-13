@@ -29,7 +29,6 @@ type
   public
     constructor Create(ASourceObject: TObject; AName: string; AHasChildren:
         Boolean);
-    destructor Destroy; override;
     property HasChildren: Boolean read FHasChildren write SetHasChildren;
     property Name: string read FName write SetName;
     property SourceObject: TObject read FSourceObject write SetSourceObject;
@@ -88,10 +87,15 @@ type
   /// List of script element
   /// </summary>
   TtgdScriptElementList = class(TObjectList)
+  private
+    FAllowedClasses: TList;
   protected
     function GetItems(Index: Integer): TtgdScriptElement;
     procedure SetItems(Index: Integer; const Value: TtgdScriptElement);
   public
+    constructor Create(AOwnsObjects: Boolean); overload;
+    destructor Destroy; override;
+    property AllowedClasses: TList read FAllowedClasses;
     /// <summary>TtgdScriptElementList.Items
     /// Elements in list
     /// </summary>
@@ -110,11 +114,6 @@ begin
   FHasChildren := AHasChildren;
   FName := AName;
   FSourceObject := ASourceObject;
-end;
-
-destructor TtgdScriptElement.Destroy;
-begin
-  inherited Destroy;
 end;
 
 procedure TtgdScriptElement.SetHasChildren(const Value: Boolean);
@@ -139,6 +138,18 @@ begin
   begin
     FSourceObject := Value;
   end;
+end;
+
+constructor TtgdScriptElementList.Create(AOwnsObjects: Boolean);
+begin
+  inherited Create(AOwnsObjects);
+  FAllowedClasses := TList.Create();
+end;
+
+destructor TtgdScriptElementList.Destroy;
+begin
+  FreeAndNil(FAllowedClasses);
+  inherited Destroy;
 end;
 
 function TtgdScriptElementList.GetItems(Index: Integer): TtgdScriptElement;

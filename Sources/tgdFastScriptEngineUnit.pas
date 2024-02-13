@@ -67,7 +67,7 @@ resourcestring
 constructor TtgdFastScriptEngine.Create;
 begin
   inherited Create;
-  FScript := TfsScript.Create(nil);
+  FScript := TfsScript.Create(fsGlobalUnit);
   FScript.Parent := fsGlobalUnit;
 end;
 
@@ -80,20 +80,31 @@ end;
 procedure TtgdFastScriptEngine.AddScriptElementToList(AItem: TfsItemList;
     AChildren: TtgdScriptElementList);
 var
+  vClassName: string;
   vCustVar: TfsCustomVariable;
+  vFsClass: TfsClassVariable;
   vHasChildren: Boolean;
   vName: string;
   vScriptItem: TtgdScriptElement;
 begin
   vScriptItem := nil;
 
+  vClassName := AItem.ClassName;
+  if vClassName <> '' then
+    vClassName := '';
+
+
   if AItem is TfsCustomVariable then
   begin
     vCustVar := (AItem as TfsCustomVariable);
+
     vName := vCustVar.Name;
-    vHasChildren := (vCustVar.RefItem <> nil)
-      and (vCustVar.RefItem is TfsClassVariable)
-      and ((vCustVar.RefItem as TfsClassVariable).Count > 0);
+    if vName = '' then
+      vName := vCustVar.TypeName;
+
+
+    vFsClass := FScript.FindClass(vCustVar.GetFullTypeName);
+    vHasChildren := vFsClass <> nil;
 
     if AItem is TfsClassVariable then
       vScriptItem := TtgdScriptClass.Create(AItem, vName, vCustVar.Count > 0)
@@ -102,19 +113,13 @@ begin
       vScriptItem := TtgdScriptType.Create(AItem, vName, vCustVar.Count > 0)
     else
     if AItem is TfsVariable then
-    begin
       vScriptItem := TtgdScriptVariable.Create(AItem, vName, vHasChildren)
-    end
     else
     if AItem is TfsEventHelper then
-    begin
       vScriptItem := TtgdScriptEvent.Create(AItem, vName, vHasChildren)
-    end
     else
     if AItem is TfsPropertyHelper then
-    begin
       vScriptItem := TtgdScriptProperty.Create(AItem, vName, vHasChildren)
-    end
     else
     if AItem is TfsMethodHelper then
     begin
@@ -125,7 +130,8 @@ begin
     end
   end;
 
-  if vScriptItem <> nil then
+  if (vScriptItem <> nil) and ((AChildren.AllowedClasses.Count = 0)
+    or (AChildren.AllowedClasses.IndexOf(Pointer(vScriptItem.ClassType)) >= 0)) then
     AChildren.Add(vScriptItem)
 end;
 
@@ -237,7 +243,7 @@ end;
 
 procedure TtgdFastScriptEngine.Init(AReport: TtgdReport);
 begin
-  if AReport = nil then
+  if (AReport = nil) then
     raise Exception.Create(SAReportIsNil);
 
   FReport := AReport;
@@ -264,12 +270,18 @@ procedure TtgdFastScriptEngine.LoadSubElements(AParent: TObject; AChildren:
 var
   I: Integer;
   vClass: TfsClassVariable;
+  vClassName: string;
   vCustVar: TfsCustomVariable;
   vParentItem: TfsItemList;
 begin
   if AParent <> nil then
   begin
-    vParentItem := TfsItemList(AParent);
+    vParentItem := AParent as TfsItemList;
+
+    vClassName := vParentItem.ClassName;
+    if vClassName <> '' then
+      vClassName := '';
+
     vClass := nil;
 
     if vParentItem is TfsClassVariable then
@@ -278,14 +290,12 @@ begin
     if vParentItem is TfsCustomVariable then
     begin
       vCustVar := vParentItem as TfsCustomVariable;
-      if (vCustVar.RefItem <> nil) and (vCustVar.RefItem is TfsClassVariable) then
-        vClass := (vCustVar.RefItem as TfsClassVariable)
-      else;
+      vClass := FScript.FindClass(vCustVar.GetFullTypeName);
     end;
 
     if vClass <> nil then
     begin
-      for I := 0 to vClass.Count-1 do
+      for I := 0 to vClass.MembersCount - 1 do
         AddScriptElementToList(vClass.Members[I], AChildren);
     end;
   end;

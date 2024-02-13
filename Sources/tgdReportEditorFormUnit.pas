@@ -41,6 +41,10 @@ type
     procedure actOkExecute(Sender: TObject);
     procedure actSaveExecute(Sender: TObject);
     procedure actValidateExecute(Sender: TObject);
+    procedure tvContextEditing(Sender: TObject; Node: TTreeNode; var AllowEdit:
+        Boolean);
+    procedure tvContextExpanding(Sender: TObject; Node: TTreeNode; var
+        AllowExpansion: Boolean);
   private
     FReport: TtgdReport;
     FEngine: ItgdScriptEngine;
@@ -50,7 +54,7 @@ type
         Integer;
     procedure Init(AReport: TtgdReport);
     procedure LoadTopTreeNodes;
-    procedure LoadTreeNodes(ANode: TTreeNode);
+    procedure LoadTreeNodes(ANode: TTreeNode; AScriptElementClass: array of TClass);
   public
     class function ShowEditor(AReport: TtgdReport): Boolean;
   end;
@@ -113,6 +117,8 @@ begin
   vNode := tvContext.Items.AddChild(AParentNode, AScriptElement.Name);
   vNode.HasChildren := AScriptElement.HasChildren;
   vNode.ImageIndex := GetImageIndexOfScriptElement(AScriptElement);
+  vNode.SelectedIndex := vNode.ImageIndex;
+  vNode.Data := Pointer(Integer(AScriptElement.SourceObject));
 end;
 
 function TtgdReportEditorForm.GetImageIndexOfScriptElement(AScriptElement:
@@ -140,6 +146,9 @@ begin
   if AScriptElement is TtgdScriptConstant then
     Result := 5
   else
+  if AScriptElement is TtgdScriptConstant then
+    Result := 6
+  else
 end;
 
 procedure TtgdReportEditorForm.Init(AReport: TtgdReport);
@@ -154,21 +163,29 @@ end;
 
 procedure TtgdReportEditorForm.LoadTopTreeNodes;
 begin
-  LoadTreeNodes(nil);
+  LoadTreeNodes(nil, [TtgdScriptVariable, TtgdScriptFunction, TtgdScriptType]);
 end;
 
-procedure TtgdReportEditorForm.LoadTreeNodes(ANode: TTreeNode);
+procedure TtgdReportEditorForm.LoadTreeNodes(ANode: TTreeNode;
+    AScriptElementClass: array of TClass);
 var
   I: Integer;
   vChildren: TtgdScriptElementList;
   vParentObject: TObject;
 begin
-  vChildren := TtgdScriptElementList.Create(False);
+  vChildren := TtgdScriptElementList.Create(True);
+  
+  if Length(AScriptElementClass) >0 then
+  begin
+    for I := Low(AScriptElementClass) to High(AScriptElementClass) do
+      vChildren.AllowedClasses.Add(Pointer(AScriptElementClass[I]));
+  end;
+
   try
     vParentObject := nil;
 
     if ANode <> nil then
-      vParentObject := TObject(ANode.Data);
+      vParentObject := TObject(Integer(ANode.Data));
 
     FEngine.GetChildrenScriptElements(vParentObject, vChildren);
 
@@ -193,6 +210,21 @@ begin
   finally
     vForm.Free;
   end;
+end;
+
+procedure TtgdReportEditorForm.tvContextEditing(Sender: TObject; Node:
+    TTreeNode; var AllowEdit: Boolean);
+begin
+  AllowEdit := False;
+end;
+
+procedure TtgdReportEditorForm.tvContextExpanding(Sender: TObject; Node:
+    TTreeNode; var AllowExpansion: Boolean);
+begin
+  AllowExpansion := Node.HasChildren;
+
+  if AllowExpansion and (Node.Count = 0) then
+    LoadTreeNodes(Node, []);
 end;
 
 end.
