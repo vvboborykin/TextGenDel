@@ -40,6 +40,14 @@ type
     /// <param name="AChildren"> (TObjectList) </param>
     procedure GetChildrenScriptElements(AParent: TObject; AChildren:
         TtgdScriptElementList); stdcall;
+    /// <summary>ItgdScriptEngine.GetCompletionItems
+    /// Get autocompletion itetms for text
+    /// </summary>
+    /// <param name="AText"> (string) </param>
+    /// <param name="AItems"> (TStrings) </param>
+    /// <param name="AInserts"> (TStrings) </param>
+    procedure GetCompletionItems(AText: string; AItems, AInserts: TStrings);
+        stdcall;
     /// <summary>ItgdScriptEngine.Init
     /// Initialize script engine before use
     /// </summary>

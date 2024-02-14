@@ -96,7 +96,9 @@ type
     constructor Create(AOwnsObjects: Boolean); overload;
     destructor Destroy; override;
     function ContainsName(AName: string): Boolean;
+    function ContainsScriptElement(AElement: TtgdScriptElement): Boolean;
     function IsClassAllowed(AClass: TClass): Boolean;
+    procedure SortByName;
     property AllowedClasses: TList read FAllowedClasses;
     /// <summary>TtgdScriptElementList.Items
     /// Elements in list
@@ -169,6 +171,20 @@ begin
   end;
 end;
 
+function TtgdScriptElementList.ContainsScriptElement(AElement:
+    TtgdScriptElement): Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 0 to Count-1 do
+  begin
+    Result := AnsiSameText(Items[I].Name, AElement.Name);
+    if Result then
+      Break;
+  end;
+end;
+
 function TtgdScriptElementList.GetItems(Index: Integer): TtgdScriptElement;
 begin
   Result := inherited Items[Index] as TtgdScriptElement;
@@ -183,6 +199,20 @@ procedure TtgdScriptElementList.SetItems(Index: Integer; const Value:
     TtgdScriptElement);
 begin
   inherited Items[Index] := Value
+end;
+
+function SortNameFunc(Item1, Item2: Pointer): Integer;
+var
+  vItem1, vItem2: TtgdScriptElement;
+begin
+  vItem1 := TtgdScriptElement(Item1);
+  vItem2 := TtgdScriptElement(Item2);
+  Result := CompareStr(vItem1.Name, vItem2.Name);
+end;
+
+procedure TtgdScriptElementList.SortByName;
+begin
+  Sort(SortNameFunc);
 end;
 
 end.

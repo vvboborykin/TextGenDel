@@ -39,11 +39,13 @@ object tgdReportEditorForm: TtgdReportEditorForm
       HideSelection = False
       Images = ilTree
       Indent = 19
+      RightClickSelect = True
       RowSelect = True
       TabOrder = 0
       OnEditing = tvContextEditing
       OnExpanding = tvContextExpanding
       OnKeyUp = synmTemplateKeyUp
+      OnMouseUp = tvContextMouseUp
     end
     object synmTemplate: TSynMemo
       Left = 258
@@ -64,6 +66,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
       Gutter.Font.Name = 'Courier New'
       Gutter.Font.Style = []
       Highlighter = symMain
+      Options = [eoAutoIndent, eoDragDropEditing, eoEnhanceEndKey, eoGroupUndo, eoScrollPastEol, eoShowScrollHint, eoTabsToSpaces]
       RightEdge = 0
       SearchEngine = synsSearch
       TabWidth = 2
@@ -241,14 +244,6 @@ object tgdReportEditorForm: TtgdReportEditorForm
     DelphiVersion = dvDelphi7
     Left = 392
     Top = 112
-  end
-  object syaAutoComplete: TSynAutoComplete
-    EndOfTokenChr = '()[]. '
-    Editor = synmTemplate
-    ShortCut = 8224
-    Options = [scoCompleteWithTab, scoCompleteWithEnter]
-    Left = 440
-    Top = 24
   end
   object synsSearch: TSynEditSearch
     Left = 352
@@ -733,5 +728,28 @@ object tgdReportEditorForm: TtgdReportEditorForm
     Options = []
     Left = 536
     Top = 312
+  end
+  object SynCompletionProposal1: TSynCompletionProposal
+    NbLinesInWindow = 16
+    EndOfTokenChr = '()[]. '
+    TriggerChars = '.'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clBtnText
+    TitleFont.Height = -11
+    TitleFont.Name = 'MS Sans Serif'
+    TitleFont.Style = [fsBold]
+    Columns = <>
+    OnExecute = SynCompletionProposal1Execute
+    ShortCut = 16416
+    Editor = synmTemplate
+    Left = 448
+    Top = 24
+    EndOfTokenChrW = '()[]. '
+    TriggerCharsW = '.'
   end
 end
