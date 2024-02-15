@@ -102,7 +102,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
     BevelOuter = bvNone
     TabOrder = 1
     object btnSave: TBitBtn
-      Left = 264
+      Left = 256
       Top = 8
       Width = 105
       Height = 25
@@ -147,7 +147,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
         0000000000000000000000000000000000000000000000000000}
     end
     object btnLoadFromFile: TBitBtn
-      Left = 376
+      Left = 368
       Top = 8
       Width = 105
       Height = 25
@@ -216,7 +216,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
       TabOrder = 1
     end
     object btnValidate: TBitBtn
-      Left = 488
+      Left = 480
       Top = 8
       Width = 145
       Height = 25
@@ -261,7 +261,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
         97FF47BB96FF46BB96FF47BA95FF45BA94FF338A6EC000000003}
     end
     object btnExecuteReport: TBitBtn
-      Left = 640
+      Left = 632
       Top = 8
       Width = 137
       Height = 25

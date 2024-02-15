@@ -81,7 +81,7 @@ type
 implementation
 
 uses
-  StrUtils, ComObj;
+  StrUtils, ComObj, shellapi;
 
 resourcestring
   STemplateIsValid = 'Template is valid';
@@ -110,7 +110,10 @@ begin
       vReport.TemplateLines.Add(synmTemplate.Lines[I]);
     vReport.GenerateText(vResultLines);
     if dlgSaveReport.Execute then
+    begin
       vResultLines.SaveToFile(dlgSaveReport.FileName);
+      ShellExecute(0, 'open', PChar(dlgSaveReport.FileName), nil, nil, 0);
+    end;
   finally
     vReport.Free;
     vResultLines.Free;
