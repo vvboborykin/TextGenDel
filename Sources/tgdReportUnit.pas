@@ -50,6 +50,7 @@ type
     procedure SetDefaultMarkers;
     function DoCallMethod(Instance: TObject; ClassType: TClass; const MethodName:
         String; var Params: Variant): Variant;
+    procedure Assign(Source: TPersistent); override;
   published
     /// <summary>TtgdReport.AddLineFunctionName
     /// The Name Of Custom function for Script appending New Line in Generation results
@@ -133,6 +134,27 @@ begin
   FreeAndNil(FContext);
   FreeAndNil(FTemplateLines);
   inherited Destroy;
+end;
+
+procedure TtgdReport.Assign(Source: TPersistent);
+var
+  vReport: TtgdReport;
+begin
+  if Source is TtgdReport then
+  begin
+    vReport := Source as TtgdReport;
+    TemplateLines.Assign(vReport.TemplateLines);
+    UseOwnerAsContext := vReport.UseOwnerAsContext;
+    MacroBeginMarker := vReport.MacroBeginMarker;
+    MacroEndMarker := vReport.MacroEndMarker;
+    CodeBeginMarker := vReport.CodeBeginMarker;
+    CodeEndMarker := vReport.CodeEndMarker;
+    Functions.Assign(vReport.Functions);
+    Variables.Assign(vReport.Variables);
+    Context.Assign(vReport.Context);
+  end
+  else
+    inherited Assign(Source);
 end;
 
 function TtgdReport.DoCallMethod(Instance: TObject; ClassType: TClass; const

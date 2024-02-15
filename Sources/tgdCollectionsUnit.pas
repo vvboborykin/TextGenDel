@@ -23,6 +23,8 @@ type
   protected
     function GetDisplayName: string; override;
     procedure SetName(const Value: string);
+  public
+    procedure Assign(ASource: TPersistent); override;
   published
     /// <summary>TtgdNamedCollectionItem.Name
     /// Item name
@@ -40,6 +42,7 @@ type
     function GetValues(Name: String): TtgdNamedCollectionItem;
     procedure SetItems(Index: Integer; const Value: TtgdNamedCollectionItem);
   public
+    procedure Assign(ASource: TPersistent); override;
     /// <summary>TtgdNamedCollection.ContainsName Is collection contains item having
     /// specified name
     /// </summary>
@@ -95,6 +98,8 @@ type
     FComponent: TComponent;
   protected
     procedure SetComponent(const Value: TComponent);
+  public
+    procedure Assign(ASource: TPersistent); override;
   published
     /// <summary>TtgdReportContextItem.Component
     /// Component instance for template variable
@@ -127,6 +132,8 @@ type
     FValue: Variant;
   protected
     procedure SetValue(const Value: Variant);
+  public
+    procedure Assign(ASource: TPersistent); override;
   published
     /// <summary>TtgdReportVariable.Value
     /// Variable value
@@ -167,6 +174,7 @@ type
   public
     function ExtractNameFromDeclaration(ADeclaration: String): string;
     function DoExecute(AName: string; AParams: Variant): Variant;
+    procedure Assign(ASource: TPersistent); override;
   published
     /// <summary>TtgdReportFunction.Declaration
     /// Function syntax
@@ -198,6 +206,14 @@ type
 
 implementation
 
+procedure TtgdNamedCollectionItem.Assign(ASource: TPersistent);
+begin
+  if ASource is TtgdNamedCollectionItem then
+    Name := (ASource as TtgdNamedCollectionItem).Name
+  else
+    inherited Assign(ASource);
+end;
+
 function TtgdNamedCollectionItem.GetDisplayName: string;
 begin
   Result := Name;
@@ -211,6 +227,22 @@ begin
   begin
     FName := Value;
   end;
+end;
+
+procedure TtgdNamedCollection.Assign(ASource: TPersistent);
+var
+  I: Integer;
+  vCollection: TtgdNamedCollection;
+begin
+  if ASource is TtgdNamedCollection then
+  begin
+    Clear;
+    vCollection := ASource as TtgdNamedCollection;
+    for I := 0 to vCollection.Count-1 do
+      Add.Assign(vCollection.Items[I]);
+  end
+  else
+    inherited Assign(ASource);
 end;
 
 function TtgdNamedCollection.ContainsName(AName: string): Boolean;
@@ -267,6 +299,13 @@ function TtgdNamedCollection.TryFindName(AName: string; out AItem:
 begin
   AItem := FindName(AName);
   Result := AItem <> nil;
+end;
+
+procedure TtgdReportContextItem.Assign(ASource: TPersistent);
+begin
+  if ASource is TtgdReportContextItem then
+    Component := (ASource as TtgdReportContextItem).Component;
+  inherited Assign(ASource);
 end;
 
 procedure TtgdReportContextItem.SetComponent(const Value: TComponent);
@@ -336,6 +375,16 @@ begin
   inherited Items[Index] := Value;
 end;
 
+procedure TtgdReportFunction.Assign(ASource: TPersistent);
+begin
+  if ASource is TtgdReportFunction then
+  begin
+    Declaration := (ASource as TtgdReportFunction).Declaration;
+    OnExecute := (ASource as TtgdReportFunction).OnExecute;
+  end;
+  inherited;
+end;
+
 function TtgdReportFunction.DoExecute(AName: string; AParams: Variant): Variant;
 begin
   if Assigned(FOnExecute) then
@@ -398,6 +447,13 @@ end;
 procedure TtgdReportFunctions.SetItems(Index: Integer; const Value: TtgdReportFunction);
 begin
   inherited Items[Index] := Value;
+end;
+
+procedure TtgdReportVariable.Assign(ASource: TPersistent);
+begin
+  if ASource is TtgdReportVariable then
+    Value := (ASource as TtgdReportVariable).Value;
+  inherited;
 end;
 
 procedure TtgdReportVariable.SetValue(const Value: Variant);

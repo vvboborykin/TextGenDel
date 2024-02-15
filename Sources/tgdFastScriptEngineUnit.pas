@@ -361,8 +361,8 @@ begin
         vCustVar := (vObject as TfsCustomVariable);
         if AnsiStartsText(ANameStart, vCustVar.Name) then
         begin
-          AItems.Add(vCustVar.Name);
-          AInserts.Add(vCustVar.Name);
+          AItems.AddObject(vCustVar.Name, TObject(vChildren[I].ClassType));
+          AInserts.AddObject(vCustVar.Name, TObject(vChildren[I].ClassType));
         end;
       end;
     end;

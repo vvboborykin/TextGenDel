@@ -8,7 +8,7 @@ uses
   ImgList, ComCtrls, ExtCtrls, SynEditMiscClasses, SynEditSearch,
   SynCompletionProposal, ActnList, SynHighlighterMulti, Buttons,
   tgdScriptEngineUnit, SynHighlighterXML, SynHighlighterJSON, tgdReportUnit,
-  tdgScriptElementsUnit, DialogsX;
+  tdgScriptElementsUnit, DialogsX, frxUnicodeUtils, SynUnicode;
 
 type
   TtgdReportEditorForm = class(TForm)
@@ -34,15 +34,23 @@ type
     btnValidate: TBitBtn;
     actValidate: TAction;
     synjJsonSyntax: TSynJSONSyn;
-    dlgLoad: TFileOpenDialog;
-    dlgSave: TFileSaveDialog;
+    dlgLoadTemplate: TFileOpenDialog;
+    dlgSaveTemplate: TFileSaveDialog;
     SynCompletionProposal1: TSynCompletionProposal;
+    actExecuteReport: TAction;
+    btnExecuteReport: TBitBtn;
+    dlgSaveReport: TFileSaveDialog;
+    statTempl: TStatusBar;
+    pnlTemplate: TPanel;
+    procedure actCancelExecute(Sender: TObject);
+    procedure actExecuteReportExecute(Sender: TObject);
     procedure actLoadExecute(Sender: TObject);
     procedure actOkExecute(Sender: TObject);
     procedure actSaveExecute(Sender: TObject);
     procedure actValidateExecute(Sender: TObject);
     procedure SynCompletionProposal1Execute(Kind: SynCompletionType; Sender:
       TObject; var CurrentInput: WideString; var x, y: Integer; var CanExecute: Boolean);
+    procedure synmTemplateChange(Sender: TObject);
     procedure synmTemplateKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure tvContextEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
     procedure tvContextExpanding(Sender: TObject; Node: TTreeNode; var
@@ -53,14 +61,19 @@ type
     FReport: TtgdReport;
     FEngine: ItgdScriptEngine;
     procedure AddChildNode(AParentNode: TTreeNode; AScriptElement: TtgdScriptElement);
+    procedure AddImagesToProposalList(AProposalList: TUnicodeStrings; AItems:
+        TStrings);
     function GetImageIndexOfScriptElement(AScriptElement: TtgdScriptElement): Integer;
     function GetNodeChainText(ANode: TTreeNode): string;
+    function GetRandomName: string;
+    function GetScriptElementClassImage(AClass: TClass): Integer;
     function GetTextLeftOfCaret: string;
     procedure Init(AReport: TtgdReport);
     procedure InsertSelectedTreeNodeToTemplate;
     procedure LoadAutoCompleteList(ANestLevel: Integer = 4);
     procedure LoadTopTreeNodes;
     procedure LoadTreeNodes(ANode: TTreeNode; AScriptElementClass: array of TClass);
+    procedure UpdateStatusPanel;
   public
     class function ShowEditor(AReport: TtgdReport): Boolean;
   end;
@@ -68,7 +81,7 @@ type
 implementation
 
 uses
-  StrUtils;
+  StrUtils, ComObj;
 
 resourcestring
   STemplateIsValid = 'Template is valid';
@@ -76,14 +89,42 @@ resourcestring
 
 {$R *.dfm}
 
+procedure TtgdReportEditorForm.actCancelExecute(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TtgdReportEditorForm.actExecuteReportExecute(Sender: TObject);
+var
+  I: Integer;
+  vReport: TtgdReport;
+  vResultLines: TStrings;
+begin
+  vResultLines := TStringList.Create;
+  vReport := TtgdReport.Create(FReport.Owner);
+  vReport.Name := 'TtgdReport' + GetRandomName();
+  try
+    vReport.Assign(FReport);
+    vReport.TemplateLines.Clear;
+    for I := 0 to synmTemplate.Lines.Count-1 do
+      vReport.TemplateLines.Add(synmTemplate.Lines[I]);
+    vReport.GenerateText(vResultLines);
+    if dlgSaveReport.Execute then
+      vResultLines.SaveToFile(dlgSaveReport.FileName);
+  finally
+    vReport.Free;
+    vResultLines.Free;
+  end;
+end;
+
 procedure TtgdReportEditorForm.actLoadExecute(Sender: TObject);
 begin
-  if dlgLoad.Execute then
+  if dlgLoadTemplate.Execute then
   begin
-    synmTemplate.Lines.LoadFromFile(dlgLoad.FileName);
-    if AnsiSameText('.xml', ExtractFileExt(dlgLoad.FileName)) then
+    synmTemplate.Lines.LoadFromFile(dlgLoadTemplate.FileName);
+    if AnsiSameText('.xml', ExtractFileExt(dlgLoadTemplate.FileName)) then
       symMain.DefaultHighlighter := syxXmlSyntax
-    else if AnsiSameText('.json', ExtractFileExt(dlgLoad.FileName)) then
+    else if AnsiSameText('.json', ExtractFileExt(dlgLoadTemplate.FileName)) then
       symMain.DefaultHighlighter := synjJsonSyntax
     else
       symMain.DefaultHighlighter := nil;
@@ -97,24 +138,30 @@ end;
 
 procedure TtgdReportEditorForm.actSaveExecute(Sender: TObject);
 begin
-  if dlgSave.Execute then
-    synmTemplate.Lines.SaveToFile(dlgSave.FileName);
+  if dlgSaveTemplate.Execute then
+    synmTemplate.Lines.SaveToFile(dlgSaveTemplate.FileName);
 end;
 
 procedure TtgdReportEditorForm.actValidateExecute(Sender: TObject);
 var
+  I: Integer;
+  vLines: TStrings;
   vScript: TStringList;
   vScriptEngine: ItgdScriptEngine;
 begin
+  vLines := TStringList.Create;
   vScript := TStringList.Create();
   try
+    for I := 0 to synmTemplate.Lines.Count-1 do
+      vLines.Add(synmTemplate.Lines[I]);
     vScriptEngine := CreateScriptEngine();
     vScriptEngine.Init(FReport);
-    vScriptEngine.ConvertTemplateToScript(vScript);
+    vScriptEngine.ConvertTemplateToScript(vScript, vLines);
     vScriptEngine.ValidateScript(vScript);
     ShowMessage(STemplateIsValid);
   finally
     vScript.Free;
+    vLines.Free;
   end;
 end;
 
@@ -128,6 +175,22 @@ begin
   vNode.ImageIndex := GetImageIndexOfScriptElement(AScriptElement);
   vNode.SelectedIndex := vNode.ImageIndex;
   vNode.Data := Pointer(Integer(AScriptElement.SourceObject));
+end;
+
+procedure TtgdReportEditorForm.AddImagesToProposalList(AProposalList:
+    TUnicodeStrings; AItems: TStrings);
+var
+  I: Integer;
+  vImageIndex: Integer;
+  vString: string;
+begin
+  for I := 0 to AProposalList.Count-1 do
+  begin
+    vString := AProposalList[I];
+    vImageIndex := GetScriptElementClassImage(TClass(AItems.Objects[I]));
+    vString := Format('\IMAGE{%d}', [vImageIndex]) + vString;
+    AProposalList[I] := vString;
+  end;
 end;
 
 function TtgdReportEditorForm.GetImageIndexOfScriptElement(AScriptElement:
@@ -159,6 +222,33 @@ begin
   if ANode.Parent <> nil then
     Result := GetNodeChainText(ANode.Parent);
   Result := Result + IfThen(Result = '', '', '.') + ANode.Text
+end;
+
+function TtgdReportEditorForm.GetRandomName: string;
+begin
+  Result := CreateClassID;
+  Result := MidStr(Result, 2, Length(Result)-2);
+  Result := StringReplace(Result, '-', '', [rfReplaceAll]);
+end;
+
+function TtgdReportEditorForm.GetScriptElementClassImage(AClass: TClass):
+    Integer;
+begin
+  Result := 0;
+  if AClass = TtgdScriptVariable then
+    Result := 6
+  else if AClass = TtgdScriptClass then
+    Result := 1
+  else if AClass = TtgdScriptFunction then
+    Result := 4
+  else if AClass = TtgdScriptProperty then
+    Result := 0
+  else if AClass = TtgdScriptEvent then
+    Result := 3
+  else if AClass = TtgdScriptMethod then
+    Result := 2
+  else if AClass = TtgdScriptConstant then
+    Result := 5
 end;
 
 function TtgdReportEditorForm.GetTextLeftOfCaret: string;
@@ -200,6 +290,7 @@ begin
   synmTemplate.Lines.Assign(AReport.TemplateLines);
   LoadTopTreeNodes();
   LoadAutoCompleteList();
+  UpdateStatusPanel();
 end;
 
 procedure TtgdReportEditorForm.InsertSelectedTreeNodeToTemplate;
@@ -296,6 +387,7 @@ begin
 
       SynCompletionProposal1.ItemList.Clear;
       SynCompletionProposal1.ItemList.AddStrings(vItems);
+      AddImagesToProposalList(SynCompletionProposal1.ItemList, vItems);
 
       SynCompletionProposal1.InsertList.Clear;
       SynCompletionProposal1.InsertList.AddStrings(vInserts);
@@ -307,11 +399,17 @@ begin
   end;
 end;
 
+procedure TtgdReportEditorForm.synmTemplateChange(Sender: TObject);
+begin
+  UpdateStatusPanel;
+end;
+
 procedure TtgdReportEditorForm.synmTemplateKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if (Key = VK_RETURN) and (ssCtrl in Shift) then
     InsertSelectedTreeNodeToTemplate();
+  UpdateStatusPanel;
 end;
 
 procedure TtgdReportEditorForm.tvContextEditing(Sender: TObject; Node: TTreeNode;
@@ -343,6 +441,12 @@ begin
       InsertSelectedTreeNodeToTemplate();
     end;
   end;
+end;
+
+procedure TtgdReportEditorForm.UpdateStatusPanel;
+begin
+  statTempl.SimpleText := Format('Pos: %d, %d',
+    [synmTemplate.CaretY, synmTemplate.CaretX]);
 end;
 
 end.

@@ -1,6 +1,6 @@
 object tgdReportEditorForm: TtgdReportEditorForm
-  Left = 459
-  Top = 141
+  Left = 556
+  Top = 138
   Width = 957
   Height = 633
   Caption = 'Report Editor'
@@ -12,6 +12,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  ShowHint = True
   PixelsPerInch = 96
   TextHeight = 13
   object pnlClient: TPanel
@@ -47,31 +48,49 @@ object tgdReportEditorForm: TtgdReportEditorForm
       OnKeyUp = synmTemplateKeyUp
       OnMouseUp = tvContextMouseUp
     end
-    object synmTemplate: TSynMemo
+    object pnlTemplate: TPanel
       Left = 258
       Top = 7
       Width = 676
       Height = 539
       Align = alClient
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Courier New'
-      Font.Style = []
+      BevelOuter = bvNone
       TabOrder = 1
-      OnKeyUp = synmTemplateKeyUp
-      Gutter.Font.Charset = DEFAULT_CHARSET
-      Gutter.Font.Color = clWindowText
-      Gutter.Font.Height = -11
-      Gutter.Font.Name = 'Courier New'
-      Gutter.Font.Style = []
-      Highlighter = symMain
-      Options = [eoAutoIndent, eoDragDropEditing, eoEnhanceEndKey, eoGroupUndo, eoScrollPastEol, eoShowScrollHint, eoTabsToSpaces]
-      RightEdge = 0
-      SearchEngine = synsSearch
-      TabWidth = 2
-      WantTabs = True
-      FontSmoothing = fsmClearType
+      object synmTemplate: TSynMemo
+        Left = 0
+        Top = 0
+        Width = 676
+        Height = 520
+        Align = alClient
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+        TabOrder = 0
+        OnKeyUp = synmTemplateKeyUp
+        Gutter.Font.Charset = DEFAULT_CHARSET
+        Gutter.Font.Color = clWindowText
+        Gutter.Font.Height = -11
+        Gutter.Font.Name = 'Courier New'
+        Gutter.Font.Style = []
+        Highlighter = symMain
+        Options = [eoAutoIndent, eoDragDropEditing, eoEnhanceEndKey, eoGroupUndo, eoScrollPastEol, eoShowScrollHint, eoTabsToSpaces]
+        RightEdge = 0
+        SearchEngine = synsSearch
+        TabWidth = 2
+        WantTabs = True
+        OnChange = synmTemplateChange
+        FontSmoothing = fsmClearType
+      end
+      object statTempl: TStatusBar
+        Left = 0
+        Top = 520
+        Width = 676
+        Height = 19
+        Panels = <>
+        SimplePanel = True
+      end
     end
   end
   object pnlBttons: TPanel
@@ -87,9 +106,10 @@ object tgdReportEditorForm: TtgdReportEditorForm
       Top = 8
       Width = 105
       Height = 25
+      Hint = 'Save template to file (Ctrl+S)'
       Action = actSave
       Caption = 'Save to file'
-      TabOrder = 0
+      TabOrder = 2
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000000000000000000000000000000000000000000000000
@@ -131,9 +151,10 @@ object tgdReportEditorForm: TtgdReportEditorForm
       Top = 8
       Width = 105
       Height = 25
+      Hint = 'Load template from file (Ctrl+O)'
       Action = actLoad
       Caption = 'Load from file'
-      TabOrder = 1
+      TabOrder = 3
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000000000000000000000000000000000000000000000000
@@ -175,28 +196,31 @@ object tgdReportEditorForm: TtgdReportEditorForm
       Top = 8
       Width = 105
       Height = 25
+      Hint = 'Save changes (Ctrl+Enter)'
       Action = actOk
       Caption = 'Ok'
       Default = True
       ModalResult = 1
-      TabOrder = 2
+      TabOrder = 0
     end
     object btnCancel: TBitBtn
       Left = 120
       Top = 8
       Width = 105
       Height = 25
+      Hint = 'Discard changes'
       Action = actCancel
       Cancel = True
       Caption = 'Cancel'
       ModalResult = 2
-      TabOrder = 3
+      TabOrder = 1
     end
     object btnValidate: TBitBtn
       Left = 488
       Top = 8
-      Width = 161
+      Width = 145
       Height = 25
+      Hint = 'Validate template (Ctrl+F9)'
       Action = actValidate
       Caption = 'Validate template'
       TabOrder = 4
@@ -235,6 +259,51 @@ object tgdReportEditorForm: TtgdReportEditorForm
         EBFFC5F4EBFFC5F4EBFFC5F4EBFFC5F4EBFF44B792FF00000005348B70BF47BC
         97FF47BC97FF47BC97FF47BC97FF47BC97FF47BC97FF47BC97FF47BB97FF47BB
         97FF47BB96FF46BB96FF47BA95FF45BA94FF338A6EC000000003}
+    end
+    object btnExecuteReport: TBitBtn
+      Left = 640
+      Top = 8
+      Width = 137
+      Height = 25
+      Hint = 'Execute report (F9)'
+      Action = actExecuteReport
+      Caption = 'Execute Report'
+      TabOrder = 5
+      Glyph.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000000000000000000000000003827174D0000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000B8824DFF3827174D00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000B8824DFFB8824DFF3827174D000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000B8824DFFB8824DFFB8824DFF3827174D0000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000B8824DFFB8824DFFB8824DFFB8824DFF3827
+        174D000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000B8824DFFB8824DFFB8824DFFB8824DFFB882
+        4DFF3827174D0000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000B8824DFFB8824DFFB8824DFFB8824DFFB882
+        4DFFB8824DFF3827174D00000000000000000000000000000000000000000000
+        0000000000000000000000000000B8824DFFB8824DFFB8824DFFB8824DFFB882
+        4DFFB8824DFFB8824DFF3827174D000000000000000000000000000000000000
+        0000000000000000000000000000B8824DFFB8824DFFB8824DFFB8824DFFB882
+        4DFFB8824DFF3827174D00000000000000000000000000000000000000000000
+        0000000000000000000000000000B8824DFFB8824DFFB8824DFFB8824DFFB882
+        4DFF3827174D0000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000B8824DFFB8824DFFB8824DFFB8824DFF3827
+        174D000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000B8824DFFB8824DFFB8824DFF3827174D0000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000B8824DFFB8824DFF3827174D000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000B8824DFF3827174D00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000000000000000000000000003827174D0000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000}
     end
   end
   object synpPascalSyntax: TSynPasSyn
@@ -657,14 +726,16 @@ object tgdReportEditorForm: TtgdReportEditorForm
       000000000000}
   end
   object aclMain: TActionList
-    Left = 584
-    Top = 136
+    Left = 168
+    Top = 40
     object actOk: TAction
       Caption = 'Ok'
+      ShortCut = 16397
       OnExecute = actOkExecute
     end
     object actCancel: TAction
       Caption = 'Cancel'
+      OnExecute = actCancelExecute
     end
     object actLoad: TAction
       Caption = 'Load from file'
@@ -679,7 +750,13 @@ object tgdReportEditorForm: TtgdReportEditorForm
     end
     object actValidate: TAction
       Caption = 'Validate template'
+      ShortCut = 16504
       OnExecute = actValidateExecute
+    end
+    object actExecuteReport: TAction
+      Caption = 'Execute Report'
+      ShortCut = 120
+      OnExecute = actExecuteReportExecute
     end
   end
   object symMain: TSynMultiSyn
@@ -715,27 +792,29 @@ object tgdReportEditorForm: TtgdReportEditorForm
     Left = 392
     Top = 216
   end
-  object dlgLoad: TFileOpenDialog
+  object dlgLoadTemplate: TFileOpenDialog
     FavoriteLinks = <>
     FileTypes = <>
     Options = []
     Left = 464
     Top = 304
   end
-  object dlgSave: TFileSaveDialog
+  object dlgSaveTemplate: TFileSaveDialog
     FavoriteLinks = <>
     FileTypes = <>
     Options = []
     Left = 536
-    Top = 312
+    Top = 304
   end
   object SynCompletionProposal1: TSynCompletionProposal
+    Options = [scoLimitToMatchedText, scoUseInsertList, scoUsePrettyText, scoUseBuiltInTimer, scoEndCharCompletion, scoCompleteWithTab, scoCompleteWithEnter]
     NbLinesInWindow = 16
+    Width = 550
     EndOfTokenChr = '()[]. '
     TriggerChars = '.'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
+    Font.Height = -13
     Font.Name = 'MS Sans Serif'
     Font.Style = []
     TitleFont.Charset = DEFAULT_CHARSET
@@ -743,13 +822,28 @@ object tgdReportEditorForm: TtgdReportEditorForm
     TitleFont.Height = -11
     TitleFont.Name = 'MS Sans Serif'
     TitleFont.Style = [fsBold]
-    Columns = <>
+    Columns = <
+      item
+        ColumnWidth = 50
+      end
+      item
+        ColumnWidth = 100
+      end>
+    Images = ilTree
     OnExecute = SynCompletionProposal1Execute
     ShortCut = 16416
     Editor = synmTemplate
+    TimerInterval = 500
     Left = 448
     Top = 24
     EndOfTokenChrW = '()[]. '
     TriggerCharsW = '.'
+  end
+  object dlgSaveReport: TFileSaveDialog
+    FavoriteLinks = <>
+    FileTypes = <>
+    Options = []
+    Left = 624
+    Top = 304
   end
 end
