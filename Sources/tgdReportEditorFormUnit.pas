@@ -8,7 +8,9 @@ uses
   ImgList, ComCtrls, ExtCtrls, SynEditMiscClasses, SynEditSearch,
   SynCompletionProposal, ActnList, SynHighlighterMulti, Buttons,
   tgdScriptEngineUnit, SynHighlighterXML, SynHighlighterJSON, tgdReportUnit,
-  tdgScriptElementsUnit, DialogsX, frxUnicodeUtils, SynUnicode;
+  tdgScriptElementsUnit, DialogsX, frxUnicodeUtils, SynUnicode,
+  SynHighlighterGeneral, SynHighlighterIni, SynHighlighterSQL,
+  SynHighlighterHtml;
 
 type
   TtgdReportEditorForm = class(TForm)
@@ -42,6 +44,10 @@ type
     dlgSaveReport: TFileSaveDialog;
     statTempl: TStatusBar;
     pnlTemplate: TPanel;
+    SynGeneralSyn1: TSynGeneralSyn;
+    SynSQLSyn1: TSynSQLSyn;
+    SynIniSyn1: TSynIniSyn;
+    SynHTMLSyn1: TSynHTMLSyn;
     procedure actCancelExecute(Sender: TObject);
     procedure actExecuteReportExecute(Sender: TObject);
     procedure actLoadExecute(Sender: TObject);
@@ -51,6 +57,9 @@ type
     procedure SynCompletionProposal1Execute(Kind: SynCompletionType; Sender:
       TObject; var CurrentInput: WideString; var x, y: Integer; var CanExecute: Boolean);
     procedure synmTemplateChange(Sender: TObject);
+    procedure synmTemplateDragDrop(Sender, Source: TObject; X, Y: Integer);
+    procedure synmTemplateDragOver(Sender, Source: TObject; X, Y: Integer; State:
+        TDragState; var Accept: Boolean);
     procedure synmTemplateKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure tvContextEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
     procedure tvContextExpanding(Sender: TObject; Node: TTreeNode; var
@@ -63,12 +72,16 @@ type
     procedure AddChildNode(AParentNode: TTreeNode; AScriptElement: TtgdScriptElement);
     procedure AddImagesToProposalList(AProposalList: TUnicodeStrings; AItems:
         TStrings);
+    function FileNameMatchesHighliterMask(vFileName: string; vHighliter:
+        TSynCustomHighlighter): Boolean;
+    function GetHighlighterForFileName(AFileName: string): TSynCustomHighlighter;
     function GetImageIndexOfScriptElement(AScriptElement: TtgdScriptElement): Integer;
     function GetNodeChainText(ANode: TTreeNode): string;
     function GetRandomName: string;
     function GetScriptElementClassImage(AClass: TClass): Integer;
     function GetTextLeftOfCaret: string;
     procedure Init(AReport: TtgdReport);
+    procedure InsertIntoTemplateCaretPos(AText: string);
     procedure InsertSelectedTreeNodeToTemplate;
     procedure LoadAutoCompleteList(ANestLevel: Integer = 4);
     procedure LoadTopTreeNodes;
@@ -81,13 +94,34 @@ type
 implementation
 
 uses
-  StrUtils, ComObj, shellapi;
+  StrUtils, ComObj, shellapi, Mask, Masks;
 
 resourcestring
   STemplateIsValid = 'Template is valid';
   SAReportIsNil = 'AReport is nil';
 
 {$R *.dfm}
+
+type
+  TStringArray = array of string;
+
+function SplitString(AString: String; Delimiter: Char): TStringArray;
+var
+  I: Integer;
+  vList: TStringList;
+begin
+  vList := TStringList.Create;
+  try
+    vList.Delimiter := Delimiter;
+    vList.DelimitedText := AString;
+    SetLength(Result, vList.Count);
+    for I := 0 to vList.Count-1 do
+      Result[I] := vList[I];
+  finally
+    vList.Free;
+  end;
+end;
+
 
 procedure TtgdReportEditorForm.actCancelExecute(Sender: TObject);
 begin
@@ -121,16 +155,22 @@ begin
 end;
 
 procedure TtgdReportEditorForm.actLoadExecute(Sender: TObject);
+var
+  vLines: TStrings;
 begin
   if dlgLoadTemplate.Execute then
   begin
-    synmTemplate.Lines.LoadFromFile(dlgLoadTemplate.FileName);
-    if AnsiSameText('.xml', ExtractFileExt(dlgLoadTemplate.FileName)) then
-      symMain.DefaultHighlighter := syxXmlSyntax
-    else if AnsiSameText('.json', ExtractFileExt(dlgLoadTemplate.FileName)) then
-      symMain.DefaultHighlighter := synjJsonSyntax
-    else
-      symMain.DefaultHighlighter := nil;
+    vLines := TStringList.Create;
+    try
+      vLines.LoadFromFile(dlgLoadTemplate.FileName);
+      synmTemplate.Lines.Clear;
+      synmTemplate.Lines.AddStrings(vLines);
+    finally
+      vLines.Free;
+    end;
+
+    symMain.DefaultHighlighter :=
+      GetHighlighterForFileName(dlgLoadTemplate.FileName);
   end;
 end;
 
@@ -140,9 +180,21 @@ begin
 end;
 
 procedure TtgdReportEditorForm.actSaveExecute(Sender: TObject);
+var
+  vLines: TStrings;
+  vText: string;
 begin
   if dlgSaveTemplate.Execute then
-    synmTemplate.Lines.SaveToFile(dlgSaveTemplate.FileName);
+  begin
+    vLines := TStringList.Create;
+    try
+      vText := synmTemplate.Lines.Text;
+      vLines.Text := vText;
+      vLines.SaveToFile(dlgSaveTemplate.FileName);
+    finally
+      vLines.Free;
+    end;
+  end;
 end;
 
 procedure TtgdReportEditorForm.actValidateExecute(Sender: TObject);
@@ -194,6 +246,60 @@ begin
     vString := Format('\IMAGE{%d}', [vImageIndex]) + vString;
     AProposalList[I] := vString;
   end;
+end;
+
+function TtgdReportEditorForm.FileNameMatchesHighliterMask(vFileName: string;
+    vHighliter: TSynCustomHighlighter): Boolean;
+var
+  I: Integer;
+  J: Integer;
+  vFilters: TStringArray;
+  vMasks: TStringArray;
+begin
+  Result := False;
+  vFilters := SplitString(vHighliter.DefaultFilter, '|');
+  for I := Low(vFilters) to High(vFilters) do
+  begin
+    if (I mod 2) = 1 then
+    begin
+      vMasks := SplitString(vFilters[I], ';');
+      for J := Low(vMasks) to High(vMasks) do
+      begin
+        if MatchesMask(vFileName, vMasks[J]) then
+        begin
+          Result := True;
+          Break;
+        end;
+      end;
+    end;
+    if Result then
+      Break;
+  end;
+end;
+
+function TtgdReportEditorForm.GetHighlighterForFileName(AFileName: string):
+    TSynCustomHighlighter;
+var
+  I: Integer;
+  vFileName: string;
+  vHighliter: TSynCustomHighlighter;
+begin
+  Result := nil;
+  vFileName := ExtractFileName(AFileName);
+
+  for I := 0 to ComponentCount-1 do
+    if Components[I] is TSynCustomHighlighter then
+    begin
+      vHighliter := Components[I] as TSynCustomHighlighter;
+      if FileNameMatchesHighliterMask(vFileName, vHighliter) then
+      begin
+        Result := vHighliter;
+        Break;
+      end;
+    end;
+
+  if Result = nil then
+    Result := SynGeneralSyn1;
 end;
 
 function TtgdReportEditorForm.GetImageIndexOfScriptElement(AScriptElement:
@@ -294,6 +400,21 @@ begin
   LoadTopTreeNodes();
   LoadAutoCompleteList();
   UpdateStatusPanel();
+end;
+
+procedure TtgdReportEditorForm.InsertIntoTemplateCaretPos(AText: string);
+var
+  vText: string;
+begin
+  if synmTemplate.Lines.Count = 0 then
+    synmTemplate.Lines.Add(AText)
+  else
+  begin
+    vText := synmTemplate.Lines[synmTemplate.CaretY - 1];
+    Insert(AText, vText, synmTemplate.CaretX);
+    synmTemplate.Lines[synmTemplate.CaretY - 1] := vText;
+    synmTemplate.CaretX := synmTemplate.CaretX + 3;
+  end;
 end;
 
 procedure TtgdReportEditorForm.InsertSelectedTreeNodeToTemplate;
@@ -407,12 +528,32 @@ begin
   UpdateStatusPanel;
 end;
 
+procedure TtgdReportEditorForm.synmTemplateDragDrop(Sender, Source: TObject; X,
+    Y: Integer);
+begin
+  InsertSelectedTreeNodeToTemplate();
+end;
+
+procedure TtgdReportEditorForm.synmTemplateDragOver(Sender, Source: TObject; X,
+    Y: Integer; State: TDragState; var Accept: Boolean);
+begin
+  Accept := Source = tvContext;
+end;
+
 procedure TtgdReportEditorForm.synmTemplateKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if (Key = VK_RETURN) and (ssCtrl in Shift) then
     InsertSelectedTreeNodeToTemplate();
   UpdateStatusPanel;
+  if (Key = 219) then
+  begin
+    if (ssCtrl in Shift) and (ssShift in Shift) then
+      InsertIntoTemplateCaretPos(FReport.CodeBeginMarker + '  ' + FReport.CodeEndMarker)
+    else
+    if (ssCtrl in Shift) and (ssAlt in Shift) then
+      InsertIntoTemplateCaretPos(FReport.MacroBeginMarker + '  ' + FReport.MacroEndMarker)
+  end;
 end;
 
 procedure TtgdReportEditorForm.tvContextEditing(Sender: TObject; Node: TTreeNode;

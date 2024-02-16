@@ -37,6 +37,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
       Width = 246
       Height = 539
       Align = alLeft
+      DragMode = dmAutomatic
       HideSelection = False
       Images = ilTree
       Indent = 19
@@ -68,6 +69,8 @@ object tgdReportEditorForm: TtgdReportEditorForm
         Font.Name = 'Courier New'
         Font.Style = []
         TabOrder = 0
+        OnDragDrop = synmTemplateDragDrop
+        OnDragOver = synmTemplateDragOver
         OnKeyUp = synmTemplateKeyUp
         Gutter.Font.Charset = DEFAULT_CHARSET
         Gutter.Font.Color = clWindowText
@@ -773,7 +776,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
         StartExprW = '{{'
         EndExprW = '}}'
       end>
-    DefaultHighlighter = syxXmlSyntax
+    DefaultHighlighter = SynGeneralSyn1
     Left = 304
     Top = 112
   end
@@ -790,21 +793,21 @@ object tgdReportEditorForm: TtgdReportEditorForm
     Options.AutoDetectLineLimit = 0
     Options.Visible = False
     Left = 392
-    Top = 216
+    Top = 208
   end
   object dlgLoadTemplate: TFileOpenDialog
     FavoriteLinks = <>
     FileTypes = <>
     Options = []
-    Left = 464
-    Top = 304
+    Left = 584
+    Top = 40
   end
   object dlgSaveTemplate: TFileSaveDialog
     FavoriteLinks = <>
     FileTypes = <>
     Options = []
-    Left = 536
-    Top = 304
+    Left = 584
+    Top = 88
   end
   object SynCompletionProposal1: TSynCompletionProposal
     Options = [scoLimitToMatchedText, scoUseInsertList, scoUsePrettyText, scoUseBuiltInTimer, scoEndCharCompletion, scoCompleteWithTab, scoCompleteWithEnter]
@@ -843,7 +846,37 @@ object tgdReportEditorForm: TtgdReportEditorForm
     FavoriteLinks = <>
     FileTypes = <>
     Options = []
-    Left = 624
-    Top = 304
+    Left = 584
+    Top = 136
+  end
+  object SynGeneralSyn1: TSynGeneralSyn
+    Options.AutoDetectEnabled = False
+    Options.AutoDetectLineLimit = 0
+    Options.Visible = False
+    DetectPreprocessor = False
+    StringMultiLine = False
+    Left = 394
+    Top = 255
+  end
+  object SynSQLSyn1: TSynSQLSyn
+    Options.AutoDetectEnabled = False
+    Options.AutoDetectLineLimit = 0
+    Options.Visible = False
+    Left = 394
+    Top = 303
+  end
+  object SynIniSyn1: TSynIniSyn
+    Options.AutoDetectEnabled = False
+    Options.AutoDetectLineLimit = 0
+    Options.Visible = False
+    Left = 394
+    Top = 351
+  end
+  object SynHTMLSyn1: TSynHTMLSyn
+    Options.AutoDetectEnabled = False
+    Options.AutoDetectLineLimit = 0
+    Options.Visible = False
+    Left = 394
+    Top = 399
   end
 end
