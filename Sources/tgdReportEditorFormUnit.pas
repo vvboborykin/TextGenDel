@@ -10,7 +10,7 @@ uses
   tgdScriptEngineUnit, SynHighlighterXML, SynHighlighterJSON, tgdReportUnit,
   tdgScriptElementsUnit, DialogsX, frxUnicodeUtils, SynUnicode,
   SynHighlighterGeneral, SynHighlighterIni, SynHighlighterSQL,
-  SynHighlighterHtml;
+  SynHighlighterHtml, Menus, StdActns;
 
 type
   TtgdReportEditorForm = class(TForm)
@@ -44,18 +44,54 @@ type
     dlgSaveReport: TFileSaveDialog;
     statTempl: TStatusBar;
     pnlTemplate: TPanel;
-    SynGeneralSyn1: TSynGeneralSyn;
+    syngText: TSynGeneralSyn;
     SynSQLSyn1: TSynSQLSyn;
     SynIniSyn1: TSynIniSyn;
     SynHTMLSyn1: TSynHTMLSyn;
+    ActionListMain: TActionList;
+    ActionFileOpen: TAction;
+    ActionSearch: TAction;
+    ActionSearchNext: TAction;
+    ActionSearchPrev: TAction;
+    ActionSearchReplace: TAction;
+    ImageListMain: TImageList;
+    OpenDialogFile: TOpenDialog;
+    syngMacro: TSynGeneralSyn;
+    pm1: TPopupMenu;
+    Find1: TMenuItem;
+    Findnext1: TMenuItem;
+    Findprevious1: TMenuItem;
+    Replace1: TMenuItem;
+    EditCut1: TEditCut;
+    EditCopy1: TEditCopy;
+    EditPaste1: TEditPaste;
+    EditSelectAll1: TEditSelectAll;
+    EditUndo1: TEditUndo;
+    EditDelete1: TEditDelete;
+    N1: TMenuItem;
+    Copy1: TMenuItem;
+    Cut1: TMenuItem;
+    Delete1: TMenuItem;
+    Paste1: TMenuItem;
+    SelectAll1: TMenuItem;
+    Undo1: TMenuItem;
     procedure actCancelExecute(Sender: TObject);
     procedure actExecuteReportExecute(Sender: TObject);
+    procedure ActionFileOpenExecute(Sender: TObject);
+    procedure ActionSearchExecute(Sender: TObject);
+    procedure ActionSearchNextExecute(Sender: TObject);
+    procedure ActionSearchPrevExecute(Sender: TObject);
+    procedure ActionSearchReplaceExecute(Sender: TObject);
+    procedure ActionSearchReplaceUpdate(Sender: TObject);
     procedure actLoadExecute(Sender: TObject);
     procedure actOkExecute(Sender: TObject);
     procedure actSaveExecute(Sender: TObject);
+    procedure actSearchUpdate(Sender: TObject);
     procedure actValidateExecute(Sender: TObject);
     procedure SynCompletionProposal1Execute(Kind: SynCompletionType; Sender:
       TObject; var CurrentInput: WideString; var x, y: Integer; var CanExecute: Boolean);
+    procedure SynEditorReplaceText(Sender: TObject; const ASearch, AReplace:
+        UnicodeString; Line, Column: Integer; var Action: TSynReplaceAction);
     procedure synmTemplateChange(Sender: TObject);
     procedure synmTemplateDragDrop(Sender, Source: TObject; X, Y: Integer);
     procedure synmTemplateDragOver(Sender, Source: TObject; X, Y: Integer; State:
@@ -69,9 +105,11 @@ type
   private
     FReport: TtgdReport;
     FEngine: ItgdScriptEngine;
+    FSearchFromCaret: Boolean;
     procedure AddChildNode(AParentNode: TTreeNode; AScriptElement: TtgdScriptElement);
     procedure AddImagesToProposalList(AProposalList: TUnicodeStrings; AItems:
         TStrings);
+    procedure DoSearchReplaceText(AReplace: boolean; ABackwards: boolean);
     function FileNameMatchesHighliterMask(vFileName: string; vHighliter:
         TSynCustomHighlighter): Boolean;
     function GetHighlighterForFileName(AFileName: string): TSynCustomHighlighter;
@@ -86,6 +124,7 @@ type
     procedure LoadAutoCompleteList(ANestLevel: Integer = 4);
     procedure LoadTopTreeNodes;
     procedure LoadTreeNodes(ANode: TTreeNode; AScriptElementClass: array of TClass);
+    procedure ShowSearchReplaceDialog(AReplace: boolean);
     procedure UpdateStatusPanel;
   public
     class function ShowEditor(AReport: TtgdReport): Boolean;
@@ -94,13 +133,36 @@ type
 implementation
 
 uses
-  StrUtils, ComObj, shellapi, Mask, Masks;
+  StrUtils, ComObj, shellapi, Mask, Masks,
+  dlgSearchText, dlgReplaceText, dlgConfirmReplace, plgSearchHighlighter,
+  SynEditTypes, SynEditMiscProcs;
+
+  // options - to be saved to the registry
+var
+  gbSearchBackwards: Boolean;
+  gbSearchCaseSensitive: Boolean;
+  gbSearchFromCaret: Boolean;
+  gbSearchSelectionOnly: Boolean;
+  gbSearchTextAtCaret: Boolean;
+  gbSearchWholeWords: Boolean;
+  gbSearchRegex: Boolean;
+
+  gsSearchText: string;
+  gsSearchTextHistory: string;
+  gsReplaceText: string;
+  gsReplaceTextHistory: string;
+
+resourcestring
+  STextNotFound = 'Text not found';
+
 
 resourcestring
   STemplateIsValid = 'Template is valid';
   SAReportIsNil = 'AReport is nil';
 
 {$R *.dfm}
+
+
 
 type
   TStringArray = array of string;
@@ -154,6 +216,42 @@ begin
   end;
 end;
 
+{ event handler }
+
+procedure TtgdReportEditorForm.ActionFileOpenExecute(Sender: TObject);
+begin
+  if OpenDialogFile.Execute then begin
+    synmTemplate.Lines.LoadFromFile(OpenDialogFile.FileName);
+    synmTemplate.ReadOnly := ofReadOnly in OpenDialogFile.Options;
+  end;
+end;
+
+procedure TtgdReportEditorForm.ActionSearchExecute(Sender: TObject);
+begin
+  ShowSearchReplaceDialog(FALSE);
+end;
+
+procedure TtgdReportEditorForm.ActionSearchNextExecute(Sender: TObject);
+begin
+  DoSearchReplaceText(FALSE, FALSE);
+end;
+
+procedure TtgdReportEditorForm.ActionSearchPrevExecute(Sender: TObject);
+begin
+  DoSearchReplaceText(FALSE, TRUE);
+end;
+
+procedure TtgdReportEditorForm.ActionSearchReplaceExecute(Sender: TObject);
+begin
+  ShowSearchReplaceDialog(TRUE);
+end;
+
+procedure TtgdReportEditorForm.ActionSearchReplaceUpdate(Sender: TObject);
+begin
+  (Sender as TAction).Enabled := (gsSearchText <> '')
+    and not synmTemplate.ReadOnly;
+end;
+
 procedure TtgdReportEditorForm.actLoadExecute(Sender: TObject);
 var
   vLines: TStrings;
@@ -195,6 +293,11 @@ begin
       vLines.Free;
     end;
   end;
+end;
+
+procedure TtgdReportEditorForm.actSearchUpdate(Sender: TObject);
+begin
+  (Sender as TAction).Enabled := gsSearchText <> '';
 end;
 
 procedure TtgdReportEditorForm.actValidateExecute(Sender: TObject);
@@ -248,6 +351,40 @@ begin
   end;
 end;
 
+procedure TtgdReportEditorForm.DoSearchReplaceText(AReplace: Boolean;
+    ABackwards: Boolean);
+var
+  Options: TSynSearchOptions;
+begin
+  if AReplace then
+    Options := [ssoPrompt, ssoReplace, ssoReplaceAll]
+  else
+    Options := [];
+  if ABackwards then
+    Include(Options, ssoBackwards);
+  if gbSearchCaseSensitive then
+    Include(Options, ssoMatchCase);
+  if not FSearchFromCaret then
+    Include(Options, ssoEntireScope);
+  if gbSearchSelectionOnly then
+    Include(Options, ssoSelectedOnly);
+  if gbSearchWholeWords then
+    Include(Options, ssoWholeWord);
+  synmTemplate.SearchEngine := synsSearch;
+  if synmTemplate.SearchReplace(gsSearchText, gsReplaceText, Options) = 0 then
+  begin
+    MessageBeep(MB_ICONASTERISK);
+    if ssoBackwards in Options then
+      synmTemplate.BlockEnd := synmTemplate.BlockBegin
+    else
+      synmTemplate.BlockBegin := synmTemplate.BlockEnd;
+    synmTemplate.CaretXY := synmTemplate.BlockBegin;
+  end;
+
+  if ConfirmReplaceDialog <> nil then
+    ConfirmReplaceDialog.Free;
+end;
+
 function TtgdReportEditorForm.FileNameMatchesHighliterMask(vFileName: string;
     vHighliter: TSynCustomHighlighter): Boolean;
 var
@@ -299,7 +436,7 @@ begin
     end;
 
   if Result = nil then
-    Result := SynGeneralSyn1;
+    Result := syngText;
 end;
 
 function TtgdReportEditorForm.GetImageIndexOfScriptElement(AScriptElement:
@@ -494,6 +631,60 @@ begin
   end;
 end;
 
+procedure TtgdReportEditorForm.ShowSearchReplaceDialog(AReplace: Boolean);
+var
+  dlg: TTextSearchDialog;
+begin
+  if AReplace then
+    dlg := TTextReplaceDialog.Create(Self)
+  else
+    dlg := TTextSearchDialog.Create(Self);
+  with dlg do try
+    // assign search options
+    SearchBackwards := gbSearchBackwards;
+    SearchCaseSensitive := gbSearchCaseSensitive;
+    SearchFromCursor := gbSearchFromCaret;
+    SearchInSelectionOnly := gbSearchSelectionOnly;
+    // start with last search text
+    SearchText := gsSearchText;
+    if gbSearchTextAtCaret then begin
+      // if something is selected search for that text
+      if synmTemplate.SelAvail and (synmTemplate.BlockBegin.Line = synmTemplate.BlockEnd.Line)
+      then
+        SearchText := synmTemplate.SelText
+      else
+        SearchText := synmTemplate.GetWordAtRowCol(synmTemplate.CaretXY);
+    end;
+    SearchTextHistory := gsSearchTextHistory;
+    if AReplace then with dlg as TTextReplaceDialog do begin
+      ReplaceText := gsReplaceText;
+      ReplaceTextHistory := gsReplaceTextHistory;
+    end;
+    SearchWholeWords := gbSearchWholeWords;
+    if ShowModal = mrOK then begin
+      gbSearchBackwards := SearchBackwards;
+      gbSearchCaseSensitive := SearchCaseSensitive;
+      gbSearchFromCaret := SearchFromCursor;
+      gbSearchSelectionOnly := SearchInSelectionOnly;
+      gbSearchWholeWords := SearchWholeWords;
+      gbSearchRegex := SearchRegularExpression;
+      gsSearchText := SearchText;
+      gsSearchTextHistory := SearchTextHistory;
+      if AReplace then with dlg as TTextReplaceDialog do begin
+        gsReplaceText := ReplaceText;
+        gsReplaceTextHistory := ReplaceTextHistory;
+      end;
+      FSearchFromCaret := gbSearchFromCaret;
+      if gsSearchText <> '' then begin
+        DoSearchReplaceText(AReplace, gbSearchBackwards);
+        FSearchFromCaret := TRUE;
+      end;
+    end;
+  finally
+    dlg.Free;
+  end;
+end;
+
 procedure TtgdReportEditorForm.SynCompletionProposal1Execute(Kind:
   SynCompletionType; Sender: TObject; var CurrentInput: WideString; var x, y:
   Integer; var CanExecute: Boolean);
@@ -520,6 +711,37 @@ begin
     end;
   finally
     vInserts.Free;
+  end;
+end;
+
+procedure TtgdReportEditorForm.SynEditorReplaceText(Sender: TObject; const
+    ASearch, AReplace: UnicodeString; Line, Column: Integer; var Action:
+    TSynReplaceAction);
+var
+  APos: TPoint;
+  EditRect: TRect;
+begin
+  if ASearch = AReplace then
+    Action := raSkip
+  else begin
+    APos := synmTemplate.ClientToScreen(
+      synmTemplate.RowColumnToPixels(
+      synmTemplate.BufferToDisplayPos(
+        BufferCoord(Column, Line) ) ) );
+    EditRect := ClientRect;
+    EditRect.TopLeft := ClientToScreen(EditRect.TopLeft);
+    EditRect.BottomRight := ClientToScreen(EditRect.BottomRight);
+
+    if ConfirmReplaceDialog = nil then
+      ConfirmReplaceDialog := TConfirmReplaceDialog.Create(Application);
+    ConfirmReplaceDialog.PrepareShow(EditRect, APos.X, APos.Y,
+      APos.Y + synmTemplate.LineHeight, ASearch);
+    case ConfirmReplaceDialog.ShowModal of
+      mrYes: Action := raReplace;
+      mrYesToAll: Action := raReplaceAll;
+      mrNo: Action := raSkip;
+      else Action := raCancel;
+    end;
   end;
 end;
 
@@ -589,7 +811,7 @@ end;
 
 procedure TtgdReportEditorForm.UpdateStatusPanel;
 begin
-  statTempl.SimpleText := Format('Pos: %d, %d',
+  statTempl.Panels[0].Text := Format('Pos: %d, %d',
     [synmTemplate.CaretY, synmTemplate.CaretX]);
 end;
 
