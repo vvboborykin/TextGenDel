@@ -55,6 +55,8 @@ type
     fsMenusRTTI1: TfsMenusRTTI;
     fsIniRTTI1: TfsIniRTTI;
     fsDBRTTI1: TfsDBRTTI;
+    tgdReport1: TtgdReport;
+    tgdReport2: TtgdReport;
     procedure btnEditClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);

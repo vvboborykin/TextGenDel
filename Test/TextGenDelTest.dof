@@ -141,3 +141,7 @@ Item0=C:\Program Files\Borland\Delphi7\zeos\src\dbc\
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+[HistoryLists\hlUnitOutputDirectory]
+Count=2
+Item0=..\Lib\D7
+Item1=..\..\Lib\D7

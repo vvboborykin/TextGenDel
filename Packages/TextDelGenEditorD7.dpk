@@ -1,0 +1,52 @@
+package TextDelGenEditorD7;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$IMPLICITBUILD OFF}
+
+requires
+  rtl,
+  vcl,
+  SynEdit_R7,
+  vclx,
+  vcldb,
+  dbrtl,
+  VclNewlyext,
+  designide,
+  vclactnband,
+  frx7,
+  fs7,
+  fqb70,
+  bdertl,
+  vcljpg,
+  TextDelGenD7;
+
+contains
+  dlgConfirmReplace in '..\Sources\dlgConfirmReplace.pas' {ConfirmReplaceDialog},
+  dlgReplaceText in '..\Sources\dlgReplaceText.pas' {TextReplaceDialog},
+  dlgSearchText in '..\Sources\dlgSearchText.pas' {TextSearchDialog},
+  plgSearchHighlighter in '..\Sources\plgSearchHighlighter.pas',
+  tgdReportEditorFormUnit in '..\Sources\tgdReportEditorFormUnit.pas' {tgdReportEditorForm},
+  tgdReportEditorUnit in '..\Sources\tgdReportEditorUnit.pas';
+
+end.

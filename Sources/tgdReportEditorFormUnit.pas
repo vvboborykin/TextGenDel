@@ -130,12 +130,13 @@ type
     class function ShowEditor(AReport: TtgdReport): Boolean;
   end;
 
+
 implementation
 
 uses
   StrUtils, ComObj, shellapi, Mask, Masks,
   dlgSearchText, dlgReplaceText, dlgConfirmReplace, plgSearchHighlighter,
-  SynEditTypes, SynEditMiscProcs;
+  SynEditTypes, SynEditMiscProcs, DesignIntf;
 
   // options - to be saved to the registry
 var

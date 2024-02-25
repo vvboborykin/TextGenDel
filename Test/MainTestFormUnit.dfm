@@ -233,6 +233,7 @@ object TestMainForm: TTestMainForm
   end
   object vtData: TVirtualTable
     Active = True
+    Constraints = <>
     FieldDefs = <
       item
         Name = 'Name'
@@ -306,5 +307,31 @@ object TestMainForm: TTestMainForm
   object fsDBRTTI1: TfsDBRTTI
     Left = 828
     Top = 280
+  end
+  object tgdReport1: TtgdReport
+    AddLineFunctionName = 'AddLine'
+    Context = <>
+    UseOwnerAsContext = True
+    MacroBeginMarker = '{='
+    MacroEndMarker = '=}'
+    CodeBeginMarker = '{{'
+    CodeEndMarker = '}}'
+    Functions = <>
+    Variables = <>
+    Left = 520
+    Top = 272
+  end
+  object tgdReport2: TtgdReport
+    AddLineFunctionName = 'AddLine'
+    Context = <>
+    UseOwnerAsContext = True
+    MacroBeginMarker = '{='
+    MacroEndMarker = '=}'
+    CodeBeginMarker = '{{'
+    CodeEndMarker = '}}'
+    Functions = <>
+    Variables = <>
+    Left = 484
+    Top = 304
   end
 end

@@ -107,10 +107,18 @@ type
     property Variables: TtgdReportVariables read FVariables write SetVariables;
   end;
 
+procedure Register;
+
 implementation
 
 uses
   tgdGeneratorUnit;
+
+procedure Register;
+begin
+  RegisterComponents('Tgd', [TtgdReport]);
+end;
+
 
 const
   SAResultLinesIsNil = 'AResultLines is nil';
