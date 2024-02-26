@@ -9,18 +9,18 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = TextGenDelTest.exe TextDelGenD7.bpl TextDelGenEditorD7.bpl
+PROJECTS = TextDelGenD7.bpl TextDelGenEditorD7.bpl Demo.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
-
-TextGenDelTest.exe: Test\TextGenDelTest.dpr
-  $(DCC)
 
 TextDelGenD7.bpl: Packages\TextDelGenD7.dpk
   $(DCC)
 
 TextDelGenEditorD7.bpl: Packages\TextDelGenEditorD7.dpk
+  $(DCC)
+
+Demo.exe: Demo\Demo.dpr
   $(DCC)
 
 

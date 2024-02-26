@@ -76,4 +76,7 @@ var
 
 implementation
 
+uses
+  tgdFastScriptEngineUnit;
+
 end.
