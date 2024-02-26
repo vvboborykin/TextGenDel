@@ -1,0 +1,59 @@
+DiGraph Classes {
+  "ItgdScriptEngine" -> "IInterface"
+  "ItgdScriptEngine" [href="tgdScriptEngineUnit.ItgdScriptEngine.html"]
+  "TtgdReportEditor" -> "TComponentEditor"
+  "TtgdReportEditor" [href="tgdReportEditorUnit.TtgdReportEditor.html"]
+  "TtgdReportEditorForm" -> "TForm"
+  "TtgdReportEditorForm" [href="tgdReportEditorFormUnit.TtgdReportEditorForm.html"]
+  "TtgdFastScriptEngine" -> "TInterfacedObject"
+  "TtgdFastScriptEngine" [href="tgdFastScriptEngineUnit.TtgdFastScriptEngine.html"]
+  "TList" -> "TObject"
+  "TObjectList" -> "TList"
+  "TtgdScriptElementList" -> "TObjectList"
+  "TtgdScriptElementList" [href="tdgScriptElementsUnit.TtgdScriptElementList.html"]
+  "TPersistent" -> "TObject"
+  "TCollection" -> "TPersistent"
+  "TOwnedCollection" -> "TCollection"
+  "TtgdNamedCollection" -> "TOwnedCollection"
+  "TtgdNamedCollection" [href="tgdCollectionsUnit.TtgdNamedCollection.html"]
+  "TtgdReportContext" -> "TtgdNamedCollection"
+  "TtgdReportContext" [href="tgdCollectionsUnit.TtgdReportContext.html"]
+  "TtgdReportFunctions" -> "TtgdNamedCollection"
+  "TtgdReportFunctions" [href="tgdCollectionsUnit.TtgdReportFunctions.html"]
+  "TtgdReportVariables" -> "TtgdNamedCollection"
+  "TtgdReportVariables" [href="tgdCollectionsUnit.TtgdReportVariables.html"]
+  "TCollectionItem" -> "TPersistent"
+  "TtgdNamedCollectionItem" -> "TCollectionItem"
+  "TtgdNamedCollectionItem" [href="tgdCollectionsUnit.TtgdNamedCollectionItem.html"]
+  "TtgdReportContextItem" -> "TtgdNamedCollectionItem"
+  "TtgdReportContextItem" [href="tgdCollectionsUnit.TtgdReportContextItem.html"]
+  "TtgdReportFunction" -> "TtgdNamedCollectionItem"
+  "TtgdReportFunction" [href="tgdCollectionsUnit.TtgdReportFunction.html"]
+  "TtgdReportVariable" -> "TtgdNamedCollectionItem"
+  "TtgdReportVariable" [href="tgdCollectionsUnit.TtgdReportVariable.html"]
+  "TComponent" -> "TPersistent"
+  "TtgdReport" -> "TComponent"
+  "TtgdReport" [href="tgdReportUnit.TtgdReport.html"]
+  "TtgdGenerator" -> "TObject"
+  "TtgdGenerator" [href="tgdGeneratorUnit.TtgdGenerator.html"]
+  "TtgdScriptElement" -> "TObject"
+  "TtgdScriptElement" [href="tdgScriptElementsUnit.TtgdScriptElement.html"]
+  "TtgdScriptClass" -> "TtgdScriptElement"
+  "TtgdScriptClass" [href="tdgScriptElementsUnit.TtgdScriptClass.html"]
+  "TtgdScriptConstant" -> "TtgdScriptElement"
+  "TtgdScriptConstant" [href="tdgScriptElementsUnit.TtgdScriptConstant.html"]
+  "TtgdScriptEvent" -> "TtgdScriptElement"
+  "TtgdScriptEvent" [href="tdgScriptElementsUnit.TtgdScriptEvent.html"]
+  "TtgdScriptFunction" -> "TtgdScriptElement"
+  "TtgdScriptFunction" [href="tdgScriptElementsUnit.TtgdScriptFunction.html"]
+  "TtgdScriptMethod" -> "TtgdScriptElement"
+  "TtgdScriptMethod" [href="tdgScriptElementsUnit.TtgdScriptMethod.html"]
+  "TtgdScriptProperty" -> "TtgdScriptElement"
+  "TtgdScriptProperty" [href="tdgScriptElementsUnit.TtgdScriptProperty.html"]
+  "TtgdScriptType" -> "TtgdScriptElement"
+  "TtgdScriptType" [href="tdgScriptElementsUnit.TtgdScriptType.html"]
+  "TtgdScriptVariable" -> "TtgdScriptElement"
+  "TtgdScriptVariable" [href="tdgScriptElementsUnit.TtgdScriptVariable.html"]
+  "TSearchTextHightlighterSynEditPlugin" -> "TSynEditPlugin"
+  "TSearchTextHightlighterSynEditPlugin" [href="plgSearchHighlighter.TSearchTextHightlighterSynEditPlugin.html"]
+}
