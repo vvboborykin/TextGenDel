@@ -20,6 +20,7 @@ type
   TtgdGenerator = class
   private
     FReport: TtgdReport;
+    function CreateScriptEngine: ItgdScriptEngine;
   protected
     procedure SetReport(const Value: TtgdReport);
   public
@@ -44,9 +45,6 @@ type
 
 implementation
 
-uses
-  tgdScriptEngineUnit;
-
 const
   SAReportIsNil = 'AReport is nil';
 
@@ -57,6 +55,11 @@ begin
 
   inherited Create;
   FReport := AReport;
+end;
+
+function TtgdGenerator.CreateScriptEngine: ItgdScriptEngine;
+begin
+  Result := FReport.ScriptEngineFactory.CreateScriptEngine;
 end;
 
 procedure TtgdGenerator.GenerateScript(AResultLines: TStrings);

@@ -5,11 +5,11 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, fs_idbrtti, fs_iinirtti, fs_iextctrlsrtti, fs_iformsrtti,
-  fs_iclassesrtti, tgdReportUnit, DB, DBClient, StdCtrls;
+  fs_iclassesrtti, tgdReportUnit, DB, DBClient, StdCtrls,
+  tgdFastScriptEngineFactoryUnit;
 
 type
   TMainDemoForm = class(TForm)
-    tgrReport: TtgdReport;
     fsClassesRTTI1: TfsClassesRTTI;
     fsFormsRTTI1: TfsFormsRTTI;
     fsExtCtrlsRTTI1: TfsExtCtrlsRTTI;
@@ -21,6 +21,8 @@ type
     cdsDataCode: TStringField;
     cdsDataIsValid: TBooleanField;
     btnGenerateXml: TButton;
+    tgrReport: TtgdReport;
+    fs1: TtgdFastScriptEngineFactory;
     procedure btnGenerateXmlClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private

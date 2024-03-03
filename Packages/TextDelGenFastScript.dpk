@@ -1,4 +1,4 @@
-package TextDelGenD7;
+package TextDelGenFastScript;
 
 {$R *.res}
 {$ALIGN 8}
@@ -11,7 +11,7 @@ package TextDelGenD7;
 {$LOCALSYMBOLS ON}
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
-{$OPTIMIZATION OFF}
+{$OPTIMIZATION ON}
 {$OVERFLOWCHECKS OFF}
 {$RANGECHECKS OFF}
 {$REFERENCEINFO ON}
@@ -25,13 +25,15 @@ package TextDelGenD7;
 {$IMPLICITBUILD OFF}
 
 requires
+  rtl,
   vcl,
-  rtl;
+  fs7,
+  vclx,
+  TextDelGenD7;
 
 contains
-  tgdScriptElementsUnit in '..\Sources\tgdScriptElementsUnit.pas',
-  tgdCollectionsUnit in '..\Sources\tgdCollectionsUnit.pas',
-  tgdGeneratorUnit in '..\Sources\tgdGeneratorUnit.pas',
-  tgdReportUnit in '..\Sources\tgdReportUnit.pas';
+  tgdFastScriptEngineUnit in '..\Sources\tgdFastScriptEngineUnit.pas',
+  tgdFastScriptEngineFactoryUnit in '..\Sources\tgdFastScriptEngineFactoryUnit.pas';
 
 end.
+

@@ -2,7 +2,7 @@
 * Project: TextGenDelTest
 * Unit: tgdReportUnit.pas
 * Description: Template generator component
-* 
+*
 * Created: 08.02.2024 10:43:28
 * Copyright (C) 2024 Боборыкин В.В. (bpost@yandex.ru)
 *******************************************************}
@@ -12,9 +12,66 @@ interface
 
 uses
   SysUtils, Classes, Variants, StrUtils, DateUtils, tgdCollectionsUnit,
-  fs_iinterpreter;
+  tgdScriptElementsUnit;
 
 type
+  TtgdReport = class;
+
+  /// <summary>ItgdScriptEngine
+  /// Scrip Engine interface declaration
+  /// </summary>
+  ItgdScriptEngine = interface
+  ['{E42CD0D9-F515-4EAA-9A38-7E55F648CA11}']
+    /// <summary>ItgdScriptEngine.ConvertTemplateToScript
+    /// Convert report`s TemplateLines to script lines
+    /// </summary>
+    /// <param name="AScript"> (TStrings) Result script lines</param>
+    procedure ConvertTemplateToScript(AScript: TStrings; ATemplateLines: TStrings =
+        nil); stdcall;
+    /// <summary>ItgdScriptEngine.ExecuteScript
+    /// Execute script (generate text)
+    /// </summary>
+    /// <param name="AScript"> (TStrings) Script source to generate text</param>
+    /// <param name="AResultLines"> (TStrings) Result text lines recipient</param>
+    procedure ExecuteScript(AScript, AResultLines: TStrings); stdcall;
+    /// <summary>ItgdScriptEngine.GetChildrenScriptElements
+    /// Get script children elements
+    /// </summary>
+    /// <param name="AParent"> (TObject) </param>
+    /// <param name="AChildren"> (TObjectList) </param>
+    procedure GetChildrenScriptElements(AParent: TObject; AChildren:
+        TtgdScriptElementList); stdcall;
+    /// <summary>ItgdScriptEngine.GetCompletionItems
+    /// Get autocompletion itetms for text
+    /// </summary>
+    /// <param name="AText"> (string) </param>
+    /// <param name="AItems"> (TStrings) </param>
+    /// <param name="AInserts"> (TStrings) </param>
+    procedure GetCompletionItems(AText: string; AItems, AInserts: TStrings);
+        stdcall;
+    /// <summary>ItgdScriptEngine.Init
+    /// Initialize script engine before use
+    /// </summary>
+    /// <param name="AReport"> (TtgdReport) Report context</param>
+    procedure Init(AReport: TtgdReport); stdcall;
+    /// <summary>ItgdScriptEngine.ValidateScript
+    /// Validate script
+    /// </summary>
+    /// <param name="AScript"> (TStrings) Script lines</param>
+    procedure ValidateScript(AScript: TStrings); stdcall;
+  end;
+
+  //1 Script engine factory abstract class
+  TtgdScriptEngineFactory = class(TComponent)
+  public
+    /// <summary>ItgdScriptEngineFactory.CreateScriptEngine
+    /// Create new instance of ItgdScriptEngine
+    /// </summary>
+    /// <returns> ItgdScriptEngine
+    /// </returns>
+    function CreateScriptEngine: ItgdScriptEngine; virtual; abstract;
+  end;
+
   /// <summary>TtgdReport
   /// Template generator component
   /// </summary>
@@ -27,9 +84,13 @@ type
     FFunctions: TtgdReportFunctions;
     FMacroBeginMarker: string;
     FMacroEndMarker: string;
+    FScriptEngineFactory: TtgdScriptEngineFactory;
+    FSyntaxName: String;
     FTemplateLines: TStringList;
     FUseOwnerAsContext: Boolean;
     FVariables: TtgdReportVariables;
+    procedure SetScriptEngineFactory(const Value: TtgdScriptEngineFactory);
+    procedure SetSyntaxName(const Value: String);
   protected
     procedure SetAddLineFunctionName(const Value: String);
     procedure SetCodeBeginMarker(const Value: string);
@@ -41,6 +102,7 @@ type
     procedure SetTemplateLines(const Value: TStringList);
     procedure SetUseOwnerAsContext(const Value: Boolean);
     procedure SetVariables(const Value: TtgdReportVariables);
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -51,6 +113,7 @@ type
     function DoCallMethod(Instance: TObject; ClassType: TClass; const MethodName:
         String; var Params: Variant): Variant;
     procedure Assign(Source: TPersistent); override;
+    function CreateScriptEngine: ItgdScriptEngine;
   published
     /// <summary>TtgdReport.AddLineFunctionName
     /// The Name Of Custom function for Script appending New Line in Generation results
@@ -100,6 +163,15 @@ type
     /// </summary>
     /// type:TtgdReportFunctions
     property Functions: TtgdReportFunctions read FFunctions write SetFunctions;
+    /// <summary>TtgdReport.ScriptEngineFactory
+    /// ScriptEngine factory reference
+    /// </summary>
+    /// type:ItgdScriptEngineFactory
+    property ScriptEngineFactory: TtgdScriptEngineFactory read FScriptEngineFactory
+        write SetScriptEngineFactory;
+    /// <summary>TtgdReport.SyntaxName Template syntax for component editor
+    /// </summary> type:String
+    property SyntaxName: String read FSyntaxName write SetSyntaxName;
     /// <summary>TtgdReport.Variables
     /// Script Custom varibles
     /// </summary>
@@ -113,6 +185,11 @@ implementation
 
 uses
   tgdGeneratorUnit;
+
+resourcestring
+  SScriptEngineFactoryPropertyIsNil = 'ScriptEngineFactory property is nil';
+
+{$R TextDelGen.dcr}  
 
 procedure Register;
 begin
@@ -160,9 +237,17 @@ begin
     Functions.Assign(vReport.Functions);
     Variables.Assign(vReport.Variables);
     Context.Assign(vReport.Context);
+    ScriptEngineFactory := vReport.ScriptEngineFactory;
   end
   else
     inherited Assign(Source);
+end;
+
+function TtgdReport.CreateScriptEngine: ItgdScriptEngine;
+begin
+  if FScriptEngineFactory = nil then
+    raise Exception.Create(SScriptEngineFactoryPropertyIsNil);
+  Result := FScriptEngineFactory.CreateScriptEngine;
 end;
 
 function TtgdReport.DoCallMethod(Instance: TObject; ClassType: TClass; const
@@ -203,6 +288,16 @@ begin
   finally
     vGenerator.Free;
   end;
+end;
+
+procedure TtgdReport.Notification(AComponent: TComponent; Operation:
+    TOperation);
+begin
+  if (Operation = opRemove) and (AComponent = FScriptEngineFactory) then
+  begin
+    FScriptEngineFactory := nil;
+  end;
+  inherited;
 end;
 
 procedure TtgdReport.SetAddLineFunctionName(const Value: String);
@@ -260,6 +355,23 @@ begin
   if FMacroEndMarker <> Value then
   begin
     FMacroEndMarker := Value;
+  end;
+end;
+
+procedure TtgdReport.SetScriptEngineFactory(const Value:
+    TtgdScriptEngineFactory);
+begin
+  if FScriptEngineFactory <> Value then
+  begin
+    FScriptEngineFactory := Value;
+  end;
+end;
+
+procedure TtgdReport.SetSyntaxName(const Value: String);
+begin
+  if FSyntaxName <> Value then
+  begin
+    FSyntaxName := Value;
   end;
 end;
 

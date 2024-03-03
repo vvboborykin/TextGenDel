@@ -6,7 +6,7 @@
 * Created: 13.02.2024 9:57:35
 * Copyright (C) 2024 Боборыкин В.В. (bpost@yandex.ru)
 *******************************************************}
-unit tdgScriptElementsUnit;
+unit tgdScriptElementsUnit;
 
 interface
 

@@ -1,6 +1,6 @@
 object MainDemoForm: TMainDemoForm
-  Left = 487
-  Top = 146
+  Left = 517
+  Top = 147
   Width = 377
   Height = 373
   Caption = 'Main Demo Form'
@@ -22,36 +22,6 @@ object MainDemoForm: TMainDemoForm
     Caption = 'Generate Xml'
     TabOrder = 0
     OnClick = btnGenerateXmlClick
-  end
-  object tgrReport: TtgdReport
-    AddLineFunctionName = 'AddLine'
-    Context = <>
-    TemplateLines.Strings = (
-      '<?xml version="1.0" encoding="utf-8"?>'
-      '<information>'
-      '{{'
-      '  cdsData.First;'
-      '  while not cdsData.Eof do begin'
-      '    if cdsDataIsValid.AsBoolean then begin'
-      '}}'
-      
-        '  <RecordData Id="{= cdsDataRecordId.AsString =}" Code="{= cdsDa' +
-        'taCode.AsString =}">{= cdsDataName.AsString =}</RecordData>   '
-      '{{'
-      '    end;'
-      '    cdsData.Next;'
-      '  end;   '
-      '}}'
-      '</information>')
-    UseOwnerAsContext = True
-    MacroBeginMarker = '{='
-    MacroEndMarker = '=}'
-    CodeBeginMarker = '{{'
-    CodeEndMarker = '}}'
-    Functions = <>
-    Variables = <>
-    Left = 40
-    Top = 56
   end
   object fsClassesRTTI1: TfsClassesRTTI
     Left = 296
@@ -118,5 +88,43 @@ object MainDemoForm: TMainDemoForm
     object cdsDataIsValid: TBooleanField
       FieldName = 'IsValid'
     end
+  end
+  object tgrReport: TtgdReport
+    AddLineFunctionName = 'AddLine'
+    Context = <>
+    TemplateLines.Strings = (
+      '<?xml version="1.0" encoding="utf-8"?>'
+      '<information>'
+      '{{'
+      '  cdsData.First;'
+      '  while not cdsData.Eof do begin'
+      '    if cdsDataIsValid.AsBoolean then begin'
+      '}}'
+      
+        '  <RecordData Id="{= cdsDataRecordId.AsString =}" Code="{= cdsDa' +
+        'taCode.AsString =}">{= cdsDataName.AsString =}</RecordData>   '
+      '{{'
+      '    end;'
+      '    cdsData.Next;'
+      '  end;   '
+      '}}'
+      '</information>')
+    UseOwnerAsContext = True
+    MacroBeginMarker = '{='
+    MacroEndMarker = '=}'
+    CodeBeginMarker = '{{'
+    CodeEndMarker = '}}'
+    Functions = <>
+    ScriptEngineFactory = fs1
+    SyntaxName = 
+      'XML Files (*.xml;*.xsd;*.xsl;*.xslt;*.dtd)|*.xml;*.xsd;*.xsl;*.x' +
+      'slt;*.dtd'
+    Variables = <>
+    Left = 144
+    Top = 96
+  end
+  object fs1: TtgdFastScriptEngineFactory
+    Left = 152
+    Top = 152
   end
 end

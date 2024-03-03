@@ -11,8 +11,8 @@ unit tgdFastScriptEngineUnit;
 interface
 
 uses
-  SysUtils, Classes, Variants, StrUtils, DateUtils, tgdScriptEngineUnit,
-  tdgScriptElementsUnit, tgdReportUnit, fs_iinterpreter, fs_ipascal,
+  SysUtils, Classes, Variants, StrUtils, DateUtils, 
+  tgdScriptElementsUnit, tgdReportUnit, fs_iinterpreter, fs_ipascal,
   fs_iclassesrtti;
 
 type
@@ -536,12 +536,6 @@ function CreateFastScriptEngine(): ItgdScriptEngine;
 begin
   Result := TtgdFastScriptEngine.Create;
 end;
-
-initialization
-  CreateScriptEngine := CreateFastScriptEngine;
-
-finalization
-  CreateScriptEngine := nil;
 
 end.
 

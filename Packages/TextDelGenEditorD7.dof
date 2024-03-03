@@ -32,10 +32,10 @@ ShowWarnings=1
 UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 NamespacePrefix=
 SymbolDeprecated=1
-SymbolLibrary=1
-SymbolPlatform=1
+SymbolLibrary=0
+SymbolPlatform=0
 UnitLibrary=1
-UnitPlatform=1
+UnitPlatform=0
 UnitDeprecated=1
 HResultCompat=1
 HidingMember=1
@@ -76,9 +76,9 @@ LocaleToUnicode=1
 ImagebaseMultiple=1
 SuspiciousTypecast=1
 PrivatePropAccessor=1
-UnsafeType=1
-UnsafeCode=1
-UnsafeCast=1
+UnsafeType=0
+UnsafeCode=0
+UnsafeCast=0
 [Linker]
 MapFile=0
 OutputObjs=0
@@ -123,6 +123,16 @@ Private=0
 DLL=0
 Locale=1049
 CodePage=1251
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
 [HistoryLists\hlDebugSourcePath]
 Count=1
 Item0=C:\Program Files\Borland\Delphi7\zeos\src\dbc\
