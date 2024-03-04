@@ -1,4 +1,4 @@
-package TextDelGenFastScript;
+package TextGenDelD7;
 
 {$R *.res}
 {$ALIGN 8}
@@ -11,7 +11,7 @@ package TextDelGenFastScript;
 {$LOCALSYMBOLS ON}
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
-{$OPTIMIZATION ON}
+{$OPTIMIZATION OFF}
 {$OVERFLOWCHECKS OFF}
 {$RANGECHECKS OFF}
 {$REFERENCEINFO ON}
@@ -22,18 +22,17 @@ package TextDelGenFastScript;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
+{$DESCRIPTION 'Text Generator for Delphi'}
 {$IMPLICITBUILD OFF}
 
 requires
-  rtl,
   vcl,
-  fs7,
-  vclx,
-  TextDelGenD7;
+  rtl;
 
 contains
-  tgdFastScriptEngineUnit in '..\Sources\tgdFastScriptEngineUnit.pas',
-  tgdFastScriptEngineFactoryUnit in '..\Sources\tgdFastScriptEngineFactoryUnit.pas';
+  tgdScriptElementsUnit in '..\Sources\tgdScriptElementsUnit.pas',
+  tgdCollectionsUnit in '..\Sources\tgdCollectionsUnit.pas',
+  tgdGeneratorUnit in '..\Sources\tgdGeneratorUnit.pas',
+  tgdReportUnit in '..\Sources\tgdReportUnit.pas';
 
 end.
-

@@ -28,7 +28,7 @@ procedure Register;
 
 implementation
 
-{$R TextDelGenFastScript.dcr}
+{$R TextGenDelFastScript.dcr}
 
 uses
   tgdFastScriptEngineUnit;

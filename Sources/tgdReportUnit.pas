@@ -14,6 +14,7 @@ uses
   SysUtils, Classes, Variants, StrUtils, DateUtils, tgdCollectionsUnit,
   tgdScriptElementsUnit;
 
+
 type
   TtgdReport = class;
 
@@ -181,6 +182,9 @@ type
 
 procedure Register;
 
+const
+  STextGenDelComponentPage = 'TextGenDel';
+
 implementation
 
 uses
@@ -189,11 +193,11 @@ uses
 resourcestring
   SScriptEngineFactoryPropertyIsNil = 'ScriptEngineFactory property is nil';
 
-{$R TextDelGen.dcr}  
+{$R TextGenDel.dcr}  
 
 procedure Register;
 begin
-  RegisterComponents('Tgd', [TtgdReport]);
+  RegisterComponents(STextGenDelComponentPage, [TtgdReport]);
 end;
 
 

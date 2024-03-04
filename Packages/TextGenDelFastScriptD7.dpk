@@ -1,0 +1,40 @@
+package TextGenDelFastScriptD7;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'FastScript engine components for Text Generator for Delphi'}
+{$IMPLICITBUILD OFF}
+
+requires
+  rtl,
+  vcl,
+  fs7,
+  vclx,
+  TextGenDelD7;
+
+contains
+  tgdFastScriptEngineUnit in '..\Sources\tgdFastScriptEngineUnit.pas',
+  tgdFastScriptEngineFactoryUnit in '..\Sources\tgdFastScriptEngineFactoryUnit.pas';
+
+end.
+

@@ -1,4 +1,4 @@
-package TextDelGenEditorD7;
+package TextGenDelEditorD7;
 
 {$R *.res}
 {$ALIGN 8}
@@ -11,7 +11,7 @@ package TextDelGenEditorD7;
 {$LOCALSYMBOLS ON}
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
-{$OPTIMIZATION ON}
+{$OPTIMIZATION OFF}
 {$OVERFLOWCHECKS OFF}
 {$RANGECHECKS OFF}
 {$REFERENCEINFO ON}
@@ -22,6 +22,7 @@ package TextDelGenEditorD7;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
+{$DESCRIPTION 'Component editor for Text Generator for Delphi'}
 {$IMPLICITBUILD OFF}
 
 requires
@@ -39,7 +40,7 @@ requires
   fqb70,
   bdertl,
   vcljpg,
-  TextDelGenD7;
+  TextGenDelD7;
 
 contains
   dlgConfirmReplace in '..\Sources\dlgConfirmReplace.pas' {ConfirmReplaceDialog},

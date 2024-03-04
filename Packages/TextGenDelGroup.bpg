@@ -1,0 +1,30 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = TextDelGenD7.bpl TextDelGenEditorD7.bpl Demo.exe \
+  TextDelGenFastScript.bpl
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+TextDelGenD7.bpl: TextDelGenD7.dpk
+  $(DCC)
+
+TextDelGenEditorD7.bpl: TextDelGenEditorD7.dpk
+  $(DCC)
+
+Demo.exe: ..\Demo\Demo.dpr
+  $(DCC)
+
+TextDelGenFastScript.bpl: TextDelGenFastScript.dpk
+  $(DCC)
+
+
