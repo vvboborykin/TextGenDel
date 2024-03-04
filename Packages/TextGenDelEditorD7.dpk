@@ -29,16 +29,7 @@ requires
   rtl,
   vcl,
   SynEdit_R7,
-  vclx,
-  vcldb,
-  dbrtl,
-  VclNewlyext,
   designide,
-  vclactnband,
-  frx7,
-  fs7,
-  fqb70,
-  bdertl,
   vcljpg,
   TextGenDelD7;
 

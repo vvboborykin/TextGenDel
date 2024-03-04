@@ -831,20 +831,6 @@ object tgdReportEditorForm: TtgdReportEditorForm
     Left = 368
     Top = 256
   end
-  object dlgLoadTemplate: TFileOpenDialog
-    FavoriteLinks = <>
-    FileTypes = <>
-    Options = []
-    Left = 584
-    Top = 40
-  end
-  object dlgSaveTemplate: TFileSaveDialog
-    FavoriteLinks = <>
-    FileTypes = <>
-    Options = []
-    Left = 584
-    Top = 88
-  end
   object sypComplete: TSynCompletionProposal
     Options = [scoLimitToMatchedText, scoUseInsertList, scoUsePrettyText, scoUseBuiltInTimer, scoEndCharCompletion, scoCompleteWithTab, scoCompleteWithEnter]
     NbLinesInWindow = 16
@@ -877,13 +863,6 @@ object tgdReportEditorForm: TtgdReportEditorForm
     Top = 32
     EndOfTokenChrW = '()[]. '
     TriggerCharsW = '.'
-  end
-  object dlgSaveReport: TFileSaveDialog
-    FavoriteLinks = <>
-    FileTypes = <>
-    Options = []
-    Left = 584
-    Top = 136
   end
   object synText: TSynGeneralSyn
     Options.AutoDetectEnabled = False

@@ -1,3 +1,11 @@
+{*******************************************************
+* Project: TextGenDelEditorD7
+* Unit: tgdReportEditorFormUnit.pas
+* Description: Report component editor form
+*
+* Created: 04.03.2024 16:53:17
+* Copyright (C) 2024 Боборыкин В.В. (bpost@yandex.ru)
+*******************************************************}
 unit tgdReportEditorFormUnit;
 
 interface
@@ -8,11 +16,14 @@ uses
   ImgList, ComCtrls, ExtCtrls, SynEditMiscClasses, SynEditSearch,
   SynCompletionProposal, ActnList, SynHighlighterMulti, Buttons,
   SynHighlighterXML, SynHighlighterJSON, tgdReportUnit,
-  tgdScriptElementsUnit, DialogsX, frxUnicodeUtils, SynUnicode,
+  tgdScriptElementsUnit, SynUnicode,
   SynHighlighterGeneral, SynHighlighterIni, SynHighlighterSQL,
   SynHighlighterHtml, Menus, StdActns;
 
 type
+  /// <summary>TtgdReportEditorForm
+  /// Report component editor form
+  /// </summary>
   TtgdReportEditorForm = class(TForm)
     synPascalSyntax: TSynPasSyn;
     synsSearch: TSynEditSearch;
@@ -36,12 +47,9 @@ type
     btnValidate: TBitBtn;
     actValidate: TAction;
     synJsonSyntax: TSynJSONSyn;
-    dlgLoadTemplate: TFileOpenDialog;
-    dlgSaveTemplate: TFileSaveDialog;
     sypComplete: TSynCompletionProposal;
     actExecuteReport: TAction;
     btnExecuteReport: TBitBtn;
-    dlgSaveReport: TFileSaveDialog;
     statTempl: TStatusBar;
     pnlTemplate: TPanel;
     synText: TSynGeneralSyn;
@@ -92,15 +100,19 @@ type
     procedure cbbTemplateSyntaxChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure sypCompleteExecute(Kind: SynCompletionType; Sender:
-      TObject; var CurrentInput: WideString; var x, y: Integer; var CanExecute: Boolean);
+      TObject; var CurrentInput: WideString; var x, y: Integer; var CanExecute:
+        Boolean);
     procedure SynEditorReplaceText(Sender: TObject; const ASearch, AReplace:
-        UnicodeString; Line, Column: Integer; var Action: TSynReplaceAction);
+      UnicodeString; Line, Column: Integer; var Action: TSynReplaceAction);
     procedure synmTemplateChange(Sender: TObject);
     procedure synmTemplateDragDrop(Sender, Source: TObject; X, Y: Integer);
-    procedure synmTemplateDragOver(Sender, Source: TObject; X, Y: Integer; State:
-        TDragState; var Accept: Boolean);
-    procedure synmTemplateKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure tvContextEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
+    procedure synmTemplateDragOver(Sender, Source: TObject; X, Y: Integer;
+      State:
+      TDragState; var Accept: Boolean);
+    procedure synmTemplateKeyUp(Sender: TObject; var Key: Word; Shift:
+      TShiftState);
+    procedure tvContextEditing(Sender: TObject; Node: TTreeNode; var AllowEdit:
+      Boolean);
     procedure tvContextExpanding(Sender: TObject; Node: TTreeNode; var
       AllowExpansion: Boolean);
     procedure tvContextMouseUp(Sender: TObject; Button: TMouseButton; Shift:
@@ -111,16 +123,19 @@ type
     FEngine: ItgdScriptEngine;
     FInitCompleted: Boolean;
     FSearchFromCaret: Boolean;
-    procedure AddChildNode(AParentNode: TTreeNode; AScriptElement: TtgdScriptElement);
+    procedure AddChildNode(AParentNode: TTreeNode; AScriptElement:
+      TtgdScriptElement);
     procedure AddImagesToProposalList(AProposalList: TUnicodeStrings; AItems:
-        TStrings);
+      TStrings);
     procedure DoSearchReplaceText(AReplace: boolean; ABackwards: boolean);
     procedure ExecuteReportForCurrentTemplate;
     function FileNameMatchesHighliterMask(vFileName: string; vHighliter:
-        TSynCustomHighlighter): Boolean;
+      TSynCustomHighlighter): Boolean;
     procedure FillTemplateSyntaxComboBoxList;
-    function GetHighlighterForFileName(AFileName: string): TSynCustomHighlighter;
-    function GetImageIndexOfScriptElement(AScriptElement: TtgdScriptElement): Integer;
+    function GetHighlighterForFileName(AFileName: string):
+      TSynCustomHighlighter;
+    function GetImageIndexOfScriptElement(AScriptElement: TtgdScriptElement):
+      Integer;
     function GetNodeChainText(ANode: TTreeNode): string;
     function GetRandomName: string;
     function GetScriptElementClassImage(AClass: TClass): Integer;
@@ -133,7 +148,8 @@ type
     procedure LoadTemplateFromFile;
     procedure LoadTemplateSyntax;
     procedure LoadTopTreeNodes;
-    procedure LoadTreeNodes(ANode: TTreeNode; AScriptElementClass: array of TClass);
+    procedure LoadTreeNodes(ANode: TTreeNode; AScriptElementClass: array of
+      TClass);
     procedure MarkModified;
     procedure SaveChangesToReport;
     procedure SaveTemplateToFile;
@@ -143,9 +159,14 @@ type
     procedure UpdateStatusPanel;
     procedure ValidateTemplate;
   public
+    /// <summary>TtgdReportEditorForm.ShowEditor
+    /// Show report component editor form
+    /// </summary>
+    /// <returns> Boolean
+    /// </returns>
+    /// <param name="AReport"> (TtgdReport) Report component</param>
     class function ShowEditor(AReport: TtgdReport): Boolean;
   end;
-
 
 implementation
 
@@ -154,7 +175,7 @@ uses
   dlgSearchText, dlgReplaceText, dlgConfirmReplace, plgSearchHighlighter,
   SynEditTypes, SynEditMiscProcs, DesignIntf;
 
-  // options - to be saved to the registry
+// options - to be saved to the registry
 var
   gbSearchBackwards: Boolean;
   gbSearchCaseSensitive: Boolean;
@@ -170,9 +191,10 @@ var
   gsReplaceTextHistory: string;
 
 resourcestring
-  STheTemplateHasBeenChangedSaveCha = 'The template has been changed. Save changes ?';
-  STextNotFound = 'Text not found';
+  STheTemplateHasBeenChangedSaveCha =
+    'The template has been changed. Save changes ?';
 
+  STextNotFound = 'Text not found';
 
 resourcestring
   STemplateIsValid = 'Template is valid';
@@ -180,12 +202,10 @@ resourcestring
 
 {$R *.dfm}
 
-
-
 type
   TStringArray = array of string;
 
-function SplitString(AString: String; Delimiter: Char): TStringArray;
+function SplitString(AString: string; Delimiter: Char): TStringArray;
 var
   I: Integer;
   vList: TStringList;
@@ -195,13 +215,12 @@ begin
     vList.Delimiter := Delimiter;
     vList.DelimitedText := AString;
     SetLength(Result, vList.Count);
-    for I := 0 to vList.Count-1 do
+    for I := 0 to vList.Count - 1 do
       Result[I] := vList[I];
   finally
     vList.Free;
   end;
 end;
-
 
 procedure TtgdReportEditorForm.actCancelExecute(Sender: TObject);
 begin
@@ -217,7 +236,8 @@ end;
 
 procedure TtgdReportEditorForm.ActionFileOpenExecute(Sender: TObject);
 begin
-  if dlgOpenFile.Execute then begin
+  if dlgOpenFile.Execute then
+  begin
     synmTemplate.Lines.LoadFromFile(dlgOpenFile.FileName);
     synmTemplate.ReadOnly := ofReadOnly in dlgOpenFile.Options;
   end;
@@ -287,13 +307,13 @@ begin
 end;
 
 procedure TtgdReportEditorForm.AddImagesToProposalList(AProposalList:
-    TUnicodeStrings; AItems: TStrings);
+  TUnicodeStrings; AItems: TStrings);
 var
   I: Integer;
   vImageIndex: Integer;
   vString: string;
 begin
-  for I := 0 to AProposalList.Count-1 do
+  for I := 0 to AProposalList.Count - 1 do
   begin
     vString := AProposalList[I];
     vImageIndex := GetScriptElementClassImage(TClass(AItems.Objects[I]));
@@ -304,11 +324,12 @@ end;
 
 procedure TtgdReportEditorForm.cbbTemplateSyntaxChange(Sender: TObject);
 begin
-  SetTemplateSyntax(cbbTemplateSyntax.Items.Objects[cbbTemplateSyntax.ItemIndex] as TSynCustomHighlighter);
+  SetTemplateSyntax(cbbTemplateSyntax.Items.Objects[cbbTemplateSyntax.ItemIndex]
+    as TSynCustomHighlighter);
 end;
 
 procedure TtgdReportEditorForm.DoSearchReplaceText(AReplace: Boolean;
-    ABackwards: Boolean);
+  ABackwards: Boolean);
 var
   Options: TSynSearchOptions;
 begin
@@ -344,9 +365,11 @@ end;
 procedure TtgdReportEditorForm.ExecuteReportForCurrentTemplate;
 var
   I: Integer;
+  dlgSaveReport: TSaveDialog;
   vReport: TtgdReport;
   vResultLines: TStrings;
 begin
+  dlgSaveReport := TSaveDialog.Create(Self);
   vResultLines := TStringList.Create;
   vReport := TtgdReport.Create(FReport.Owner);
   vReport.Name := 'TtgdReport' + GetRandomName();
@@ -354,7 +377,7 @@ begin
     vReport.Assign(FReport);
 
     vReport.TemplateLines.Clear;
-    for I := 0 to synmTemplate.Lines.Count-1 do
+    for I := 0 to synmTemplate.Lines.Count - 1 do
       vReport.TemplateLines.Add(synmTemplate.Lines[I]);
 
     vReport.GenerateText(vResultLines);
@@ -366,11 +389,12 @@ begin
   finally
     vReport.Free;
     vResultLines.Free;
+    dlgSaveReport.Free;
   end;
 end;
 
 function TtgdReportEditorForm.FileNameMatchesHighliterMask(vFileName: string;
-    vHighliter: TSynCustomHighlighter): Boolean;
+  vHighliter: TSynCustomHighlighter): Boolean;
 var
   I: Integer;
   J: Integer;
@@ -403,7 +427,7 @@ var
   I: Integer;
   vSyntaxName: string;
 begin
-  for I := 0 to ComponentCount-1 do
+  for I := 0 to ComponentCount - 1 do
   begin
     if Components[I] is TSynCustomHighlighter then
     begin
@@ -415,13 +439,14 @@ begin
 end;
 
 procedure TtgdReportEditorForm.FormCloseQuery(Sender: TObject; var CanClose:
-    Boolean);
+  Boolean);
 var
   vAnswer: Integer;
 begin
   if FModifiedFlag and not IsPositiveResult(ModalResult) then
   begin
-    vAnswer := MessageDlg(STheTemplateHasBeenChangedSaveCha, mtConfirmation, mbYesNoCancel, 0);
+    vAnswer := MessageDlg(STheTemplateHasBeenChangedSaveCha, mtConfirmation,
+      mbYesNoCancel, 0);
     case vAnswer of
       mrYes: SaveChangesToReport();
       mrCancel: CanClose := False;
@@ -431,7 +456,7 @@ begin
 end;
 
 function TtgdReportEditorForm.GetHighlighterForFileName(AFileName: string):
-    TSynCustomHighlighter;
+  TSynCustomHighlighter;
 var
   I: Integer;
   vFileName: string;
@@ -440,7 +465,7 @@ begin
   Result := nil;
   vFileName := ExtractFileName(AFileName);
 
-  for I := 0 to ComponentCount-1 do
+  for I := 0 to ComponentCount - 1 do
     if Components[I] is TSynCustomHighlighter then
     begin
       vHighliter := Components[I] as TSynCustomHighlighter;
@@ -489,12 +514,12 @@ end;
 function TtgdReportEditorForm.GetRandomName: string;
 begin
   Result := CreateClassID;
-  Result := MidStr(Result, 2, Length(Result)-2);
+  Result := MidStr(Result, 2, Length(Result) - 2);
   Result := StringReplace(Result, '-', '', [rfReplaceAll]);
 end;
 
 function TtgdReportEditorForm.GetScriptElementClassImage(AClass: TClass):
-    Integer;
+  Integer;
 begin
   Result := 0;
   if AClass = TtgdScriptVariable then
@@ -515,7 +540,7 @@ end;
 
 function TtgdReportEditorForm.GetTextLeftOfCaret: string;
 const
-  TokenChars =['a'..'z', 'A'..'Z', '_', '.'];
+  TokenChars = ['a'..'z', 'A'..'Z', '_', '.'];
 var
   I: Integer;
   vLine: string;
@@ -546,7 +571,7 @@ end;
 procedure TtgdReportEditorForm.Init(AReport: TtgdReport);
 begin
   FInitCompleted := False;
-  
+
   FReport := AReport;
   FEngine := AReport.CreateScriptEngine;
   FEngine.Init(FReport);
@@ -603,23 +628,34 @@ end;
 procedure TtgdReportEditorForm.LoadLines;
 var
   vLines: TStrings;
+  dlgLoadTemplate: TOpenDialog;
 begin
   vLines := TStringList.Create;
+  dlgLoadTemplate := TOpenDialog.Create(Self);
   try
     vLines.LoadFromFile(dlgLoadTemplate.FileName);
     synmTemplate.Lines.Clear;
     synmTemplate.Lines.AddStrings(vLines);
   finally
     vLines.Free;
+    dlgLoadTemplate.Free;
   end;
 end;
 
 procedure TtgdReportEditorForm.LoadTemplateFromFile;
+var
+  dlgLoadTemplate: TOpenDialog;
 begin
-  if dlgLoadTemplate.Execute then
-  begin
-    LoadLines;
-    SetTemplateSyntax(GetHighlighterForFileName(dlgLoadTemplate.FileName));
+  dlgLoadTemplate := TOpenDialog.Create(Self);
+  try
+    dlgLoadTemplate := TOpenDialog.Create(Self);
+    if dlgLoadTemplate.Execute then
+    begin
+      LoadLines;
+      SetTemplateSyntax(GetHighlighterForFileName(dlgLoadTemplate.FileName));
+    end;
+  finally
+    dlgLoadTemplate.Free;
   end;
 end;
 
@@ -683,18 +719,25 @@ end;
 procedure TtgdReportEditorForm.SaveTemplateToFile;
 var
   vLines: TStrings;
+  dlgSaveTemplate: TSaveDialog;
   vText: string;
 begin
-  if dlgSaveTemplate.Execute then
-  begin
-    vLines := TStringList.Create;
-    try
-      vText := synmTemplate.Lines.Text;
-      vLines.Text := vText;
-      vLines.SaveToFile(dlgSaveTemplate.FileName);
-    finally
-      vLines.Free;
+  dlgSaveTemplate := TSaveDialog.Create(Self);
+  try
+    dlgSaveTemplate := TSaveDialog.Create(Self);
+    if dlgSaveTemplate.Execute then
+    begin
+      vLines := TStringList.Create;
+      try
+        vText := synmTemplate.Lines.Text;
+        vLines.Text := vText;
+        vLines.SaveToFile(dlgSaveTemplate.FileName);
+      finally
+        vLines.Free;
+      end;
     end;
+  finally
+    dlgSaveTemplate.Free;
   end;
 end;
 
@@ -708,11 +751,12 @@ begin
   if vIndex < 0 then
     vIndex := cbbTemplateSyntax.Items.IndexOfObject(synXmlSyntax);
   cbbTemplateSyntax.ItemIndex := vIndex;
-  SetTemplateSyntax(cbbTemplateSyntax.Items.Objects[vIndex] as TSynCustomHighlighter);
+  SetTemplateSyntax(cbbTemplateSyntax.Items.Objects[vIndex] as
+    TSynCustomHighlighter);
 end;
 
 procedure TtgdReportEditorForm.SetTemplateSyntax(AHighliter:
-    TSynCustomHighlighter);
+  TSynCustomHighlighter);
 begin
   symMain.DefaultHighlighter := AHighliter;
 end;
@@ -724,7 +768,7 @@ begin
   if AReport = nil then
     raise Exception.Create(SAReportIsNil);
 
-  vForm := TtgdReportEditorForm.Create(nil);
+  vForm := TtgdReportEditorForm.Create(Application);
   try
     vForm.Init(AReport);
     Result := IsPositiveResult(vForm.ShowModal);
@@ -741,50 +785,58 @@ begin
     dlg := TTextReplaceDialog.Create(Self)
   else
     dlg := TTextSearchDialog.Create(Self);
-  with dlg do try
-    // assign search options
-    SearchBackwards := gbSearchBackwards;
-    SearchCaseSensitive := gbSearchCaseSensitive;
-    SearchFromCursor := gbSearchFromCaret;
-    SearchInSelectionOnly := gbSearchSelectionOnly;
-    // start with last search text
-    SearchText := gsSearchText;
-    if gbSearchTextAtCaret then begin
-      // if something is selected search for that text
-      if synmTemplate.SelAvail and (synmTemplate.BlockBegin.Line = synmTemplate.BlockEnd.Line)
-      then
-        SearchText := synmTemplate.SelText
-      else
-        SearchText := synmTemplate.GetWordAtRowCol(synmTemplate.CaretXY);
-    end;
-    SearchTextHistory := gsSearchTextHistory;
-    if AReplace then with dlg as TTextReplaceDialog do begin
-      ReplaceText := gsReplaceText;
-      ReplaceTextHistory := gsReplaceTextHistory;
-    end;
-    SearchWholeWords := gbSearchWholeWords;
-    if ShowModal = mrOK then begin
-      gbSearchBackwards := SearchBackwards;
-      gbSearchCaseSensitive := SearchCaseSensitive;
-      gbSearchFromCaret := SearchFromCursor;
-      gbSearchSelectionOnly := SearchInSelectionOnly;
-      gbSearchWholeWords := SearchWholeWords;
-      gbSearchRegex := SearchRegularExpression;
-      gsSearchText := SearchText;
-      gsSearchTextHistory := SearchTextHistory;
-      if AReplace then with dlg as TTextReplaceDialog do begin
-        gsReplaceText := ReplaceText;
-        gsReplaceTextHistory := ReplaceTextHistory;
+  with dlg do
+    try
+      // assign search options
+      SearchBackwards := gbSearchBackwards;
+      SearchCaseSensitive := gbSearchCaseSensitive;
+      SearchFromCursor := gbSearchFromCaret;
+      SearchInSelectionOnly := gbSearchSelectionOnly;
+      // start with last search text
+      SearchText := gsSearchText;
+      if gbSearchTextAtCaret then
+      begin
+        // if something is selected search for that text
+        if synmTemplate.SelAvail and (synmTemplate.BlockBegin.Line =
+          synmTemplate.BlockEnd.Line) then
+          SearchText := synmTemplate.SelText
+        else
+          SearchText := synmTemplate.GetWordAtRowCol(synmTemplate.CaretXY);
       end;
-      FSearchFromCaret := gbSearchFromCaret;
-      if gsSearchText <> '' then begin
-        DoSearchReplaceText(AReplace, gbSearchBackwards);
-        FSearchFromCaret := TRUE;
+      SearchTextHistory := gsSearchTextHistory;
+      if AReplace then
+        with dlg as TTextReplaceDialog do
+        begin
+          ReplaceText := gsReplaceText;
+          ReplaceTextHistory := gsReplaceTextHistory;
+        end;
+      SearchWholeWords := gbSearchWholeWords;
+      if ShowModal = mrOK then
+      begin
+        gbSearchBackwards := SearchBackwards;
+        gbSearchCaseSensitive := SearchCaseSensitive;
+        gbSearchFromCaret := SearchFromCursor;
+        gbSearchSelectionOnly := SearchInSelectionOnly;
+        gbSearchWholeWords := SearchWholeWords;
+        gbSearchRegex := SearchRegularExpression;
+        gsSearchText := SearchText;
+        gsSearchTextHistory := SearchTextHistory;
+        if AReplace then
+          with dlg as TTextReplaceDialog do
+          begin
+            gsReplaceText := ReplaceText;
+            gsReplaceTextHistory := ReplaceTextHistory;
+          end;
+        FSearchFromCaret := gbSearchFromCaret;
+        if gsSearchText <> '' then
+        begin
+          DoSearchReplaceText(AReplace, gbSearchBackwards);
+          FSearchFromCaret := TRUE;
+        end;
       end;
+    finally
+      dlg.Free;
     end;
-  finally
-    dlg.Free;
-  end;
 end;
 
 procedure TtgdReportEditorForm.sypCompleteExecute(Kind:
@@ -817,19 +869,20 @@ begin
 end;
 
 procedure TtgdReportEditorForm.SynEditorReplaceText(Sender: TObject; const
-    ASearch, AReplace: UnicodeString; Line, Column: Integer; var Action:
-    TSynReplaceAction);
+  ASearch, AReplace: UnicodeString; Line, Column: Integer; var Action:
+  TSynReplaceAction);
 var
   APos: TPoint;
   EditRect: TRect;
 begin
   if ASearch = AReplace then
     Action := raSkip
-  else begin
+  else
+  begin
     APos := synmTemplate.ClientToScreen(
       synmTemplate.RowColumnToPixels(
       synmTemplate.BufferToDisplayPos(
-        BufferCoord(Column, Line) ) ) );
+      BufferCoord(Column, Line))));
     EditRect := ClientRect;
     EditRect.TopLeft := ClientToScreen(EditRect.TopLeft);
     EditRect.BottomRight := ClientToScreen(EditRect.BottomRight);
@@ -842,7 +895,8 @@ begin
       mrYes: Action := raReplace;
       mrYesToAll: Action := raReplaceAll;
       mrNo: Action := raSkip;
-      else Action := raCancel;
+    else
+      Action := raCancel;
     end;
   end;
 end;
@@ -854,13 +908,13 @@ begin
 end;
 
 procedure TtgdReportEditorForm.synmTemplateDragDrop(Sender, Source: TObject; X,
-    Y: Integer);
+  Y: Integer);
 begin
   InsertSelectedTreeNodeToTemplate();
 end;
 
 procedure TtgdReportEditorForm.synmTemplateDragOver(Sender, Source: TObject; X,
-    Y: Integer; State: TDragState; var Accept: Boolean);
+  Y: Integer; State: TDragState; var Accept: Boolean);
 begin
   Accept := Source = tvContext;
 end;
@@ -874,14 +928,16 @@ begin
   if (Key = 219) then
   begin
     if (ssCtrl in Shift) and (ssShift in Shift) then
-      InsertIntoTemplateCaretPos(FReport.CodeBeginMarker + '  ' + FReport.CodeEndMarker)
-    else
-    if (ssCtrl in Shift) and (ssAlt in Shift) then
-      InsertIntoTemplateCaretPos(FReport.MacroBeginMarker + '  ' + FReport.MacroEndMarker)
+      InsertIntoTemplateCaretPos(FReport.CodeBeginMarker + '  ' +
+        FReport.CodeEndMarker)
+    else if (ssCtrl in Shift) and (ssAlt in Shift) then
+      InsertIntoTemplateCaretPos(FReport.MacroBeginMarker + '  ' +
+        FReport.MacroEndMarker)
   end;
 end;
 
-procedure TtgdReportEditorForm.tvContextEditing(Sender: TObject; Node: TTreeNode;
+procedure TtgdReportEditorForm.tvContextEditing(Sender: TObject; Node:
+  TTreeNode;
   var AllowEdit: Boolean);
 begin
   AllowEdit := False;
@@ -928,7 +984,7 @@ begin
   vLines := TStringList.Create;
   vScript := TStringList.Create();
   try
-    for I := 0 to synmTemplate.Lines.Count-1 do
+    for I := 0 to synmTemplate.Lines.Count - 1 do
       vLines.Add(synmTemplate.Lines[I]);
     vScriptEngine := FReport.CreateScriptEngine;
     vScriptEngine.Init(FReport);

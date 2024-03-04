@@ -12,7 +12,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, ActnList, StdCtrls, tgdReportUnit, DB, DBClient;
+  Dialogs, ExtCtrls, ActnList, StdCtrls, tgdReportUnit, DB, DBClient,
+  DBCtrls, Grids, DBGrids, ComCtrls;
 
 type
   /// <summary>TDemoBaseMainForm
@@ -35,6 +36,12 @@ type
     mmoResult: TMemo;
     btnGenerateScript: TButton;
     actGenerateScript: TAction;
+    pgcMain: TPageControl;
+    tsData: TTabSheet;
+    tsText: TTabSheet;
+    grdData: TDBGrid;
+    navData: TDBNavigator;
+    dsData: TDataSource;
     procedure FormCreate(Sender: TObject);
     procedure actEditTemplateExecute(Sender: TObject);
     procedure actExitExecute(Sender: TObject);
@@ -117,12 +124,14 @@ procedure TDemoBaseMainForm.GenerateScript;
 begin
   mmoResult.Lines.Clear;
   tgrReport.GenerateScript(mmoResult.Lines);
+  pgcMain.ActivePageIndex := 1;
 end;
 
 procedure TDemoBaseMainForm.GenerateXml;
 begin
   mmoResult.Lines.Clear;
   tgrReport.GenerateText(mmoResult.Lines);
+  pgcMain.ActivePageIndex := 1;
 end;
 
 end.

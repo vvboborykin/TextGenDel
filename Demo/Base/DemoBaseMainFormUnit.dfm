@@ -1,8 +1,8 @@
 object DemoBaseMainForm: TDemoBaseMainForm
-  Left = 438
-  Top = 277
+  Left = 668
+  Top = 163
   Width = 885
-  Height = 539
+  Height = 664
   Caption = 'Demo Base Main Form'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -15,7 +15,7 @@ object DemoBaseMainForm: TDemoBaseMainForm
   OnCreate = FormCreate
   DesignSize = (
     869
-    500)
+    625)
   PixelsPerInch = 96
   TextHeight = 19
   object btnGenerateXml: TButton
@@ -35,25 +35,14 @@ object DemoBaseMainForm: TDemoBaseMainForm
     TabOrder = 1
   end
   object btnExit: TButton
-    Left = 671
+    Left = 720
     Top = 7
-    Width = 185
+    Width = 136
     Height = 30
     Action = actExit
     Anchors = [akTop, akRight]
     Cancel = True
     TabOrder = 2
-  end
-  object mmoResult: TMemo
-    Left = 16
-    Top = 48
-    Width = 840
-    Height = 441
-    Anchors = [akLeft, akTop, akRight, akBottom]
-    ScrollBars = ssBoth
-    TabOrder = 3
-    WantTabs = True
-    WordWrap = False
   end
   object btnGenerateScript: TButton
     Left = 248
@@ -61,7 +50,82 @@ object DemoBaseMainForm: TDemoBaseMainForm
     Width = 185
     Height = 30
     Action = actGenerateScript
+    TabOrder = 3
+  end
+  object pgcMain: TPageControl
+    Left = 16
+    Top = 48
+    Width = 838
+    Height = 558
+    ActivePage = tsData
+    Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 4
+    object tsData: TTabSheet
+      Caption = 'Data'
+      object grdData: TDBGrid
+        Left = 0
+        Top = 25
+        Width = 830
+        Height = 499
+        Align = alClient
+        DataSource = dsData
+        TabOrder = 0
+        TitleFont.Charset = DEFAULT_CHARSET
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -16
+        TitleFont.Name = 'Tahoma'
+        TitleFont.Style = []
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'RecordId'
+            Width = 76
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'Name'
+            Width = 394
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'Code'
+            Width = 181
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'IsValid'
+            Width = 100
+            Visible = True
+          end>
+      end
+      object navData: TDBNavigator
+        Left = 0
+        Top = 0
+        Width = 830
+        Height = 25
+        DataSource = dsData
+        Align = alTop
+        TabOrder = 1
+      end
+    end
+    object tsText: TTabSheet
+      Caption = 'Text'
+      ImageIndex = 1
+      object mmoResult: TMemo
+        Left = 0
+        Top = 0
+        Width = 830
+        Height = 524
+        Align = alClient
+        ScrollBars = ssBoth
+        TabOrder = 0
+        WantTabs = True
+        WordWrap = False
+      end
+    end
   end
   object cdsData: TClientDataSet
     Active = True
@@ -89,7 +153,7 @@ object DemoBaseMainForm: TDemoBaseMainForm
     Params = <>
     StoreDefs = True
     Left = 72
-    Top = 72
+    Top = 192
     Data = {
       6D0000009619E0BD0100000018000000040000000000030000006D0008526563
       6F726449640400010000000000044E616D650200490000000100055749445448
@@ -161,5 +225,10 @@ object DemoBaseMainForm: TDemoBaseMainForm
       Caption = 'Generate Script'
       OnExecute = actGenerateScriptExecute
     end
+  end
+  object dsData: TDataSource
+    DataSet = cdsData
+    Left = 68
+    Top = 246
   end
 end

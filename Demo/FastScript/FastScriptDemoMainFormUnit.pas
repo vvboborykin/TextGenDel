@@ -14,7 +14,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, fs_idbrtti, fs_iinirtti, fs_iextctrlsrtti, fs_iformsrtti,
   fs_iclassesrtti, tgdReportUnit, DB, DBClient, StdCtrls,
-  tgdFastScriptEngineFactoryUnit, DemoBaseMainFormUnit, ActnList;
+  tgdFastScriptEngineFactoryUnit, DemoBaseMainFormUnit, ActnList, ExtCtrls,
+  DBCtrls, Grids, DBGrids, ComCtrls;
 
 type
   /// <summary>TFastScriptDemoMainForm
@@ -28,9 +29,7 @@ type
     fsDBRTTI1: TfsDBRTTI;
     fseScriptEngine: TtgdFastScriptEngineFactory;
   private
-    { Private declarations }
   public
-    { Public declarations }
   end;
 
 var
