@@ -92,7 +92,6 @@ type
     FVariables: TtgdReportVariables;
     procedure SetScriptEngineFactory(const Value: TtgdScriptEngineFactory);
     procedure SetSyntaxName(const Value: String);
-  protected
     procedure SetAddLineFunctionName(const Value: String);
     procedure SetCodeBeginMarker(const Value: string);
     procedure SetCodeEndMarker(const Value: string);
@@ -103,17 +102,55 @@ type
     procedure SetTemplateLines(const Value: TStringList);
     procedure SetUseOwnerAsContext(const Value: Boolean);
     procedure SetVariables(const Value: TtgdReportVariables);
+  protected
+    /// <summary>TtgdReport.Notification
+    /// Process notification of linked components deletion
+    /// </summary>
+    /// <param name="AComponent"> (TComponent) </param>
+    /// <param name="Operation"> (TOperation) </param>
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    /// <summary>TtgdReport.SetDefaultMarkers
+    /// Initiate marker properties with default values
+    /// </summary>
+    procedure SetDefaultMarkers; virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    /// <summary>TtgdReport.GenerateText
+    /// Generate text for TemplateLines in current context
+    /// </summary>
+    /// <param name="AResultLines"> (TStrings) Result text lines</param>
     procedure GenerateText(AResultLines: TStrings);
+    /// <summary>TtgdReport.GenerateScript Convert TemplateLines to script lines
+    /// </summary>
+    /// <param name="AResultLines"> (TStrings) Result script lines</param>
     procedure GenerateScript(AResultLines: TStrings);
+    /// <summary>TtgdReport.ValidateTemplate
+    /// Check TemplateLines for correct template syntax
+    /// </summary>
     procedure ValidateTemplate;
-    procedure SetDefaultMarkers;
+    /// <summary>TtgdReport.DoCallMethod
+    /// Execute script function
+    /// </summary>
+    /// <returns> Variant
+    /// </returns>
+    /// <param name="Instance"> (TObject) Object owned method</param>
+    /// <param name="ClassType"> (TClass) Class owned method</param>
+    /// <param name="MethodName"> (String) The name of method or function or
+    /// procedure</param>
+    /// <param name="Params"> (Variant) Array of parameter values</param>
     function DoCallMethod(Instance: TObject; ClassType: TClass; const MethodName:
         String; var Params: Variant): Variant;
+    /// <summary>TtgdReport.Assign
+    /// Copy properties values from source objects
+    /// </summary>
+    /// <param name="Source"> (TPersistent) Source object</param>
     procedure Assign(Source: TPersistent); override;
+    /// <summary>TtgdReport.CreateScriptEngine
+    /// Create script engine
+    /// </summary>
+    /// <returns> ItgdScriptEngine
+    /// </returns>
     function CreateScriptEngine: ItgdScriptEngine;
   published
     /// <summary>TtgdReport.AddLineFunctionName

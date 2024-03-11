@@ -33,6 +33,7 @@ contains
   tgdScriptElementsUnit in '..\Sources\tgdScriptElementsUnit.pas',
   tgdCollectionsUnit in '..\Sources\tgdCollectionsUnit.pas',
   tgdGeneratorUnit in '..\Sources\tgdGeneratorUnit.pas',
-  tgdReportUnit in '..\Sources\tgdReportUnit.pas';
+  tgdReportUnit in '..\Sources\tgdReportUnit.pas',
+  tgdBaseScriptEngineUnit in '..\Sources\tgdBaseScriptEngineUnit.pas';
 
 end.

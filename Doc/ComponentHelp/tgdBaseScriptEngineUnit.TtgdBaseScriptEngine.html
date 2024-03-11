@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Text generator for Delphi: tgdBaseScriptEngineUnit: Class TtgdBaseScriptEngine</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="PasDoc 0.16.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<div class="container"><div class="navigation">
+<h2><a href="index.html">Text generator for Delphi</a></h2><ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
+<span id="TtgdBaseScriptEngine"></span><h1 class="cio">Class TtgdBaseScriptEngine</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section"><a class="section" href="#PasDoc-Fields">Fields</a></div><div class="one_section"><a class="section" href="#PasDoc-Methods">Methods</a></div><div class="one_section">Properties</div></div>
+<span id="PasDoc-Description"></span><h2 class="unit">Unit</h2>
+<p class="unitlink">
+<a href="tgdBaseScriptEngineUnit.html">tgdBaseScriptEngineUnit</a></p>
+<h2 class="declaration">Declaration</h2>
+<p class="declaration">
+<code>type TtgdBaseScriptEngine = class(TInterfacedObject)</code></p>
+<h2 class="description">Description</h2>
+<p>
+TtgdBaseScriptEngine Base class for script engine implementations </p>
+<span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
+<ul class="hierarchy"><li class="ancestor">TInterfacedObject</li>
+<li class="thisitem">TtgdBaseScriptEngine</li></ul><h2 class="overview">Overview</h2>
+<span id="PasDoc-Fields"></span><h3 class="summary">Fields</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="tgdBaseScriptEngineUnit.TtgdBaseScriptEngine.html#FNestCount">FNestCount</a></strong>: Integer;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="tgdBaseScriptEngineUnit.TtgdBaseScriptEngine.html#FReport">FReport</a></strong>: <a href="tgdReportUnit.TtgdReport.html">TtgdReport</a>;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Methods"></span><h3 class="summary">Methods</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="tgdBaseScriptEngineUnit.TtgdBaseScriptEngine.html#AddScriptCodeLine">AddScriptCodeLine</a></strong>(ALine: string; AScript: TStrings); virtual;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="tgdBaseScriptEngineUnit.TtgdBaseScriptEngine.html#AddScriptMacroLine">AddScriptMacroLine</a></strong>(ALine: string; AScript: TStrings); virtual;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="tgdBaseScriptEngineUnit.TtgdBaseScriptEngine.html#CheckInitCompleted">CheckInitCompleted</a></strong>; virtual;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="tgdBaseScriptEngineUnit.TtgdBaseScriptEngine.html#GenerateScriptLine">GenerateScriptLine</a></strong>(ALine: string; AScript: TStrings); virtual;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>function <strong><a href="tgdBaseScriptEngineUnit.TtgdBaseScriptEngine.html#ReplaceMacroses">ReplaceMacroses</a></strong>(ALine: string): string; virtual;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="tgdBaseScriptEngineUnit.TtgdBaseScriptEngine.html#Init">Init</a></strong>(AReport: <a href="tgdReportUnit.TtgdReport.html">TtgdReport</a>); virtual; stdcall;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="tgdBaseScriptEngineUnit.TtgdBaseScriptEngine.html#ConvertTemplateToScript">ConvertTemplateToScript</a></strong>(AScript: TStrings; ATemplateLines: TStrings = nil); virtual; stdcall;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Fields</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="FNestCount"></span><code><strong>FNestCount</strong>: Integer;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TtgdBaseScriptEngine.FNestCount Nest level of parse </p>
+<p>
+ type:Integer</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="FReport"></span><code><strong>FReport</strong>: <a href="tgdReportUnit.TtgdReport.html">TtgdReport</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TtgdBaseScriptEngine.FReport TextGenDel report - engine context </p>
+<p>
+ type:TtgdReport</p>
+</td></tr>
+</table>
+<h3 class="detail">Methods</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="AddScriptCodeLine"></span><code>procedure <strong>AddScriptCodeLine</strong>(ALine: string; AScript: TStrings); virtual;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TtgdBaseScriptEngine.AddScriptCodeLine Add line of script code to script </p>
+<p>
+ 
+
+<p></p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>ALine</dt>
+<dd>(string)</dd>
+<dt>AScript</dt>
+<dd>(TStrings)</dd>
+</dl>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="AddScriptMacroLine"></span><code>procedure <strong>AddScriptMacroLine</strong>(ALine: string; AScript: TStrings); virtual;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TtgdBaseScriptEngine.AddScriptMacroLine Add line having macro definitions to script </p>
+<p>
+ 
+
+<p></p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>ALine</dt>
+<dd>(string)</dd>
+<dt>AScript</dt>
+<dd>(TStrings)</dd>
+</dl>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="CheckInitCompleted"></span><code>procedure <strong>CheckInitCompleted</strong>; virtual;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TtgdBaseScriptEngine.CheckInitCompleted Verify for generator was properly initiated before use </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="GenerateScriptLine"></span><code>procedure <strong>GenerateScriptLine</strong>(ALine: string; AScript: TStrings); virtual;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TtgdBaseScriptEngine.GenerateScriptLine Convert line from template format to script format </p>
+<p>
+ 
+
+<p></p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>ALine</dt>
+<dd>(string)</dd>
+<dt>AScript</dt>
+<dd>(TStrings)</dd>
+</dl>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="ReplaceMacroses"></span><code>function <strong>ReplaceMacroses</strong>(ALine: string): string; virtual;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TtgdBaseScriptEngine.ReplaceMacroses Replace macro definitions with script </p>
+<p>
+  </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>ALine</dt>
+<dd>(string)</dd>
+</dl>
+<h6 class="description_section">Returns</h6>
+<p class="return"> string </p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="Init"></span><code>procedure <strong>Init</strong>(AReport: <a href="tgdReportUnit.TtgdReport.html">TtgdReport</a>); virtual; stdcall;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TtgdBaseScriptEngine.Init Initiate generator before usage </p>
+<p>
+ </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>AReport</dt>
+<dd>(TtgdReport)</dd>
+</dl>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="ConvertTemplateToScript"></span><code>procedure <strong>ConvertTemplateToScript</strong>(AScript: TStrings; ATemplateLines: TStrings = nil); virtual; stdcall;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TtgdBaseScriptEngine.ConvertTemplateToScript Convert template lines to script lines </p>
+<p>
+ 
+
+<p></p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>AScript</dt>
+<dd>(TStrings)</dd>
+<dt>ATemplateLines</dt>
+<dd>(TStrings)</dd>
+</dl>
+</td></tr>
+</table>
+<hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0</a>. </em>
+</span>
+</div></div></body></html>

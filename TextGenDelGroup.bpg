@@ -9,8 +9,7 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = TextGenDelD7.bpl TextGenDelFastScriptD7.bpl TextGenDelEditorD7.bpl \
-  FastScriptDemo.exe
+PROJECTS = TextGenDelD7.bpl TextGenDelFastScriptD7.bpl TextGenDelEditorD7.bpl
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -22,9 +21,6 @@ TextGenDelEditorD7.bpl: Packages\TextGenDelEditorD7.dpk
   $(DCC)
 
 TextGenDelFastScriptD7.bpl: Packages\TextGenDelFastScriptD7.dpk
-  $(DCC)
-
-FastScriptDemo.exe: Demo\FastScript\FastScriptDemo.dpr
   $(DCC)
 
 

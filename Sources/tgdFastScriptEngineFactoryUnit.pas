@@ -35,7 +35,7 @@ uses
 
 procedure Register;
 begin
-  RegisterComponents('Tgd', [TtgdFastScriptEngineFactory]);
+  RegisterComponents(STextGenDelComponentPage, [TtgdFastScriptEngineFactory]);
 end;
 
 function TtgdFastScriptEngineFactory.CreateScriptEngine: ItgdScriptEngine;

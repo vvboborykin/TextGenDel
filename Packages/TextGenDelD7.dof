@@ -105,17 +105,13 @@ HostApplication=
 Launcher=
 UseLauncher=0
 DebugCWD=
-[Language]
-ActiveLang=
-ProjectLang=
-RootDir=C:\Program Files (x86)\Borland\Delphi7\Bin\
 [Version Info]
 IncludeVerInfo=1
-AutoIncBuild=0
+AutoIncBuild=1
 MajorVer=1
 MinorVer=0
 Release=0
-Build=0
+Build=3
 Debug=0
 PreRelease=0
 Special=0
@@ -126,22 +122,10 @@ CodePage=1251
 [Version Info Keys]
 CompanyName=
 FileDescription=
-FileVersion=1.0.0.0
+FileVersion=1.0.0.3
 InternalName=
 LegalCopyright=
 LegalTrademarks=
 OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
-[Excluded Packages]
-C:\YandexDisk\Delphi\Components\FastReport5\LibD7\dclfrxBDE7.bpl=FastReport 5.0 BDE Components
-[HistoryLists\hlDebugSourcePath]
-Count=1
-Item0=C:\Program Files\Borland\Delphi7\zeos\src\dbc\
-[HistoryLists\hlUnitAliases]
-Count=1
-Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-[HistoryLists\hlUnitOutputDirectory]
-Count=2
-Item0=..\Lib\D7
-Item1=..\..\Lib\D7

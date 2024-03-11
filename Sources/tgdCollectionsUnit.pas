@@ -162,6 +162,8 @@ type
 
   TtgdReportFunctionExecuteEvent = function(Sender: TtgdReportFunction; AParams: Variant): Variant of object;
 
+  TtgdDoExecuteEvent = function (AName: string; AParams: Variant): Variant of object;
+
   /// <summary>TtgdReportFunction
   /// Additional custom function for use in template
   /// </summary>

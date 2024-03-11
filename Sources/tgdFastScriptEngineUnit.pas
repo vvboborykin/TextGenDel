@@ -2,7 +2,7 @@
 * Project: TextGenDelTest
 * Unit: tgdFastScriptEngineUnit.pas
 * Description: Implimentation of Script Engine Interface Based On FastScript library
-* 
+*
 * Created: 08.02.2024 10:50:19
 * Copyright (C) 2024 Боборыкин В.В. (bpost@yandex.ru)
 *******************************************************}
@@ -11,7 +11,7 @@ unit tgdFastScriptEngineUnit;
 interface
 
 uses
-  SysUtils, Classes, Variants, StrUtils, DateUtils, 
+  SysUtils, Classes, Variants, StrUtils, DateUtils, tgdBaseScriptEngineUnit,
   tgdScriptElementsUnit, tgdReportUnit, fs_iinterpreter, fs_ipascal,
   fs_iclassesrtti;
 
@@ -19,33 +19,20 @@ type
   /// <summary>TtgdFastScriptEngine
   /// Implimentation of Script Engine Interface Based On FastScript library
   /// </summary>
-  TtgdFastScriptEngine = class(TInterfacedObject, ItgdScriptEngine)
+  TtgdFastScriptEngine = class(TtgdBaseScriptEngine, ItgdScriptEngine)
   private
-    FNestCount: Integer;
-    FReport: TtgdReport;
     FResultLines: TStrings;
     FScript: TfsScript;
+    procedure AddComponentRegistration(vComponent: TComponent);
     procedure AddScriptElementToList(AItem: TfsItemList; AChildren:
       TtgdScriptElementList);
-    procedure AddComponentRegistration(vComponent: TComponent);
-    procedure AddScriptCodeLine(ALine: string; AScript: TStrings);
-    procedure AddScriptMacroLine(ALine: string; AScript: TStrings);
     function CallAddLine(Instance: TObject; ClassType: TClass; const MethodName:
       string; var Params: Variant): Variant;
-    procedure CheckInitCompleted;
-    procedure ConvertTemplateToScript(AScript: TStrings; ATemplateLines:
-      TStrings = nil); stdcall;
-    procedure ExecuteScript(AScript, AResultLines: TStrings); stdcall;
     procedure FindRootItemByName(AName: string; var vParentItem: TfsItemList);
     procedure FindSubItemByName(AName: string; var vParentItem: TfsItemList);
-    procedure GenerateScriptLine(ALine: string; AScript: TStrings);
-    procedure GetChildrenScriptElements(AParent: TObject; AChildren:
-      TtgdScriptElementList); stdcall;
-    procedure GetCompletionItems(AText: string; AItems, AInserts: TStrings); stdcall;
     procedure GetSubItemByTokenName(AName: string; var vParentItem: TfsItemList);
     procedure GetSubitemsStartedWithName(AItem: TfsItemList; ANameStart: string;
       AItems, AInserts: TStrings);
-    procedure Init(AReport: TtgdReport); stdcall;
     procedure LoadRootElements(AChildren: TtgdScriptElementList);
     procedure LoadSubElements(AParent: TObject; AChildren: TtgdScriptElementList);
     procedure RaiseCompileError;
@@ -53,8 +40,37 @@ type
     procedure RegisterContext;
     procedure RegisterFunctions;
     procedure RegisterVariables;
-    function ReplaceMacroses(ALine: string): string;
+  protected
+    /// <summary>ItgdScriptEngine.GetCompletionItems
+    /// Get autocompletion itetms for text
+    /// </summary>
+    /// <param name="AText"> (string) </param>
+    /// <param name="AItems"> (TStrings) </param>
+    /// <param name="AInserts"> (TStrings) </param>
+    procedure GetCompletionItems(AText: string; AItems, AInserts: TStrings); stdcall;
+    /// <summary>ItgdScriptEngine.GetChildrenScriptElements
+    /// Get script children elements
+    /// </summary>
+    /// <param name="AParent"> (TObject) </param>
+    /// <param name="AChildren"> (TObjectList) </param>
+    procedure GetChildrenScriptElements(AParent: TObject; AChildren:
+      TtgdScriptElementList); stdcall;
+    /// <summary>ItgdScriptEngine.ValidateScript
+    /// Validate script
+    /// </summary>
+    /// <param name="AScript"> (TStrings) Script lines</param>
     procedure ValidateScript(AScript: TStrings); stdcall;
+    /// <summary>ItgdScriptEngine.Init
+    /// Initialize script engine before use
+    /// </summary>
+    /// <param name="AReport"> (TtgdReport) Report context</param>
+    procedure Init(AReport: TtgdReport); override; stdcall;
+    /// <summary>ItgdScriptEngine.ExecuteScript
+    /// Execute script (generate text)
+    /// </summary>
+    /// <param name="AScript"> (TStrings) Script source to generate text</param>
+    /// <param name="AResultLines"> (TStrings) Result text lines recipient</param>
+    procedure ExecuteScript(AScript, AResultLines: TStrings); stdcall;
   public
     constructor Create;
     destructor Destroy; override;
@@ -81,6 +97,12 @@ destructor TtgdFastScriptEngine.Destroy;
 begin
   FreeAndNil(FScript);
   inherited Destroy;
+end;
+
+procedure TtgdFastScriptEngine.AddComponentRegistration(vComponent: TComponent);
+begin
+  RegisterComponentClass(vComponent.ClassType);
+  FScript.AddComponent(vComponent);
 end;
 
 procedure TtgdFastScriptEngine.AddScriptElementToList(AItem: TfsItemList;
@@ -139,68 +161,10 @@ begin
   end;
 end;
 
-procedure TtgdFastScriptEngine.AddComponentRegistration(vComponent: TComponent);
-begin
-  RegisterComponentClass(vComponent.ClassType);
-  FScript.AddComponent(vComponent);
-end;
-
-procedure TtgdFastScriptEngine.AddScriptCodeLine(ALine: string; AScript: TStrings);
-var
-  vText: string;
-begin
-  vText := StringReplace(ALine, FReport.CodeBeginMarker, '', [rfReplaceAll]);
-  vText := StringReplace(vText, FReport.CodeEndMarker, '', [rfReplaceAll]);
-  AScript.Add(vText);
-end;
-
-procedure TtgdFastScriptEngine.AddScriptMacroLine(ALine: string; AScript: TStrings);
-var
-  vText: string;
-begin
-  vText := ReplaceMacroses(ALine);
-  vText := '''' + vText + '''';
-
-  if AnsiStartsText(''' + ', vText) then
-    vText := MidStr(vText, 5, MaxInt);
-
-  if AnsiEndsText(' + ''', vText) then
-    vText := LeftStr(vText, Length(vText) - 4);
-
-  AScript.Add(FReport.AddLineFunctionName + '(' + vText + ');');
-end;
-
 function TtgdFastScriptEngine.CallAddLine(Instance: TObject; ClassType: TClass;
   const MethodName: string; var Params: Variant): Variant;
 begin
   Result := FResultLines.Add(VarToStr(Params[0]));
-end;
-
-procedure TtgdFastScriptEngine.CheckInitCompleted;
-begin
-  if FReport = nil then
-    raise Exception.Create(SInitMetodNotExecuted);
-end;
-
-procedure TtgdFastScriptEngine.ConvertTemplateToScript(AScript: TStrings;
-  ATemplateLines: TStrings = nil);
-var
-  I: Integer;
-begin
-  CheckInitCompleted();
-  FNestCount := 0;
-
-  if ATemplateLines = nil then
-    ATemplateLines := FReport.TemplateLines;
-
-  for I := 0 to ATemplateLines.Count - 1 do
-    GenerateScriptLine(ATemplateLines[I], AScript);
-
-  if (AScript.Count = 0) or (Trim(AScript[AScript.Count - 1]) <> 'end.') then
-  begin
-    AScript.Insert(0, 'begin');
-    AScript.Append('end.');
-  end;
 end;
 
 procedure TtgdFastScriptEngine.ExecuteScript(AScript, AResultLines: TStrings);
@@ -276,20 +240,6 @@ begin
       vChildren.Free;
     end;
   end;
-end;
-
-procedure TtgdFastScriptEngine.GenerateScriptLine(ALine: string; AScript: TStrings);
-begin
-  if AnsiStartsText(FReport.CodeBeginMarker, Trim(ALine)) then
-    Inc(FNestCount);
-
-  if FNestCount > 0 then
-    AddScriptCodeLine(ALine, AScript)
-  else
-    AddScriptMacroLine(ALine, AScript);
-
-  if AnsiEndsText(FReport.CodeEndMarker, Trim(ALine)) then
-    Dec(FNestCount);
 end;
 
 procedure TtgdFastScriptEngine.GetChildrenScriptElements(AParent: TObject;
@@ -373,10 +323,7 @@ end;
 
 procedure TtgdFastScriptEngine.Init(AReport: TtgdReport);
 begin
-  if (AReport = nil) then
-    raise Exception.Create(SAReportIsNil);
-
-  FReport := AReport;
+  inherited Init(AReport);
   RegisterContext();
   RegisterVariables();
   RegisterFunctions();
@@ -514,13 +461,6 @@ begin
     vItem := FReport.Variables.Items[I];
     FScript.AddVariable(vItem.Name, 'Variant', vItem.Value);
   end;
-end;
-
-function TtgdFastScriptEngine.ReplaceMacroses(ALine: string): string;
-begin
-  Result := ALine;
-  Result := StringReplace(Result, FReport.MacroBeginMarker, ''' + ', [rfReplaceAll]);
-  Result := StringReplace(Result, FReport.MacroEndMarker, ' + ''', [rfReplaceAll]);
 end;
 
 procedure TtgdFastScriptEngine.ValidateScript(AScript: TStrings);

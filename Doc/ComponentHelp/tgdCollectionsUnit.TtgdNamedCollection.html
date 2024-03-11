@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Text generator for Delphi: tgdCollectionsUnit: Class TtgdNamedCollection</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="PasDoc 0.16.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<div class="container"><div class="navigation">
+<h2><a href="index.html">Text generator for Delphi</a></h2><ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
+<span id="TtgdNamedCollection"></span><h1 class="cio">Class TtgdNamedCollection</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section">Fields</div><div class="one_section"><a class="section" href="#PasDoc-Methods">Methods</a></div><div class="one_section"><a class="section" href="#PasDoc-Properties">Properties</a></div></div>
+<span id="PasDoc-Description"></span><h2 class="unit">Unit</h2>
+<p class="unitlink">
+<a href="tgdCollectionsUnit.html">tgdCollectionsUnit</a></p>
+<h2 class="declaration">Declaration</h2>
+<p class="declaration">
+<code>type TtgdNamedCollection = class(TOwnedCollection)</code></p>
+<h2 class="description">Description</h2>
+<p>
+TtgdNamedCollection Base collection of named items </p>
+<span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
+<ul class="hierarchy"><li class="ancestor">TObject</li>
+<li class="ancestor">TPersistent</li>
+<li class="ancestor">TCollection</li>
+<li class="ancestor">TOwnedCollection</li>
+<li class="thisitem">TtgdNamedCollection</li></ul><h2 class="overview">Overview</h2>
+<span id="PasDoc-Methods"></span><h3 class="summary">Methods</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>function <strong><a href="tgdCollectionsUnit.TtgdNamedCollection.html#GetItems">GetItems</a></strong>(Index: Integer): <a href="tgdCollectionsUnit.TtgdNamedCollectionItem.html">TtgdNamedCollectionItem</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>function <strong><a href="tgdCollectionsUnit.TtgdNamedCollection.html#GetValues">GetValues</a></strong>(Name: String): <a href="tgdCollectionsUnit.TtgdNamedCollectionItem.html">TtgdNamedCollectionItem</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="tgdCollectionsUnit.TtgdNamedCollection.html#SetItems">SetItems</a></strong>(Index: Integer; const Value: <a href="tgdCollectionsUnit.TtgdNamedCollectionItem.html">TtgdNamedCollectionItem</a>);</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="tgdCollectionsUnit.TtgdNamedCollection.html#Assign">Assign</a></strong>(ASource: TPersistent); override;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>function <strong><a href="tgdCollectionsUnit.TtgdNamedCollection.html#ContainsName">ContainsName</a></strong>(AName: string): Boolean;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>function <strong><a href="tgdCollectionsUnit.TtgdNamedCollection.html#FindName">FindName</a></strong>(AName: string): <a href="tgdCollectionsUnit.TtgdNamedCollectionItem.html">TtgdNamedCollectionItem</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>function <strong><a href="tgdCollectionsUnit.TtgdNamedCollection.html#IndexOfName">IndexOfName</a></strong>(AName: string; APartialSearch: Boolean = False): Integer;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>function <strong><a href="tgdCollectionsUnit.TtgdNamedCollection.html#TryFindName">TryFindName</a></strong>(AName: string; out AItem: <a href="tgdCollectionsUnit.TtgdNamedCollectionItem.html">TtgdNamedCollectionItem</a>): Boolean;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Properties"></span><h3 class="summary">Properties</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="tgdCollectionsUnit.TtgdNamedCollection.html#Items">Items</a></strong>[Index:Integer]: <a href="tgdCollectionsUnit.TtgdNamedCollectionItem.html">TtgdNamedCollectionItem</a> read <a href="tgdCollectionsUnit.TtgdNamedCollection.html#GetItems">GetItems</a> write
+        <a href="tgdCollectionsUnit.TtgdNamedCollection.html#SetItems">SetItems</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="tgdCollectionsUnit.TtgdNamedCollection.html#Values">Values</a></strong>[Name:String]: <a href="tgdCollectionsUnit.TtgdNamedCollectionItem.html">TtgdNamedCollectionItem</a> read <a href="tgdCollectionsUnit.TtgdNamedCollection.html#GetValues">GetValues</a>;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Methods</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="GetItems"></span><code>function <strong>GetItems</strong>(Index: Integer): <a href="tgdCollectionsUnit.TtgdNamedCollectionItem.html">TtgdNamedCollectionItem</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="GetValues"></span><code>function <strong>GetValues</strong>(Name: String): <a href="tgdCollectionsUnit.TtgdNamedCollectionItem.html">TtgdNamedCollectionItem</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="SetItems"></span><code>procedure <strong>SetItems</strong>(Index: Integer; const Value: <a href="tgdCollectionsUnit.TtgdNamedCollectionItem.html">TtgdNamedCollectionItem</a>);</code></td>
+</tr>
+<tr><td colspan="2">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Assign"></span><code>procedure <strong>Assign</strong>(ASource: TPersistent); override;</code></td>
+</tr>
+<tr><td colspan="2">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="ContainsName"></span><code>function <strong>ContainsName</strong>(AName: string): Boolean;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TtgdNamedCollection.ContainsName Is collection contains item having specified name </p>
+<p>
+  </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>AName</dt>
+<dd>(string) Item`s name to find</dd>
+</dl>
+<h6 class="description_section">Returns</h6>
+<p class="return"> Boolean </p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="FindName"></span><code>function <strong>FindName</strong>(AName: string): <a href="tgdCollectionsUnit.TtgdNamedCollectionItem.html">TtgdNamedCollectionItem</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TtgdNamedCollection.FindName Find item having specified name </p>
+<p>
+  </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>AName</dt>
+<dd>(string) The name of item to find</dd>
+</dl>
+<h6 class="description_section">Returns</h6>
+<p class="return"> TtgdNamedCollectionItem nil if not found </p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="IndexOfName"></span><code>function <strong>IndexOfName</strong>(AName: string; APartialSearch: Boolean = False): Integer;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TtgdNamedCollection.IndexOfName The index of item having specified name in collection </p>
+<p>
+  
+
+<p></p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>AName</dt>
+<dd>(string) Name of item to find</dd>
+<dt>APartialSearch</dt>
+<dd>(Boolean)</dd>
+</dl>
+<h6 class="description_section">Returns</h6>
+<p class="return"> Integer -1 if not found </p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TryFindName"></span><code>function <strong>TryFindName</strong>(AName: string; out AItem: <a href="tgdCollectionsUnit.TtgdNamedCollectionItem.html">TtgdNamedCollectionItem</a>): Boolean;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TtgdNamedCollection.TryFindName Try to find item having specified name </p>
+<p>
+  
+
+<p></p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>AName</dt>
+<dd>(string) Name of item to find</dd>
+<dt>AItem</dt>
+<dd>(TtgdNamedCollectionItem) Found item or nil if not found</dd>
+</dl>
+<h6 class="description_section">Returns</h6>
+<p class="return"> Boolean True is found, otherwise False </p></td></tr>
+</table>
+<h3 class="detail">Properties</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Items"></span><code>property <strong>Items</strong>[Index:Integer]: <a href="tgdCollectionsUnit.TtgdNamedCollectionItem.html">TtgdNamedCollectionItem</a> read <a href="tgdCollectionsUnit.TtgdNamedCollection.html#GetItems">GetItems</a> write
+        <a href="tgdCollectionsUnit.TtgdNamedCollection.html#SetItems">SetItems</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TtgdNamedCollection.Items Collection elements </p>
+<p>
+ type:TtgdNamedCollectionItem </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>Index</dt>
+<dd>(Integer) Element index</dd>
+</dl>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Values"></span><code>property <strong>Values</strong>[Name:String]: <a href="tgdCollectionsUnit.TtgdNamedCollectionItem.html">TtgdNamedCollectionItem</a> read <a href="tgdCollectionsUnit.TtgdNamedCollection.html#GetValues">GetValues</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TtgdNamedCollection.Values Elements by name </p>
+<p>
+ type:TtgdNamedCollectionItem </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>Name</dt>
+<dd>(String)</dd>
+</dl>
+</td></tr>
+</table>
+<hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0</a>. </em>
+</span>
+</div></div></body></html>

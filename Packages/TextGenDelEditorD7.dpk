@@ -28,10 +28,10 @@ package TextGenDelEditorD7;
 requires
   rtl,
   vcl,
-  SynEdit_R7,
   designide,
   vcljpg,
-  TextGenDelD7;
+  TextGenDelD7,
+  SynEdit_R7;
 
 contains
   dlgConfirmReplace in '..\Sources\dlgConfirmReplace.pas' {ConfirmReplaceDialog},
