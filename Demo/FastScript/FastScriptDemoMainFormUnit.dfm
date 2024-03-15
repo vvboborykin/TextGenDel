@@ -1,6 +1,6 @@
 inherited FastScriptDemoMainForm: TFastScriptDemoMainForm
-  Left = 412
-  Top = 147
+  Left = 407
+  Top = 204
   Caption = 'FastScript Demo Main Form'
   PixelsPerInch = 96
   TextHeight = 19

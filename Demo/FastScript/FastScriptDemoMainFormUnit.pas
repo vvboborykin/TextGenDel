@@ -15,7 +15,7 @@ uses
   Dialogs, fs_idbrtti, fs_iinirtti, fs_iextctrlsrtti, fs_iformsrtti,
   fs_iclassesrtti, tgdReportUnit, DB, DBClient, StdCtrls,
   tgdFastScriptEngineFactoryUnit, DemoBaseMainFormUnit, ActnList, ExtCtrls,
-  DBCtrls, Grids, DBGrids, ComCtrls;
+  DBCtrls, Grids, DBGrids, ComCtrls, tgdCollectionsUnit;
 
 type
   /// <summary>TFastScriptDemoMainForm
