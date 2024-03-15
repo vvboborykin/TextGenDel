@@ -18,6 +18,11 @@ inherited FastScriptDemoMainForm: TFastScriptDemoMainForm
   end
   inherited tgrReport: TtgdReport
     ScriptEngineFactory = fseScriptEngine
+    Variables = <
+      item
+        Name = 'MyVar'
+        Value = '000000000'
+      end>
   end
   object fsClassesRTTI1: TfsClassesRTTI [8]
     Left = 296
