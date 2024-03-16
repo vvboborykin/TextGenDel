@@ -1,12 +1,12 @@
 {*******************************************************
-* Project: TextGenDelEditorD7
+* Project: TextGenDelEditorD11
 * Unit: tgdReportEditorFormUnit.pas
 * Description: Report component editor form
 *
 * Created: 04.03.2024 16:53:17
 * Copyright (C) 2024 Боборыкин В.В. (bpost@yandex.ru)
 *******************************************************}
-unit tgdReportEditorFormUnit;
+unit tgdReportEditorFormD11Unit;
 
 interface
 
@@ -18,13 +18,14 @@ uses
   SynHighlighterXML, SynHighlighterJSON, tgdReportUnit,
   tgdScriptElementsUnit, SynUnicode,
   SynHighlighterGeneral, SynHighlighterIni, SynHighlighterSQL,
-  SynHighlighterHtml, Menus, StdActns;
+  SynHighlighterHtml, Menus, StdActns, System.Actions, System.ImageList,
+  SynEditCodeFolding, System.UITypes;
 
 type
   /// <summary>TtgdReportEditorForm
   /// Report component editor form
   /// </summary>
-  TtgdReportEditorForm = class(TForm)
+  TtgdReportEditorFormD11 = class(TForm)
     synPascalSyntax: TSynPasSyn;
     synsSearch: TSynEditSearch;
     pnlClient: TPanel;
@@ -99,9 +100,6 @@ type
     procedure actValidateExecute(Sender: TObject);
     procedure cbbTemplateSyntaxChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure sypCompleteExecute(Kind: SynCompletionType; Sender:
-      TObject; var CurrentInput: WideString; var x, y: Integer; var CanExecute:
-        Boolean);
     procedure SynEditorReplaceText(Sender: TObject; const ASearch, AReplace:
       UnicodeString; Line, Column: Integer; var Action: TSynReplaceAction);
     procedure synmTemplateChange(Sender: TObject);
@@ -111,6 +109,8 @@ type
       TDragState; var Accept: Boolean);
     procedure synmTemplateKeyUp(Sender: TObject; var Key: Word; Shift:
       TShiftState);
+    procedure sypCompleteExecute(Kind: SynCompletionType; Sender: TObject; var
+        CurrentInput: string; var x, y: Integer; var CanExecute: Boolean);
     procedure tvContextEditing(Sender: TObject; Node: TTreeNode; var AllowEdit:
       Boolean);
     procedure tvContextExpanding(Sender: TObject; Node: TTreeNode; var
@@ -222,19 +222,19 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.actCancelExecute(Sender: TObject);
+procedure TtgdReportEditorFormD11.actCancelExecute(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TtgdReportEditorForm.actExecuteReportExecute(Sender: TObject);
+procedure TtgdReportEditorFormD11.actExecuteReportExecute(Sender: TObject);
 begin
   ExecuteReportForCurrentTemplate;
 end;
 
 { event handler }
 
-procedure TtgdReportEditorForm.ActionFileOpenExecute(Sender: TObject);
+procedure TtgdReportEditorFormD11.ActionFileOpenExecute(Sender: TObject);
 begin
   if dlgOpenFile.Execute then
   begin
@@ -243,58 +243,58 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.ActionSearchExecute(Sender: TObject);
+procedure TtgdReportEditorFormD11.ActionSearchExecute(Sender: TObject);
 begin
   ShowSearchReplaceDialog(FALSE);
 end;
 
-procedure TtgdReportEditorForm.ActionSearchNextExecute(Sender: TObject);
+procedure TtgdReportEditorFormD11.ActionSearchNextExecute(Sender: TObject);
 begin
   DoSearchReplaceText(FALSE, FALSE);
 end;
 
-procedure TtgdReportEditorForm.ActionSearchPrevExecute(Sender: TObject);
+procedure TtgdReportEditorFormD11.ActionSearchPrevExecute(Sender: TObject);
 begin
   DoSearchReplaceText(FALSE, TRUE);
 end;
 
-procedure TtgdReportEditorForm.ActionSearchReplaceExecute(Sender: TObject);
+procedure TtgdReportEditorFormD11.ActionSearchReplaceExecute(Sender: TObject);
 begin
   ShowSearchReplaceDialog(TRUE);
 end;
 
-procedure TtgdReportEditorForm.ActionSearchReplaceUpdate(Sender: TObject);
+procedure TtgdReportEditorFormD11.ActionSearchReplaceUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled := (gsSearchText <> '')
     and not synmTemplate.ReadOnly;
 end;
 
-procedure TtgdReportEditorForm.actLoadExecute(Sender: TObject);
+procedure TtgdReportEditorFormD11.actLoadExecute(Sender: TObject);
 begin
   LoadTemplateFromFile;
 end;
 
-procedure TtgdReportEditorForm.actOkExecute(Sender: TObject);
+procedure TtgdReportEditorFormD11.actOkExecute(Sender: TObject);
 begin
   SaveChangesToReport;
 end;
 
-procedure TtgdReportEditorForm.actSaveExecute(Sender: TObject);
+procedure TtgdReportEditorFormD11.actSaveExecute(Sender: TObject);
 begin
   SaveTemplateToFile;
 end;
 
-procedure TtgdReportEditorForm.actSearchUpdate(Sender: TObject);
+procedure TtgdReportEditorFormD11.actSearchUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled := gsSearchText <> '';
 end;
 
-procedure TtgdReportEditorForm.actValidateExecute(Sender: TObject);
+procedure TtgdReportEditorFormD11.actValidateExecute(Sender: TObject);
 begin
   ValidateTemplate;
 end;
 
-procedure TtgdReportEditorForm.AddChildNode(AParentNode: TTreeNode;
+procedure TtgdReportEditorFormD11.AddChildNode(AParentNode: TTreeNode;
   AScriptElement: TtgdScriptElement);
 var
   vNode: TTreeNode;
@@ -306,7 +306,7 @@ begin
   vNode.Data := Pointer(Integer(AScriptElement.SourceObject));
 end;
 
-procedure TtgdReportEditorForm.AddImagesToProposalList(AProposalList:
+procedure TtgdReportEditorFormD11.AddImagesToProposalList(AProposalList:
   TUnicodeStrings; AItems: TStrings);
 var
   I: Integer;
@@ -322,13 +322,13 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.cbbTemplateSyntaxChange(Sender: TObject);
+procedure TtgdReportEditorFormD11.cbbTemplateSyntaxChange(Sender: TObject);
 begin
   SetTemplateSyntax(cbbTemplateSyntax.Items.Objects[cbbTemplateSyntax.ItemIndex]
     as TSynCustomHighlighter);
 end;
 
-procedure TtgdReportEditorForm.DoSearchReplaceText(AReplace: Boolean;
+procedure TtgdReportEditorFormD11.DoSearchReplaceText(AReplace: Boolean;
   ABackwards: Boolean);
 var
   Options: TSynSearchOptions;
@@ -362,7 +362,7 @@ begin
     ConfirmReplaceDialog.Free;
 end;
 
-procedure TtgdReportEditorForm.ExecuteReportForCurrentTemplate;
+procedure TtgdReportEditorFormD11.ExecuteReportForCurrentTemplate;
 var
   I: Integer;
   dlgSaveReport: TSaveDialog;
@@ -393,7 +393,7 @@ begin
   end;
 end;
 
-function TtgdReportEditorForm.FileNameMatchesHighliterMask(vFileName: string;
+function TtgdReportEditorFormD11.FileNameMatchesHighliterMask(vFileName: string;
   vHighliter: TSynCustomHighlighter): Boolean;
 var
   I: Integer;
@@ -422,7 +422,7 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.FillTemplateSyntaxComboBoxList;
+procedure TtgdReportEditorFormD11.FillTemplateSyntaxComboBoxList;
 var
   I: Integer;
   vSyntaxName: string;
@@ -438,7 +438,7 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.FormCloseQuery(Sender: TObject; var CanClose:
+procedure TtgdReportEditorFormD11.FormCloseQuery(Sender: TObject; var CanClose:
   Boolean);
 var
   vAnswer: Integer;
@@ -455,7 +455,7 @@ begin
   end;
 end;
 
-function TtgdReportEditorForm.GetHighlighterForFileName(AFileName: string):
+function TtgdReportEditorFormD11.GetHighlighterForFileName(AFileName: string):
   TSynCustomHighlighter;
 var
   I: Integer;
@@ -480,7 +480,7 @@ begin
     Result := synXmlSyntax;
 end;
 
-function TtgdReportEditorForm.GetImageIndexOfScriptElement(AScriptElement:
+function TtgdReportEditorFormD11.GetImageIndexOfScriptElement(AScriptElement:
   TtgdScriptElement): Integer;
 begin
   Result := 0;
@@ -503,7 +503,7 @@ begin
   else
 end;
 
-function TtgdReportEditorForm.GetNodeChainText(ANode: TTreeNode): string;
+function TtgdReportEditorFormD11.GetNodeChainText(ANode: TTreeNode): string;
 begin
   Result := '';
   if ANode.Parent <> nil then
@@ -511,14 +511,14 @@ begin
   Result := Result + IfThen(Result = '', '', '.') + ANode.Text
 end;
 
-function TtgdReportEditorForm.GetRandomName: string;
+function TtgdReportEditorFormD11.GetRandomName: string;
 begin
   Result := CreateClassID;
   Result := MidStr(Result, 2, Length(Result) - 2);
   Result := StringReplace(Result, '-', '', [rfReplaceAll]);
 end;
 
-function TtgdReportEditorForm.GetScriptElementClassImage(AClass: TClass):
+function TtgdReportEditorFormD11.GetScriptElementClassImage(AClass: TClass):
   Integer;
 begin
   Result := 0;
@@ -538,7 +538,7 @@ begin
     Result := 5
 end;
 
-function TtgdReportEditorForm.GetTextLeftOfCaret: string;
+function TtgdReportEditorFormD11.GetTextLeftOfCaret: string;
 const
   TokenChars = ['a'..'z', 'A'..'Z', '_', '.'];
 var
@@ -556,7 +556,11 @@ begin
       while I >= 1 do
       begin
         vChar := vLine[I];
+{$IFDEF UNICODE}
+        if CharInSet(vChar, TokenChars) then
+{$ELSE}
         if vChar in TokenChars then
+{$ENDIF}
         begin
           Result := vChar + Result;
           Dec(I)
@@ -568,7 +572,7 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.Init(AReport: TtgdReport);
+procedure TtgdReportEditorFormD11.Init(AReport: TtgdReport);
 begin
   FInitCompleted := False;
 
@@ -585,7 +589,7 @@ begin
   FInitCompleted := True;
 end;
 
-procedure TtgdReportEditorForm.InsertIntoTemplateCaretPos(AText: string);
+procedure TtgdReportEditorFormD11.InsertIntoTemplateCaretPos(AText: string);
 var
   vText: string;
 begin
@@ -600,7 +604,7 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.InsertSelectedTreeNodeToTemplate;
+procedure TtgdReportEditorFormD11.InsertSelectedTreeNodeToTemplate;
 var
   vNodeText: string;
   vText: string;
@@ -620,12 +624,12 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.LoadAutoCompleteList(ANestLevel: Integer = 4);
+procedure TtgdReportEditorFormD11.LoadAutoCompleteList(ANestLevel: Integer = 4);
 begin
 
 end;
 
-procedure TtgdReportEditorForm.LoadLines;
+procedure TtgdReportEditorFormD11.LoadLines;
 var
   vLines: TStrings;
   dlgLoadTemplate: TOpenDialog;
@@ -642,7 +646,7 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.LoadTemplateFromFile;
+procedure TtgdReportEditorFormD11.LoadTemplateFromFile;
 var
   dlgLoadTemplate: TOpenDialog;
 begin
@@ -659,18 +663,18 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.LoadTemplateSyntax;
+procedure TtgdReportEditorFormD11.LoadTemplateSyntax;
 begin
   FillTemplateSyntaxComboBoxList();
   SelectReportTemplateSyntaxInComboBox();
 end;
 
-procedure TtgdReportEditorForm.LoadTopTreeNodes;
+procedure TtgdReportEditorFormD11.LoadTopTreeNodes;
 begin
   LoadTreeNodes(nil, [TtgdScriptVariable, TtgdScriptFunction, TtgdScriptType]);
 end;
 
-procedure TtgdReportEditorForm.LoadTreeNodes(ANode: TTreeNode;
+procedure TtgdReportEditorFormD11.LoadTreeNodes(ANode: TTreeNode;
   AScriptElementClass: array of TClass);
 var
   I: Integer;
@@ -701,7 +705,7 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.MarkModified;
+procedure TtgdReportEditorFormD11.MarkModified;
 begin
   if FInitCompleted and not FModifiedFlag then
   begin
@@ -710,13 +714,13 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.SaveChangesToReport;
+procedure TtgdReportEditorFormD11.SaveChangesToReport;
 begin
   FReport.TemplateLines.Assign(synmTemplate.Lines);
   FReport.SyntaxName := cbbTemplateSyntax.Text;
 end;
 
-procedure TtgdReportEditorForm.SaveTemplateToFile;
+procedure TtgdReportEditorFormD11.SaveTemplateToFile;
 var
   vLines: TStrings;
   dlgSaveTemplate: TSaveDialog;
@@ -741,7 +745,7 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.SelectReportTemplateSyntaxInComboBox;
+procedure TtgdReportEditorFormD11.SelectReportTemplateSyntaxInComboBox;
 var
   vIndex: Integer;
   vSyntaxName: string;
@@ -755,20 +759,20 @@ begin
     TSynCustomHighlighter);
 end;
 
-procedure TtgdReportEditorForm.SetTemplateSyntax(AHighliter:
+procedure TtgdReportEditorFormD11.SetTemplateSyntax(AHighliter:
   TSynCustomHighlighter);
 begin
   symMain.DefaultHighlighter := AHighliter;
 end;
 
-class function TtgdReportEditorForm.ShowEditor(AReport: TtgdReport): Boolean;
+class function TtgdReportEditorFormD11.ShowEditor(AReport: TtgdReport): Boolean;
 var
-  vForm: TtgdReportEditorForm;
+  vForm: TtgdReportEditorFormD11;
 begin
   if AReport = nil then
     raise Exception.Create(SAReportIsNil);
 
-  vForm := TtgdReportEditorForm.Create(Application);
+  vForm := TtgdReportEditorFormD11.Create(Application);
   try
     vForm.Init(AReport);
     Result := IsPositiveResult(vForm.ShowModal);
@@ -777,7 +781,7 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.ShowSearchReplaceDialog(AReplace: Boolean);
+procedure TtgdReportEditorFormD11.ShowSearchReplaceDialog(AReplace: Boolean);
 var
   dlg: TTextSearchDialog;
 begin
@@ -839,36 +843,7 @@ begin
     end;
 end;
 
-procedure TtgdReportEditorForm.sypCompleteExecute(Kind:
-  SynCompletionType; Sender: TObject; var CurrentInput: WideString; var x, y:
-  Integer; var CanExecute: Boolean);
-var
-  vInserts: TStringList;
-  vItems: TStringList;
-  vText: string;
-begin
-  vText := GetTextLeftOfCaret();
-  vInserts := TStringList.Create();
-  try
-    vItems := TStringList.Create;
-    try
-      FEngine.GetCompletionItems(vText, vItems, vInserts);
-
-      sypComplete.ItemList.Clear;
-      sypComplete.ItemList.AddStrings(vItems);
-      AddImagesToProposalList(sypComplete.ItemList, vItems);
-
-      sypComplete.InsertList.Clear;
-      sypComplete.InsertList.AddStrings(vInserts);
-    finally
-      vItems.Free;
-    end;
-  finally
-    vInserts.Free;
-  end;
-end;
-
-procedure TtgdReportEditorForm.SynEditorReplaceText(Sender: TObject; const
+procedure TtgdReportEditorFormD11.SynEditorReplaceText(Sender: TObject; const
   ASearch, AReplace: UnicodeString; Line, Column: Integer; var Action:
   TSynReplaceAction);
 var
@@ -901,25 +876,25 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.synmTemplateChange(Sender: TObject);
+procedure TtgdReportEditorFormD11.synmTemplateChange(Sender: TObject);
 begin
   MarkModified;
   UpdateStatusPanel;
 end;
 
-procedure TtgdReportEditorForm.synmTemplateDragDrop(Sender, Source: TObject; X,
+procedure TtgdReportEditorFormD11.synmTemplateDragDrop(Sender, Source: TObject; X,
   Y: Integer);
 begin
   InsertSelectedTreeNodeToTemplate();
 end;
 
-procedure TtgdReportEditorForm.synmTemplateDragOver(Sender, Source: TObject; X,
+procedure TtgdReportEditorFormD11.synmTemplateDragOver(Sender, Source: TObject; X,
   Y: Integer; State: TDragState; var Accept: Boolean);
 begin
   Accept := Source = tvContext;
 end;
 
-procedure TtgdReportEditorForm.synmTemplateKeyUp(Sender: TObject; var Key: Word;
+procedure TtgdReportEditorFormD11.synmTemplateKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if (Key = VK_RETURN) and (ssCtrl in Shift) then
@@ -936,14 +911,43 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.tvContextEditing(Sender: TObject; Node:
+procedure TtgdReportEditorFormD11.sypCompleteExecute(Kind: SynCompletionType;
+    Sender: TObject; var CurrentInput: string; var x, y: Integer; var
+    CanExecute: Boolean);
+var
+  vInserts: TStringList;
+  vItems: TStringList;
+  vText: string;
+begin
+  vText := GetTextLeftOfCaret();
+  vInserts := TStringList.Create();
+  try
+    vItems := TStringList.Create;
+    try
+      FEngine.GetCompletionItems(vText, vItems, vInserts);
+
+      sypComplete.ItemList.Clear;
+      sypComplete.ItemList.AddStrings(vItems);
+      AddImagesToProposalList(sypComplete.ItemList, vItems);
+
+      sypComplete.InsertList.Clear;
+      sypComplete.InsertList.AddStrings(vInserts);
+    finally
+      vItems.Free;
+    end;
+  finally
+    vInserts.Free;
+  end;
+end;
+
+procedure TtgdReportEditorFormD11.tvContextEditing(Sender: TObject; Node:
   TTreeNode;
   var AllowEdit: Boolean);
 begin
   AllowEdit := False;
 end;
 
-procedure TtgdReportEditorForm.tvContextExpanding(Sender: TObject; Node:
+procedure TtgdReportEditorFormD11.tvContextExpanding(Sender: TObject; Node:
   TTreeNode; var AllowExpansion: Boolean);
 begin
   AllowExpansion := Node.HasChildren;
@@ -952,7 +956,7 @@ begin
     LoadTreeNodes(Node, []);
 end;
 
-procedure TtgdReportEditorForm.tvContextMouseUp(Sender: TObject; Button:
+procedure TtgdReportEditorFormD11.tvContextMouseUp(Sender: TObject; Button:
   TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   vNode: TTreeNode;
@@ -968,13 +972,13 @@ begin
   end;
 end;
 
-procedure TtgdReportEditorForm.UpdateStatusPanel;
+procedure TtgdReportEditorFormD11.UpdateStatusPanel;
 begin
   statTempl.Panels[0].Text := Format('Pos: %d, %d',
     [synmTemplate.CaretY, synmTemplate.CaretX]);
 end;
 
-procedure TtgdReportEditorForm.ValidateTemplate;
+procedure TtgdReportEditorFormD11.ValidateTemplate;
 var
   I: Integer;
   vLines: TStrings;

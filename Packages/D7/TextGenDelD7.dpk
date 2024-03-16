@@ -12,11 +12,11 @@ package TextGenDelD7;
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
 {$OPTIMIZATION OFF}
-{$OVERFLOWCHECKS OFF}
-{$RANGECHECKS OFF}
+{$OVERFLOWCHECKS ON}
+{$RANGECHECKS ON}
 {$REFERENCEINFO ON}
 {$SAFEDIVIDE OFF}
-{$STACKFRAMES OFF}
+{$STACKFRAMES ON}
 {$TYPEDADDRESS OFF}
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST OFF}
@@ -24,16 +24,17 @@ package TextGenDelD7;
 {$IMAGEBASE $400000}
 {$DESCRIPTION 'Text Generator for Delphi'}
 {$IMPLICITBUILD OFF}
+{$DEFINE DEBUG}
 
 requires
   vcl,
   rtl;
 
 contains
-  tgdScriptElementsUnit in '..\Sources\tgdScriptElementsUnit.pas',
-  tgdCollectionsUnit in '..\Sources\tgdCollectionsUnit.pas',
-  tgdGeneratorUnit in '..\Sources\tgdGeneratorUnit.pas',
-  tgdReportUnit in '..\Sources\tgdReportUnit.pas',
-  tgdBaseScriptEngineUnit in '..\Sources\tgdBaseScriptEngineUnit.pas';
+  tgdScriptElementsUnit in '..\..\Sources\tgdScriptElementsUnit.pas',
+  tgdCollectionsUnit in '..\..\Sources\tgdCollectionsUnit.pas',
+  tgdGeneratorUnit in '..\..\Sources\tgdGeneratorUnit.pas',
+  tgdReportUnit in '..\..\Sources\tgdReportUnit.pas',
+  tgdBaseScriptEngineUnit in '..\..\Sources\tgdBaseScriptEngineUnit.pas';
 
 end.

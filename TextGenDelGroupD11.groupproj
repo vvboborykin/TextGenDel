@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{75231C54-23BC-4EA0-AE43-D026E43B6D9E}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Packages\D11\TextGenDelD11.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Packages\D11\TextGenDelFastScriptD11.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Packages\D11\TextGenDelEditorD11.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="TextGenDelD11">
+        <MSBuild Projects="Packages\D11\TextGenDelD11.dproj"/>
+    </Target>
+    <Target Name="TextGenDelD11:Clean">
+        <MSBuild Projects="Packages\D11\TextGenDelD11.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TextGenDelD11:Make">
+        <MSBuild Projects="Packages\D11\TextGenDelD11.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TextGenDelFastScriptD11">
+        <MSBuild Projects="Packages\D11\TextGenDelFastScriptD11.dproj"/>
+    </Target>
+    <Target Name="TextGenDelFastScriptD11:Clean">
+        <MSBuild Projects="Packages\D11\TextGenDelFastScriptD11.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TextGenDelFastScriptD11:Make">
+        <MSBuild Projects="Packages\D11\TextGenDelFastScriptD11.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TextGenDelEditorD11">
+        <MSBuild Projects="Packages\D11\TextGenDelEditorD11.dproj"/>
+    </Target>
+    <Target Name="TextGenDelEditorD11:Clean">
+        <MSBuild Projects="Packages\D11\TextGenDelEditorD11.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TextGenDelEditorD11:Make">
+        <MSBuild Projects="Packages\D11\TextGenDelEditorD11.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="TextGenDelD11;TextGenDelFastScriptD11;TextGenDelEditorD11"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="TextGenDelD11:Clean;TextGenDelFastScriptD11:Clean;TextGenDelEditorD11:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="TextGenDelD11:Make;TextGenDelFastScriptD11:Make;TextGenDelEditorD11:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

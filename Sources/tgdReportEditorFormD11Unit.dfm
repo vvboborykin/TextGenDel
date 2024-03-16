@@ -1,42 +1,43 @@
-object tgdReportEditorForm: TtgdReportEditorForm
+object tgdReportEditorFormD11: TtgdReportEditorFormD11
   Left = 595
   Top = 125
-  Width = 1034
-  Height = 634
   Caption = 'Report Editor'
+  ClientHeight = 592
+  ClientWidth = 1006
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = True
   Position = poScreenCenter
   ShowHint = True
   OnCloseQuery = FormCloseQuery
-  PixelsPerInch = 96
   TextHeight = 13
   object pnlClient: TPanel
     Left = 0
     Top = 0
-    Width = 1018
-    Height = 554
+    Width = 1006
+    Height = 551
     Align = alClient
     BevelOuter = bvNone
     BorderWidth = 7
     TabOrder = 0
+    ExplicitWidth = 1010
+    ExplicitHeight = 552
     object splVert: TSplitter
       Left = 253
       Top = 7
       Width = 5
-      Height = 540
+      Height = 538
       Beveled = True
+      ExplicitHeight = 540
     end
     object tvContext: TTreeView
       Left = 7
       Top = 7
       Width = 246
-      Height = 540
+      Height = 538
       Align = alLeft
       DragMode = dmAutomatic
       HideSelection = False
@@ -53,16 +54,18 @@ object tgdReportEditorForm: TtgdReportEditorForm
     object pnlTemplate: TPanel
       Left = 258
       Top = 7
-      Width = 753
-      Height = 540
+      Width = 741
+      Height = 537
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 1
+      ExplicitWidth = 745
+      ExplicitHeight = 538
       object synmTemplate: TSynMemo
         Left = 0
         Top = 0
-        Width = 753
-        Height = 521
+        Width = 745
+        Height = 519
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -74,6 +77,14 @@ object tgdReportEditorForm: TtgdReportEditorForm
         OnDragDrop = synmTemplateDragDrop
         OnDragOver = synmTemplateDragOver
         OnKeyUp = synmTemplateKeyUp
+        CodeFolding.GutterShapeSize = 11
+        CodeFolding.CollapsedLineColor = clGrayText
+        CodeFolding.FolderBarLinesColor = clGrayText
+        CodeFolding.IndentGuidesColor = clGray
+        CodeFolding.IndentGuides = True
+        CodeFolding.ShowCollapsedLine = False
+        CodeFolding.ShowHintMark = True
+        UseCodeFolding = False
         Gutter.Font.Charset = DEFAULT_CHARSET
         Gutter.Font.Color = clWindowText
         Gutter.Font.Height = -11
@@ -90,8 +101,8 @@ object tgdReportEditorForm: TtgdReportEditorForm
       end
       object statTempl: TStatusBar
         Left = 0
-        Top = 521
-        Width = 753
+        Top = 519
+        Width = 745
         Height = 19
         Panels = <
           item
@@ -108,12 +119,14 @@ object tgdReportEditorForm: TtgdReportEditorForm
   end
   object pnlBttons: TPanel
     Left = 0
-    Top = 554
-    Width = 1018
+    Top = 551
+    Width = 1006
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitTop = 552
+    ExplicitWidth = 1010
     object btnSave: TBitBtn
       Left = 256
       Top = 8
@@ -122,7 +135,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
       Hint = 'Save template to file'
       Action = actSave
       Caption = 'Save to file'
-      TabOrder = 2
+      ImageIndex = 0
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000000000000000000000000000000000000000000000000
@@ -158,6 +171,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
         93FFAF6A93FF00000000AF6A93FFAF6A93FF824F6DBD00000000000000000000
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000}
+      TabOrder = 2
     end
     object btnLoadFromFile: TBitBtn
       Left = 368
@@ -167,7 +181,6 @@ object tgdReportEditorForm: TtgdReportEditorForm
       Hint = 'Load template from file'
       Action = actLoad
       Caption = 'Load from file'
-      TabOrder = 3
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000000000000000000000000000000000000000000000000
@@ -203,6 +216,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000}
+      TabOrder = 3
     end
     object btnOk: TBitBtn
       Left = 8
@@ -236,7 +250,6 @@ object tgdReportEditorForm: TtgdReportEditorForm
       Hint = 'Validate template'
       Action = actValidate
       Caption = 'Validate template'
-      TabOrder = 4
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000000000000000000000000000000000000000000090000
@@ -272,6 +285,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
         EBFFC5F4EBFFC5F4EBFFC5F4EBFFC5F4EBFF44B792FF00000005348B70BF47BC
         97FF47BC97FF47BC97FF47BC97FF47BC97FF47BC97FF47BC97FF47BB97FF47BB
         97FF47BB96FF46BB96FF47BA95FF45BA94FF338A6EC000000003}
+      TabOrder = 4
     end
     object btnExecuteReport: TBitBtn
       Left = 632
@@ -281,7 +295,6 @@ object tgdReportEditorForm: TtgdReportEditorForm
       Hint = 'Execute report'
       Action = actExecuteReport
       Caption = 'Execute Report'
-      TabOrder = 5
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000000000000000000000000000000000000000000000000
@@ -317,6 +330,7 @@ object tgdReportEditorForm: TtgdReportEditorForm
         0000000000000000000000000000000000000000000000000000000000000000
         00000000000000000000000000003827174D0000000000000000000000000000
         0000000000000000000000000000000000000000000000000000}
+      TabOrder = 5
     end
     object cbbTemplateSyntax: TComboBox
       Left = 800
@@ -329,7 +343,6 @@ object tgdReportEditorForm: TtgdReportEditorForm
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
-      ItemHeight = 16
       ParentFont = False
       TabOrder = 6
       OnChange = cbbTemplateSyntaxChange
@@ -667,8 +680,6 @@ object tgdReportEditorForm: TtgdReportEditorForm
         EndExpr = '}}'
         Highlighter = synPascalSyntax
         SchemeName = 'PascalScript'
-        StartExprW = '{{'
-        EndExprW = '}}'
       end
       item
         StartExpr = '{='
@@ -677,8 +688,6 @@ object tgdReportEditorForm: TtgdReportEditorForm
         MarkerAttri.Background = clGradientInactiveCaption
         MarkerAttri.Foreground = clBlue
         SchemeName = 'Macro'
-        StartExprW = '{='
-        EndExprW = '=}'
       end>
     DefaultHighlighter = synXmlSyntax
     Left = 304
@@ -729,8 +738,6 @@ object tgdReportEditorForm: TtgdReportEditorForm
     TimerInterval = 500
     Left = 456
     Top = 32
-    EndOfTokenChrW = '()[]. '
-    TriggerCharsW = '.'
   end
   object synText: TSynGeneralSyn
     Options.AutoDetectEnabled = False

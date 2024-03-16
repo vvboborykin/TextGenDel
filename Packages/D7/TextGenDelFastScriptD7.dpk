@@ -12,11 +12,11 @@ package TextGenDelFastScriptD7;
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
 {$OPTIMIZATION OFF}
-{$OVERFLOWCHECKS OFF}
-{$RANGECHECKS OFF}
+{$OVERFLOWCHECKS ON}
+{$RANGECHECKS ON}
 {$REFERENCEINFO ON}
 {$SAFEDIVIDE OFF}
-{$STACKFRAMES OFF}
+{$STACKFRAMES ON}
 {$TYPEDADDRESS OFF}
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST OFF}
@@ -24,6 +24,7 @@ package TextGenDelFastScriptD7;
 {$IMAGEBASE $400000}
 {$DESCRIPTION 'Text Generator for Delphi FastScript engine component'}
 {$IMPLICITBUILD OFF}
+{$DEFINE DEBUG}
 
 requires
   rtl,
@@ -33,8 +34,8 @@ requires
   TextGenDelD7;
 
 contains
-  tgdFastScriptEngineUnit in '..\Sources\tgdFastScriptEngineUnit.pas',
-  tgdFastScriptEngineFactoryUnit in '..\Sources\tgdFastScriptEngineFactoryUnit.pas';
+  tgdFastScriptEngineUnit in '..\..\Sources\tgdFastScriptEngineUnit.pas',
+  tgdFastScriptEngineFactoryUnit in '..\..\Sources\tgdFastScriptEngineFactoryUnit.pas';
 
 end.
 

@@ -14,13 +14,13 @@ PROJECTS = TextGenDelD7.bpl TextGenDelFastScriptD7.bpl TextGenDelEditorD7.bpl
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
 
-TextGenDelD7.bpl: Packages\TextGenDelD7.dpk
+TextGenDelD7.bpl: Packages\D7\TextGenDelD7.dpk
   $(DCC)
 
-TextGenDelEditorD7.bpl: Packages\TextGenDelEditorD7.dpk
+TextGenDelEditorD7.bpl: Packages\D7\TextGenDelEditorD7.dpk
   $(DCC)
 
-TextGenDelFastScriptD7.bpl: Packages\TextGenDelFastScriptD7.dpk
+TextGenDelFastScriptD7.bpl: Packages\D7\TextGenDelFastScriptD7.dpk
   $(DCC)
 
 

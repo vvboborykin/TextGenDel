@@ -408,7 +408,11 @@ begin
   I := 1;
   while I <= Length(vText) do
   begin
+{$IFDEF UNICODE}
+    if CharInSet(vText[I], IdentChars) then
+{$ELSE}
     if vText[I] in IdentChars then
+{$ENDIF}
       Result := Result + vText[I]
     else
       Break;

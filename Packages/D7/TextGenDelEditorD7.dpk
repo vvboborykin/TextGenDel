@@ -12,11 +12,11 @@ package TextGenDelEditorD7;
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
 {$OPTIMIZATION OFF}
-{$OVERFLOWCHECKS OFF}
-{$RANGECHECKS OFF}
+{$OVERFLOWCHECKS ON}
+{$RANGECHECKS ON}
 {$REFERENCEINFO ON}
 {$SAFEDIVIDE OFF}
-{$STACKFRAMES OFF}
+{$STACKFRAMES ON}
 {$TYPEDADDRESS OFF}
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST OFF}
@@ -24,6 +24,7 @@ package TextGenDelEditorD7;
 {$IMAGEBASE $400000}
 {$DESCRIPTION 'Component editor for Text Generator for Delphi'}
 {$IMPLICITBUILD OFF}
+{$DEFINE DEBUG}
 
 requires
   rtl,
@@ -34,11 +35,11 @@ requires
   SynEdit_R7;
 
 contains
-  dlgConfirmReplace in '..\Sources\dlgConfirmReplace.pas' {ConfirmReplaceDialog},
-  dlgReplaceText in '..\Sources\dlgReplaceText.pas' {TextReplaceDialog},
-  dlgSearchText in '..\Sources\dlgSearchText.pas' {TextSearchDialog},
-  plgSearchHighlighter in '..\Sources\plgSearchHighlighter.pas',
-  tgdReportEditorFormUnit in '..\Sources\tgdReportEditorFormUnit.pas' {tgdReportEditorForm},
-  tgdReportEditorUnit in '..\Sources\tgdReportEditorUnit.pas';
+  dlgConfirmReplace in '..\..\Sources\dlgConfirmReplace.pas' {ConfirmReplaceDialog},
+  dlgReplaceText in '..\..\Sources\dlgReplaceText.pas' {TextReplaceDialog},
+  dlgSearchText in '..\..\Sources\dlgSearchText.pas' {TextSearchDialog},
+  plgSearchHighlighter in '..\..\Sources\plgSearchHighlighter.pas',
+  tgdReportEditorFormUnit in '..\..\Sources\tgdReportEditorFormUnit.pas' {tgdReportEditorForm},
+  tgdReportEditorUnit in '..\..\Sources\tgdReportEditorUnit.pas';
 
 end.
